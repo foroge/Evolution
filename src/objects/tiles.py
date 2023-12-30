@@ -32,5 +32,12 @@ class CustomTile(pygame.sprite.Sprite):
     def __init___(self, tile_type, pos_x, pos_y, pointer):
         super()._init__(tiles_group, all_sprites)
         self.image = tile_images[f"{tile_type}_{pointer}"]
-        self.rect = self.image.get_rect().move(
-            tile_width * pos_x, tile_height * pos_y)
+        if tile_type != "grass":
+            if pointer == 0:
+                self.rect = self.image.get_rect().move(tile_width * pos_x, tile_height * pos_y)
+            elif pointer == 1:
+                ...# self.rect = self.image.get_rect().move(tile_width * pos_x, tile_height * pos_y)
+            elif pointer == 2:
+                ...# self.rect = self.image.get_rect().move(tile_width * pos_x, tile_height * pos_y)
+        else:
+            self.rect = self.image.get_rect().move(tile_width * pos_x, tile_height * pos_y)
