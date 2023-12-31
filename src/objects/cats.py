@@ -1,6 +1,8 @@
 import pygame
 from ..load.load_images import load_image
 
+cats_group = pygame.sprite.Group()
+
 cat_image = {
     "doctor": load_image("doctor.png"),
     "egg": load_image("egg.png"),

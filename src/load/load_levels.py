@@ -1,8 +1,9 @@
 import pygame
 import sys
-from ..objects.tiles import BaseTile, CustomTile
+import os
 from random import randint
-from ..objects.cats import create_cat
+from src.objects.tiles import BaseTile, FrontTile, BackTile, GrassTile
+from src.objects.cats import create_cat
 
 
 def load_level(filename):
@@ -19,48 +20,20 @@ def load_level(filename):
 
 
 def generate_level(level):
-    cats, blocks, x, y = [], [], None, None
+    x, y = None, None
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == 'g':
-                if level[y][x] in ["конст список котов"]:
-                    block = CustomTile('grass', x, y, randint(0, 4))
-                    cat = create_cat(level[y][x])
-                    blocks.append(block)
-                    cats.append(cat)
-                else:
-                    block = CustomTile('grass', x, y, randint(0, 4))
-                    blocks.append(block)
+                block = GrassTile('grass', x, y, randint(0, 4))
             elif level[y][x] == 't':
-                if level[y][x] in ["конст список котов"]:
-                    block1 = CustomTile("tray", x, y, 1)
-                    cat = create_cat(level[y][x])
-                    block2 = CustomTile("tray", x, y, 2)
-                    blocks.append(block1)
-                    blocks.append(block2)
-                    cats.append(cat)
-                else:
-                    block = CustomTile("tray", x, y, 0)
-                    blocks.append(block)
+                block = BaseTile("tray", x, y)
             elif level[y][x] == 'w':
-                if level[y][x] in ["конст список котов"]:
-                    block1 = CustomTile("tray", x, y, 1)
-                    cat = create_cat(level[y][x])
-                    block2 = CustomTile("tray", x, y, 2)
-                    blocks.append(block1)
-                    blocks.append(block2)
-                    cats.append(cat)
-                else:
-                    block = CustomTile("tray", x, y, 0)
-                    blocks.append(block)
+                block = BaseTile("tray", x, y)
             elif level[y][x] == 'f':
                 block = BaseTile("fence", x, y)
-                cat = create_cat(level[y][x])
-                blocks.append(block)
-                cats.append(cat)
             elif level[y][x] == 's':
                 block = BaseTile("stone", x, y)
-                cat = create_cat(level[y][x])
-                blocks.append(block)
-                cats.append(cat)
-    return cats, blocks, x, y
+            elif level[y][x] == '@':
+                cat = create_cat("king", x, y)
+                block = BaseTile("stone", x, y)
+    return x, y
