@@ -1,7 +1,10 @@
 import pygame
 from src.load.load_images import load_image
+from src.objects.tiles import BaseObject, all_sprites
 
 cats_group = pygame.sprite.Group()
+
+TILE_WIDTH, TILE_HEIGHT = 16, 32
 
 
 def init_cats():
@@ -14,68 +17,90 @@ def init_cats():
         "transport": load_image("cats/transport.png"),
         "warrior": load_image("cats/warrior.png"),
         "wizard": load_image("cats/wizard.png"),
+        "sunflower": load_image("cats/sunflower.png")
     }
     return cat_image
 
 
-class BaseCat(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y, cat_type):
-        super().__init__(player_group, all_sprites)
-        self.image = cat_image[cat_type]
-        self.x = tile_width * pos_x + 15
-        self.y = tile_height * pos_y + 5
-        self.rect = self.image.get_rect().move(self.x, self.y)
+class BaseCat(BaseObject):
+    def __init__(self, pos_x, pos_y, width, height, size, cat_type, cat_images):
+        self.image = cat_images[cat_type]
+        super().__init__(pos_x, pos_y, width, height, size, self.image, cats_group, all_sprites)
+        self.x = TILE_WIDTH * pos_x
+        self.y = TILE_HEIGHT * pos_y
         self.xvel = self.yvel = 0
 
 
 class Doctor(BaseCat):
-    pass
+    def __init__(self, x, y, width, height, size, cat_images):
+        cat_type = "doctor"
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
 
 
 class Egg(BaseCat):
-    pass
+    def __init__(self, x, y, width, height, size, cat_images):
+        cat_type = "egg"
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
 
 
 class King(BaseCat):
-    def __init__(self, x, y):
+    def __init__(self, x, y, width, height, size, cat_images):
         cat_type = "king"
-        super().__init__(x, y, cat_type)
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
 
 
 class Leaf(BaseCat):
-    pass
+    def __init__(self, x, y, width, height, size, cat_images):
+        cat_type = "leaf"
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
 
 
 class Mushroom(BaseCat):
-    pass
+    def __init__(self, x, y, width, height, size, cat_images):
+        cat_type = "mushroom"
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
 
 
 class Transport(BaseCat):
-    pass
+    def __init__(self, x, y, width, height, size, cat_images):
+        cat_type = "transport"
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
 
 
 class Warrior(BaseCat):
-    pass
+    def __init__(self, x, y, width, height, size, cat_images):
+        cat_type = "warrior"
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
 
 
 class Wizard(BaseCat):
-    pass
+    def __init__(self, x, y, width, height, size, cat_images):
+        cat_type = "wizard"
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
 
 
-def create_cat(name, x, y):
+class SunFlower(BaseCat):
+    def __init__(self, x, y, width, height, size, cat_images):
+        cat_type = "sunflower"
+        super().__init__(x, y, width, height, size, cat_type, cat_images)
+
+
+def create_cat(name, x, y, width, height, size, cat_images):
     if name == "doctor":
-        return Doctor("doctor", x, y)
+        return Doctor(x, y, width, height, size, cat_images)
     elif name == "egg":
-        return Egg(x, y)
+        return Egg(x, y, width, height, size, cat_images)
     elif name == "king":
-        return King(x, y)
+        return King(x, y, width, height, size, cat_images)
     elif name == "leaf":
-        return Leaf(x, y)
+        return Leaf(x, y, width, height, size, cat_images)
     elif name == "mushroom":
-        return Mushroom(x, y)
+        return Mushroom(x, y, width, height, size, cat_images)
     elif name == "transport":
-        return Transport(x, y)
+        return Transport(x, y, width, height, size, cat_images)
     elif name == "warrior":
-        return Warrior(x, y)
+        return Warrior(x, y, width, height, size, cat_images)
     elif name == "wizard":
-        return Wizard(x, y)
+        return Wizard(x, y, width, height, size, cat_images)
+    elif name == "sunflower":
+        return SunFlower(x, y, width, height, size, cat_images)

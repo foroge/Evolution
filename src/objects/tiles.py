@@ -1,13 +1,15 @@
 import pygame
 import os
 from src.load.load_images import load_image
+from src.extra_utils import WindowSize
+
 
 back_tile_group = pygame.sprite.Group()
 front_tile_group = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 tiles_group = pygame.sprite.Group()
 
-TILE_WIDTH = TILE_HEIGHT = 32
+TILE_WIDTH, TILE_HEIGHT = 16, 32
 
 
 def init_image():
@@ -16,7 +18,7 @@ def init_image():
         'grass_1': load_image('tiles/grass/grass1.png'),
         'grass_2': load_image('tiles/grass/grass2.png'),
         'grass_3': load_image('tiles/grass/grass3.png'),
-        'grass_4': load_image('tiles/grass/grass4.png'),
+        'tree': load_image('tiles/tree.png'),
         'water_0': load_image('tiles/water/empty_water.png'),
         'water_1': load_image('tiles/water/back_filled_water.png'),
         'water_2': load_image('tiles/water/front_filled_water.png'),
@@ -25,39 +27,65 @@ def init_image():
         'tray_2': load_image('tiles/tray/front_filled_tray.png'),
         'stone_0': load_image('tiles/stone.png'),
         'fence_0': load_image('tiles/fence.png'),
-        # 'wood_0': load_image('tiles/wood.png')
     }
     return tile_images
 
 
-class BaseTile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y, tile_images):
-        super().__init__(tiles_group, all_sprites)
+class BaseObject(pygame.sprite.Sprite):
+
+    def __init__(self, pos_x, pos_y, width, height, size, image, *groups):
+        super().__init__(*groups)
+        self.image = image
+        self.size = size
+        self.width = self.height = width = height
+        self.orig_image = image
+        self.pos_x, self.pos_y = pos_x, pos_y
+        self.orig_size = image.get_size()
+        self.rect = self.image.get_rect().move(
+            self.orig_size[0] * pos_x + width, self.orig_size[1] * pos_y + height)
+
+    def move(self, dx, dy):
+        self.rect.x += dx
+        self.rect.y += dy
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
+    def change_size(self, scale):
+        old_size = self.image.get_size()
+        new_size = [int(self.orig_size[0] * scale), int(self.orig_size[1] * scale)]
+        width_rect = new_size[0] / 2 * self.pos_x + self.width
+        height_rect = new_size[1] * self.pos_y + self.height
+        # print(self.height)
+        if_width = (self.width < width_rect < self.width + self.size)
+        if_height = (self.height < height_rect < self.width + self.size)
+        if if_width and if_height:
+            self.image = pygame.transform.scale(self.orig_image, new_size)
+            self.rect = self.image.get_rect().move(width_rect, height_rect)
+
+
+class BaseTile(BaseObject):
+    def __init__(self, tile_type, pos_x, pos_y, width, height, size, tile_images):
         self.image = tile_images[f"{tile_type}_0"]
-        self.rect = self.image.get_rect().move(
-            TILE_WIDTH * pos_x, TILE_HEIGHT * pos_y)
-        print(pos_x, pos_y)
+        super().__init__(pos_x, pos_y, width, height, size, self.image, tiles_group, all_sprites)
 
 
-class GrassTile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y, pointer, tile_images):
-        super().__init__(tiles_group, all_sprites)
+class GrassTile(BaseObject):
+    def __init__(self, tile_type, pos_x, pos_y, width, height, size, pointer, tile_images):
         self.image = tile_images[f"{tile_type}_{pointer}"]
-        self.rect = self.image.get_rect().move(
-            TILE_WIDTH * pos_x, TILE_HEIGHT * pos_y)
+        super().__init__(pos_x, pos_y,width, height, size, self.image, tiles_group, all_sprites)
 
 
-class BackTile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y, tile_images):
-        super().__init__(back_tile_group, all_sprites)
+class BackTile(BaseObject):
+    def __init__(self, tile_type, pos_x, pos_y, width, height, size, tile_images):
         self.image = tile_images[f"{tile_type}_1"]
-        self.rect = self.image.get_rect().move(
-            TILE_WIDTH * pos_x, TILE_HEIGHT * pos_y)
+        super().__init__(pos_x, pos_y, width, height, size, self.image, back_tile_group, all_sprites)
 
 
-class FrontTile(pygame.sprite.Sprite):
-    def __init__(self, tile_type, pos_x, pos_y, tile_images):
-        super().__init__(front_tile_group, all_sprites)
+class FrontTile(BaseObject):
+    def __init__(self, tile_type, pos_x, pos_y, width, height, size, tile_images):
         self.image = tile_images[f"{tile_type}_2"]
-        self.rect = self.image.get_rect().move(
-            TILE_WIDTH * pos_x + 16, TILE_HEIGHT * pos_y + 16)
+        super().__init__(pos_x, pos_y, width, height, size, self.image, front_tile_group, all_sprites)
+
+
+group_list = [all_sprites, tiles_group, back_tile_group, front_tile_group]
