@@ -1,8 +1,8 @@
 import random
 
-PATH_SYMB = "-"
-ALT_PATH_SYMB = "P"
-GRASS_SYMB = " "
+PATH_SYMB = "P"
+ALT_PATH_SYMB = "-"
+GRASS_SYMB = "g"
 
 
 def randomize_map_point(levelMap, size, point1: tuple, point2: tuple):
@@ -76,38 +76,30 @@ def delete_useless_path(levelMap, coordsKing, coordsSpawn):
     direction = None
     while (r, c) != coordsKing:
         if not direction:
-            if 0 <= r - 1 < len(levelMap) and 0 <= c < len(levelMap) and levelMap[r - 1][c] == "-":
+            if 0 <= r - 1 < len(levelMap) and 0 <= c < len(levelMap) and levelMap[r - 1][c] == PATH_SYMB:
                 direction = -1, 0
-            elif 0 <= r < len(levelMap) and 0 <= c + 1 < len(levelMap) and levelMap[r][c + 1] == "-":
+            elif 0 <= r < len(levelMap) and 0 <= c + 1 < len(levelMap) and levelMap[r][c + 1] == PATH_SYMB:
                 direction = 0, 1
-            elif 0 <= r + 1 < len(levelMap) and 0 <= c < len(levelMap) and levelMap[r + 1][c] == "-":
+            elif 0 <= r + 1 < len(levelMap) and 0 <= c < len(levelMap) and levelMap[r + 1][c] == PATH_SYMB:
                 direction = 1, 0
-            elif 0 <= r < len(levelMap) and 0 <= c - 1 < len(levelMap) and levelMap[r][c - 1] == "-":
+            elif 0 <= r < len(levelMap) and 0 <= c - 1 < len(levelMap) and levelMap[r][c - 1] == PATH_SYMB:
                 direction = 0, -1
             r, c = r + direction[0], c + direction[1]
             levelMap[r][c] = ALT_PATH_SYMB
         else:
-            # if 0 <= r + direction[0] < len(levelMap) and 0 <= c + direction[1] < len(levelMap) and \
-            #         levelMap[r + direction[0]][c + direction[1]] == PATH_SYMB:
-            #     direction = direction
-            # elif 0 <= r - direction[1] < len(levelMap) and 0 <= c + direction[0] < len(levelMap) and \
-            #         levelMap[r - direction[1]][c + direction[0]] == PATH_SYMB:
-            #     direction = -direction[1], direction[0]
-            # elif 0 <= r - direction[0] < len(levelMap) and 0 <= c - direction[1] < len(levelMap) and \
-            #         levelMap[r - direction[0]][c - direction[0]] == PATH_SYMB:
-            #     direction = -direction[0], -direction[1]
-            # elif 0 <= r + direction[1] < len(levelMap) and 0 <= c - direction[0] < len(levelMap) and \
-            #         levelMap[r + direction[1]][c - direction[0]] == PATH_SYMB:
-            #     direction = direction[1], -direction[0]
             dir = check_neighbours("@", r, c, direction)
             if not dir:
                 dir = check_neighbours(PATH_SYMB, r, c, direction)
+            if not dir:
+                dir = check_neighbours(ALT_PATH_SYMB, r, c, direction)
+                if dir[0] == -direction[0] and dir[1] == -direction[1]:
+                    dir = None
             if dir:
                 direction = dir
                 r, c = r + direction[0], c + direction[1]
                 levelMap[r][c] = ALT_PATH_SYMB
             else:
-                levelMap[r + direction[0]][c + direction[1]] = GRASS_SYMB
+                levelMap[r][c] = GRASS_SYMB
                 r, c = r - direction[0], c - direction[1]
 
     for i in range(len(levelMap)):
@@ -127,14 +119,24 @@ def create_map(size):
     rowSpawn = size // 2 - random.randint(size // 4, size // 2 - 1) * [0, -1, 1][halfY:][0]
     colSpawn = size // 2 - random.randint(size // 4, size // 2 - 1) * [0, -1, 1][halfX:][0]
     levelMap[rowSpawn][colSpawn] = "#"
-    levelMap = create_path(levelMap, size, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
-    while sum(list(map(lambda x: x.count(PATH_SYMB), levelMap))) > 100:
-        levelMap = create_empty_map(size).copy()
-        levelMap[rowKing][colKing] = "@"
-        levelMap[rowSpawn][colSpawn] = "#"
-        levelMap = create_path(levelMap, size, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
-    levelMap = delete_useless_path(levelMap, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
-    levelMap[rowKing][colKing] = "@"
+
+    bad = True
+    while bad:
+        try:
+            levelMap = create_path(levelMap, size, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
+            while sum(list(map(lambda x: x.count(PATH_SYMB), levelMap))) > 100:
+                levelMap = create_empty_map(size).copy()
+                levelMap[rowKing][colKing] = "@"
+                levelMap[rowSpawn][colSpawn] = "#"
+                levelMap = create_path(levelMap, size, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
+            levelMap = delete_useless_path(levelMap, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
+            levelMap[rowKing][colKing] = "@"
+            bad = False
+        except Exception:
+            levelMap = create_empty_map(size).copy()
+            levelMap[rowKing][colKing] = "@"
+            levelMap[rowSpawn][colSpawn] = "#"
+            bad = True
     return levelMap
 
 
