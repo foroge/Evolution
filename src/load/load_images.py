@@ -4,7 +4,8 @@ import sys
 
 
 def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
+    dirname = "\\".join(os.path.dirname(__file__).split("\\")[:-2])
+    fullname = os.path.join(dirname, "data", name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
