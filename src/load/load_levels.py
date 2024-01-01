@@ -29,22 +29,22 @@ def generate_level(level):
     tile_images = init_image()
     cat_images = init_cats()
     wind = WindowSize()
-    w, h, s = wind.w_marge, wind.h_marge, wind.size
+    w, h = wind.w_marge, wind.h_marge
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == 'g':
-                block = GrassTile('grass', x, y, w, h, s, randint(0, 3), tile_images)
+                block = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
             elif level[y][x] == 't':
-                block = BaseTile("tray", x, y, w, h, s, tile_images)
+                block = BaseTile("tray", x, y, w, h, tile_images)
             elif level[y][x] == 'w':
-                block = BaseTile("tray", x, y, w, h, s, tile_images)
+                block = BaseTile("tray", x, y, w, h, tile_images)
             elif level[y][x] == 'f':
-                block = BaseTile("fence", x, y, w, h, s, tile_images)
+                block = BaseTile("fence", x, y, w, h, tile_images)
             elif level[y][x] == 's':
-                block = BaseTile("stone", x, y, w, h, s, tile_images)
+                block = BaseTile("stone", x, y, w, h, tile_images)
             elif level[y][x] == '@':
-                block1 = GrassTile('grass', x, y, w, h, s, randint(0, 3), tile_images)
-                block2 = BackTile("tray", x, y, w, h, s, tile_images)
-                king = create_cat("king", x, y, w, h, s, cat_images)
-                block3 = FrontTile("tray", x, y, w, h, s, tile_images)
+                block1 = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
+                block2 = BackTile("tray", x, y, w, h, tile_images)
+                king = create_cat("king", x, y, w, h, cat_images)
+                block3 = FrontTile("tray", x, y, w, h, tile_images)
     return king, x, y, src.objects.tiles.group_list, src.objects.cats.cats_group, src.objects.tiles.all_sprites

@@ -33,11 +33,10 @@ def init_image():
 
 class BaseObject(pygame.sprite.Sprite):
 
-    def __init__(self, pos_x, pos_y, width, height, size, image, *groups):
+    def __init__(self, pos_x, pos_y, width, height, image, *groups):
         super().__init__(*groups)
         self.image = image
-        self.size = size
-        self.width = self.height = width = height
+        self.width, self.height = width, height
         self.orig_image = image
         self.pos_x, self.pos_y = pos_x, pos_y
         self.orig_size = image.get_size()
@@ -52,40 +51,35 @@ class BaseObject(pygame.sprite.Sprite):
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
     def change_size(self, scale):
-        old_size = self.image.get_size()
         new_size = [int(self.orig_size[0] * scale), int(self.orig_size[1] * scale)]
         width_rect = new_size[0] / 2 * self.pos_x + self.width
         height_rect = new_size[1] * self.pos_y + self.height
-        # print(self.height)
-        if_width = (self.width < width_rect < self.width + self.size)
-        if_height = (self.height < height_rect < self.width + self.size)
-        if if_width and if_height:
-            self.image = pygame.transform.scale(self.orig_image, new_size)
-            self.rect = self.image.get_rect().move(width_rect, height_rect)
+        self.image = pygame.transform.scale(self.orig_image, new_size)
+        self.rect = self.image.get_rect().move(width_rect, height_rect)
 
 
 class BaseTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, width, height, size, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, width, height, tile_images):
         self.image = tile_images[f"{tile_type}_0"]
-        super().__init__(pos_x, pos_y, width, height, size, self.image, tiles_group, all_sprites)
+        super().__init__(pos_x, pos_y, width, height, self.image, tiles_group, all_sprites)
 
 
 class GrassTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, width, height, size, pointer, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, width, height, pointer, tile_images):
         self.image = tile_images[f"{tile_type}_{pointer}"]
-        super().__init__(pos_x, pos_y,width, height, size, self.image, tiles_group, all_sprites)
+        super().__init__(pos_x, pos_y,width, height, self.image, tiles_group, all_sprites)
 
 
 class BackTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, width, height, size, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, width, height, tile_images):
         self.image = tile_images[f"{tile_type}_1"]
-        super().__init__(pos_x, pos_y, width, height, size, self.image, back_tile_group, all_sprites)
+        super().__init__(pos_x, pos_y, width, height, self.image, back_tile_group, all_sprites)
 
 
 class FrontTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, width, height, size, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, width, height, tile_images):
         self.image = tile_images[f"{tile_type}_2"]
-        super().__init__(pos_x, pos_y, width, height, size, self.image, front_tile_group, all_sprites)
+        super().__init__(pos_x, pos_y, width, height, self.image, front_tile_group, all_sprites)
 
 
 group_list = [all_sprites, tiles_group, back_tile_group, front_tile_group]
