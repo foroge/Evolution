@@ -1,7 +1,9 @@
+import random
+
 import pygame
 import sys
 import os
-from random import randint
+from random import randint, choice
 import src.objects.tiles
 from src.objects.tiles import BaseTile, FrontTile, BackTile, GrassTile, init_image
 import src.objects.cats
@@ -30,17 +32,26 @@ def generate_level(level):
     cat_images = init_cats()
     wind = WindowSize()
     w, h = wind.w_marge, wind.h_marge
+    cats = ["doctor", "egg", "king", "leaf", "mushroom", "transport", "warrior", "wizard", "sunflower"]
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == 'g':
                 block = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
             elif level[y][x] == 't':
-                block = BaseTile("tray", x, y, w, h, tile_images)
+                block1 = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
+                block2 = BackTile("tray", x, y, w, h, tile_images)
+                cat = create_cat(choice(cats), x, y, w, h, cat_images)
+                block3 = FrontTile("tray", x, y, w, h, tile_images)
             elif level[y][x] == 'w':
-                block = BaseTile("tray", x, y, w, h, tile_images)
+                block1 = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
+                block2 = BaseTile("water", x, y, w, h, tile_images)
             elif level[y][x] == 'f':
                 block = BaseTile("fence", x, y, w, h, tile_images)
             elif level[y][x] == 's':
+                block = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
+            elif level[y][x] == "T":
+                block = BaseTile("tree", x, y, w, h, tile_images)
+            elif level[y][x] == "-":
                 block = BaseTile("stone", x, y, w, h, tile_images)
             elif level[y][x] == '@':
                 block1 = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)

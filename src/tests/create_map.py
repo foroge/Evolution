@@ -5,11 +5,11 @@ ALT_PATH_SYMB = "-"  # Выходной символ пути
 GRASS_SYMB = "g"
 KING_SYMB = "@"
 SPAWN_SYMB = "#"
-TRAY_SYMB = "T"
+TRAY_SYMB = "t"
 WATER_SYMB = "w"
-TREE_SYMB = "t"
-FENCE_SUMB = "F"
-STONE_SYMB = "S"
+TREE_SYMB = "T"
+FENCE_SUMB = "f"
+STONE_SYMB = "s"
 
 
 def randomize_map_point(levelMap, size, point1: tuple, point2: tuple, canstop=False):

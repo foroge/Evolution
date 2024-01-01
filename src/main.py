@@ -9,6 +9,7 @@ from objects.cats import init_cats
 import objects.tiles as obj_tiles
 from objects.tiles import init_image
 from src.extra_utils import WindowSize, Camera, change_size_sprites
+from src.tests.create_map import create_map
 
 
 pygame.init()
@@ -17,7 +18,7 @@ wind = WindowSize()
 
 screen = pygame.display.set_mode((wind.size_w, wind.size_h))
 
-king, x, y, sprites, cats, all_sprites = generate_level(load_level("map1.csv"))
+king, x, y, sprites, cats, all_sprites = generate_level(create_map(32))
 sprites.append(cats)
 
 sprites[-1], sprites[-2] = sprites[-2], sprites[-1]
