@@ -27,6 +27,8 @@ def init_image():
         'tray_2': load_image('tiles/tray/front_filled_tray.png'),
         'stone_0': load_image('tiles/stone.png'),
         'fence_0': load_image('tiles/fence.png'),
+        "path_0": load_image('tiles/path.png'),
+        "spawner_0": load_image('tiles/spawner.png')
     }
     return tile_images
 

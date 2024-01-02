@@ -39,20 +39,24 @@ def generate_level(level):
                 block = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
             elif level[y][x] == 't':
                 block1 = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
-                block2 = BackTile("tray", x, y, w, h, tile_images)
-                cat = create_cat(choice(cats), x, y, w, h, cat_images)
-                block3 = FrontTile("tray", x, y, w, h, tile_images)
+                block2 = BaseTile("tray", x, y, w, h, tile_images)
+                # block2 = BackTile("tray", x, y, w, h, tile_images)
+                # cat = create_cat(choice(cats), x, y, w, h, cat_images)
+                # block2 = BaseTile("tray", x, y, w, h, tile_images)
             elif level[y][x] == 'w':
                 block1 = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
                 block2 = BaseTile("water", x, y, w, h, tile_images)
             elif level[y][x] == 'f':
                 block = BaseTile("fence", x, y, w, h, tile_images)
             elif level[y][x] == 's':
-                block = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
+                block = BaseTile("stone", x, y, w, h, tile_images)
             elif level[y][x] == "T":
                 block = BaseTile("tree", x, y, w, h, tile_images)
             elif level[y][x] == "-":
-                block = BaseTile("stone", x, y, w, h, tile_images)
+                block = BaseTile("path", x, y, w, h, tile_images)
+            elif level[y][x] == "#":
+                block1 = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
+                block2 = BaseTile("spawner", x, y, w, h, tile_images)
             elif level[y][x] == '@':
                 block1 = GrassTile('grass', x, y, w, h, randint(0, 3), tile_images)
                 block2 = BackTile("tray", x, y, w, h, tile_images)
