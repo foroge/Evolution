@@ -49,18 +49,18 @@ class BaseObject(pygame.sprite.Sprite):
         self.default_y = def_y
         self.size_map = size
 
-    def update(self, vx, vy, horizontal_borders, vertical_borders):
-        self.rect = self.rect.move(self.rect.x + vx, self.rect.y + vy)
-        # if pygame.sprite.spritecollideany(self, horizontal_borders):
-        #     vy = -vy
-        # if pygame.sprite.spritecollideany(self, vertical_borders):
-        #     vx = -vx
-
-        # self.rect.x += vx
-        # self.rect.y += vy
-        self.dx += vx
-        self.dy += vy
-        print(vx, vy, self.rect.x, self.rect.y)
+    # def update(self, vx, vy, horizontal_borders, vertical_borders):
+    #     self.rect = self.rect.move(self.rect.x + vx, self.rect.y + vy)
+    #     # if pygame.sprite.spritecollideany(self, horizontal_borders):
+    #     #     vy = -vy
+    #     # if pygame.sprite.spritecollideany(self, vertical_borders):
+    #     #     vx = -vx
+    #
+    #     # self.rect.x += vx
+    #     # self.rect.y += vy
+    #     self.dx += vx
+    #     self.dy += vy
+    #     print(vx, vy, self.rect.x, self.rect.y)
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
