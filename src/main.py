@@ -8,17 +8,20 @@ import objects.cats as obj_cats
 from objects.cats import init_cats
 import objects.tiles as obj_tiles
 from objects.tiles import init_image
-from src.extra_utils import WindowSize, Camera, change_size_sprites
+from src.extra_utils import Camera, change_size_sprites
 from src.tests.create_map import create_map
 
 
 pygame.init()
 
-wind = WindowSize()
+info = pygame.display.Info()
+full_w = info.current_w
+full_h = info.current_h
+screen = pygame.display.set_mode((full_w, full_h))
 
-screen = pygame.display.set_mode((wind.size_w, wind.size_h))
+size_map = 32
 
-king, x, y, sprites, cats, all_sprites = generate_level(create_map(32))
+king, x, y, sprites, cats, all_sprites = generate_level(create_map(size_map))
 sprites.append(cats)
 
 sprites[-1], sprites[-2] = sprites[-2], sprites[-1]

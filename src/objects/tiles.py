@@ -1,7 +1,6 @@
 import pygame
 import os
 from src.load.load_images import load_image
-from src.extra_utils import WindowSize
 
 
 back_tile_group = pygame.sprite.Group()
@@ -35,19 +34,18 @@ def init_image():
 
 class BaseObject(pygame.sprite.Sprite):
 
-    def __init__(self, pos_x, pos_y, width, height, image, *groups):
+    def __init__(self, pos_x, pos_y, image, *groups):
         super().__init__(*groups)
         self.image = image
-        self.width, self.height = width, height
         self.orig_image = image
         self.pos_x, self.pos_y = pos_x, pos_y
         self.orig_size = image.get_size()
         self.rect = self.image.get_rect().move(
             self.orig_size[0] * pos_x + 10, self.orig_size[1] * pos_y + 10)
 
-    def move(self, dx, dy):
-        self.rect.x += dx
-        self.rect.y += dy
+    def move(self, vx, vy):
+        self.rect.x += vx
+        self.rect.y += vy
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
@@ -61,27 +59,27 @@ class BaseObject(pygame.sprite.Sprite):
 
 
 class BaseTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, width, height, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, tile_images):
         self.image = tile_images[f"{tile_type}_0"]
-        super().__init__(pos_x, pos_y, width, height, self.image, tiles_group, all_sprites)
+        super().__init__(pos_x, pos_y, self.image, tiles_group, all_sprites)
 
 
 class GrassTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, width, height, pointer, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, pointer, tile_images):
         self.image = tile_images[f"{tile_type}_{pointer}"]
-        super().__init__(pos_x, pos_y,width, height, self.image, tiles_group, all_sprites)
+        super().__init__(pos_x, pos_y,self.image, tiles_group, all_sprites)
 
 
 class BackTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, width, height, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, tile_images):
         self.image = tile_images[f"{tile_type}_1"]
-        super().__init__(pos_x, pos_y, width, height, self.image, back_tile_group, all_sprites)
+        super().__init__(pos_x, pos_y, self.image, back_tile_group, all_sprites)
 
 
 class FrontTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, width, height, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, tile_images):
         self.image = tile_images[f"{tile_type}_2"]
-        super().__init__(pos_x, pos_y, width, height, self.image, front_tile_group, all_sprites)
+        super().__init__(pos_x, pos_y, self.image, front_tile_group, all_sprites)
 
 
 group_list = [all_sprites, tiles_group, back_tile_group, front_tile_group]
