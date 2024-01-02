@@ -32,7 +32,7 @@ def generate_level(level):
     cat_images = init_cats()
     wind = WindowSize()
     w, h = wind.w_marge, wind.h_marge
-    cats = ["doctor", "egg", "king", "leaf", "mushroom", "transport", "warrior", "wizard", "sunflower"]
+    # cats = ["doctor", "egg", "king", "leaf", "mushroom", "transport", "warrior", "wizard", "sunflower"]
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == 'g':
