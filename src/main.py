@@ -6,6 +6,8 @@ from load.load_images import load_image
 from load.load_levels import generate_level, load_level
 import objects.cats as obj_cats
 from objects.cats import init_cats
+import objects.enemies
+from objects.enemies import init_enemies_images, BaseEnemy
 import objects.tiles as obj_tiles
 from objects.tiles import init_image
 from src.extra_utils import Camera, change_size_sprites, Border, sptires_move
@@ -22,11 +24,12 @@ screen = pygame.display.set_mode((full_w, full_h))
 
 col_cell = 32
 
-king, x, y, sprites, cats, all_sprites = generate_level(create_map(col_cell))
+level_map = create_map(col_cell).copy()
+king, spawner, x, y, sprites, cats, all_sprites = generate_level(level_map)
 sprites.append(cats)
 
 sprites[-1], sprites[-2] = sprites[-2], sprites[-1]
-enemies_group = pygame.sprite.Group()   # нужно будет перенести в проект с врагами
+# enemies_group = pygame.sprite.Group()   # нужно будет перенести в проект с врагами # Перенес
 ammunition_group = pygame.sprite.Group()  # аналогично
 
 
@@ -44,10 +47,15 @@ border3 = Border(x, y, x + size_map + 20, y + 20)
 border4 = Border(x, y + size_map + 15, x + size_map + 40, y + size_map + 40)
 ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 sptires_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
+
+BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 20 / camera.scale)
+enemies_group = objects.enemies.enemies_group
+
 running = True
 fps = 60
 clock = pygame.time.Clock()
 speed = 10
+
 while running:
     screen.fill((255, 255, 255))
     for event in pygame.event.get():
@@ -70,9 +78,12 @@ while running:
             camera.change_scale(False)
     change_size_sprites(all_sprites, camera.scale)
 
+    enemies_group.update(level_map, camera.scale)
+
     ver_borders.draw(screen)
     hor_borders.draw(screen)
     for i in sprites:
         i.draw(screen)
+    enemies_group.draw(screen)
     pygame.display.update()
     clock.tick(fps)

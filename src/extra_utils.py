@@ -42,11 +42,11 @@ class Camera:
     def __init__(self):
         self.dx = 0
         self.dy = 0
-        self.scale = 1
+        self.scale = 0.65
         self.step = 0.02
 
     def change_scale(self, flag):
-        if flag:
+        if flag and self.scale <= 1.2:
             self.scale += self.step
-        else:
+        elif not flag and self.scale >= 0.5:
             self.scale -= self.step

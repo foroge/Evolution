@@ -1,16 +1,16 @@
 import random
 
-PATH_SYMB = "-"  # Символ пути внутри функций
-ALT_PATH_SYMB = "P"  # Выходной символ пути
+PATH_SYMB = "P"  # Символ пути внутри функций
+ALT_PATH_SYMB = "-"  # Выходной символ пути
 NONE_PATH_SYMB = "n"  # Символ запрета установки точки пути
-GRASS_SYMB = " "
+GRASS_SYMB = "g"
 KING_SYMB = "@"
 SPAWN_SYMB = "#"
-TRAY_SYMB = "."
-WATER_SYMB = ","
-TREE_SYMB = " "
-FENCE_SUMB = " "
-STONE_SYMB = " "
+TRAY_SYMB = "T"
+WATER_SYMB = "w"
+TREE_SYMB = "t"
+FENCE_SUMB = "F"
+STONE_SYMB = "S"
 
 RANDOM_GRASS_CHANCE = 0.05
 
