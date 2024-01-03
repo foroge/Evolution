@@ -4,8 +4,6 @@ from src.objects.tiles import BaseObject, all_sprites
 
 cats_group = pygame.sprite.Group()
 
-TILE_WIDTH, TILE_HEIGHT = 16, 32
-
 
 def init_cats():
     cat_image = {
@@ -26,9 +24,6 @@ class BaseCat(BaseObject):
     def __init__(self, pos_x, pos_y, cat_type, cat_images):
         self.image = cat_images[cat_type]
         super().__init__(pos_x, pos_y, self.image, cats_group, all_sprites)
-        self.x = TILE_WIDTH * pos_x
-        self.y = TILE_HEIGHT * pos_y
-        self.xvel = self.yvel = 0
 
 
 class Doctor(BaseCat):

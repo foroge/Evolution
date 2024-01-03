@@ -41,28 +41,32 @@ class BaseObject(pygame.sprite.Sprite):
         self.pos_x, self.pos_y = pos_x, pos_y
         self.default_x = self.default_y = self.size_map = 0
         self.orig_size = image.get_size()
-        self.rect = self.image.get_rect().move(
-            self.orig_size[0] * pos_x + 30, self.orig_size[1] * pos_y + 30)
+        width_rect = self.orig_size[0] * self.pos_x + self.default_x
+        height_rect = self.orig_size[0] * self.pos_y + self.default_y
+        self.rect = self.image.get_rect().move(width_rect, height_rect)
 
     def set_defaul_value(self, def_x, def_y, size):
         self.default_x = def_x
         self.default_y = def_y
         self.size_map = size
 
-    # def update(self, vx, vy, horizontal_borders, vertical_borders):
-    #     self.rect = self.rect.move(self.rect.x + vx, self.rect.y + vy)
-    #     # if pygame.sprite.spritecollideany(self, horizontal_borders):
-    #     #     vy = -vy
-    #     # if pygame.sprite.spritecollideany(self, vertical_borders):
-    #     #     vx = -vx
-    #
-    #     # self.rect.x += vx
-    #     # self.rect.y += vy
-    #     self.dx += vx
-    #     self.dy += vy
-    #     print(vx, vy, self.rect.x, self.rect.y)
+    def update(self, vx, vy):
+        self.default_x += vx
+        self.default_y += vy
+
+    def check(self, vx, vy, horizontal_borders, vertical_borders):
+        new_vx = 0
+        new_vy = 0
+        if pygame.sprite.spritecollideany(self, horizontal_borders):
+            new_vx = -vx
+        if pygame.sprite.spritecollideany(self, vertical_borders):
+            new_vy = -vy
+        return new_vx, new_vy
 
     def draw(self, screen):
+        width_rect = self.orig_size[0] * self.pos_x + self.default_x
+        height_rect = self.orig_size[0] * self.pos_y + self.default_y
+        self.rect = self.image.get_rect().move(width_rect, height_rect)
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
     def change_size(self, scale):
@@ -98,4 +102,4 @@ class FrontTile(BaseObject):
         super().__init__(pos_x, pos_y, self.image, front_tile_group, all_sprites)
 
 
-group_list = [all_sprites, tiles_group, back_tile_group, front_tile_group]
+group_list = [tiles_group, back_tile_group, front_tile_group]
