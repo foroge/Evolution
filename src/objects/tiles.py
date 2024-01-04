@@ -45,7 +45,7 @@ class BaseObject(pygame.sprite.Sprite):
         height_rect = self.orig_size[0] * self.pos_y + self.default_y
         self.rect = self.image.get_rect().move(width_rect, height_rect)
 
-    def set_defaul_value(self, def_x, def_y, size):
+    def set_default_value(self, def_x, def_y, size):
         self.default_x = def_x
         self.default_y = def_y
         self.size_map = size
@@ -54,14 +54,21 @@ class BaseObject(pygame.sprite.Sprite):
         self.default_x += vx
         self.default_y += vy
 
-    def check(self, vx, vy, horizontal_borders, vertical_borders):
-        new_vx = 0
-        new_vy = 0
-        if pygame.sprite.spritecollideany(self, horizontal_borders):
-            new_vx = -vx
-        if pygame.sprite.spritecollideany(self, vertical_borders):
-            new_vy = -vy
-        return new_vx, new_vy
+    def check(self, horizontal_borders, vertical_borders):
+        col_h = []
+        for h in horizontal_borders:
+            col_h.append(self.image.get_rect().move(self.image.get_rect()[2] * self.pos_x + self.default_x,
+                                                    self.image.get_rect()[3] * self.pos_y + self.default_y).colliderect(h.rect))
+        col_v = []
+        for v in vertical_borders:
+            col_v.append(self.image.get_rect().move(self.image.get_rect()[2] * self.pos_x + self.default_x,
+                                                    self.image.get_rect()[3] * self.pos_y + self.default_y).colliderect(v.rect))
+        return col_h, col_v
+        # if pygame.sprite.spritecollideany(self, horizontal_borders):
+        #     new_vy = -vy
+        # if pygame.sprite.spritecollideany(self, vertical_borders):
+        #     new_vx = -vx
+        # return new_vx, new_vy
 
     def draw(self, screen):
         width_rect = self.orig_size[0] * self.pos_x + self.default_x
