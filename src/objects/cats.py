@@ -10,12 +10,12 @@ def init_cats():
         "doctor": load_image("cats/doctor.png"),
         "egg": load_image("cats/egg.png"),
         "king": load_image("cats/king.png"),
-        "leaf": load_image("cats/leaf.png"),
         "mushroom": load_image("cats/mushroom.png"),
         "transport": load_image("cats/transport.png"),
         "warrior": load_image("cats/warrior.png"),
         "wizard": load_image("cats/wizard.png"),
-        "sunflower": load_image("cats/sunflower.png")
+        "sunflower": load_image("cats/sunflower.png"),
+        "water_cat": load_image("cats/water_cat.png")
     }
     return cat_image
 
@@ -80,6 +80,12 @@ class SunFlower(BaseCat):
         super().__init__(x, y, cat_type, cat_images)
 
 
+class WaterCat(BaseCat):
+    def __init__(self, x, y, cat_images):
+        cat_type = "sunflower"
+        super().__init__(x, y, cat_type, cat_images)
+
+
 def create_cat(name, x, y, cat_images):
     if name == "doctor":
         return Doctor(x, y, cat_images)
@@ -87,8 +93,6 @@ def create_cat(name, x, y, cat_images):
         return Egg(x, y, cat_images)
     elif name == "king":
         return King(x, y, cat_images)
-    elif name == "leaf":
-        return Leaf(x, y, cat_images)
     elif name == "mushroom":
         return Mushroom(x, y, cat_images)
     elif name == "transport":
@@ -99,3 +103,5 @@ def create_cat(name, x, y, cat_images):
         return Wizard(x, y, cat_images)
     elif name == "sunflower":
         return SunFlower(x, y, cat_images)
+    elif name == "water_cat":
+        return WaterCat(x, y, cat_images)

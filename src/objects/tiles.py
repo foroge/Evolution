@@ -27,7 +27,7 @@ def init_image():
         'stone_0': load_image('tiles/stone.png'),
         'fence_0': load_image('tiles/fence.png'),
         "path_0": load_image('tiles/path.png'),
-        "spawner_0": load_image('tiles/spawner.png')
+        "spawner_2": load_image('tiles/spawner.png')
     }
     return tile_images
 
@@ -45,7 +45,7 @@ class BaseObject(pygame.sprite.Sprite):
         height_rect = self.orig_size[0] * self.pos_y + self.default_y
         self.rect = self.image.get_rect().move(width_rect, height_rect)
 
-    def set_defaul_value(self, def_x, def_y, size):
+    def set_default_value(self, def_x, def_y, size):
         self.default_x = def_x
         self.default_y = def_y
         self.size_map = size
@@ -97,7 +97,7 @@ class BackTile(BaseObject):
 
 
 class FrontTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, tile_images, standard_filename=True):
         self.image = tile_images[f"{tile_type}_2"]
         super().__init__(pos_x, pos_y, self.image, front_tile_group, all_sprites)
 

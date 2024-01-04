@@ -34,7 +34,7 @@ def generate_level(level):
         for x in range(len(level[y])):
             if level[y][x] == 'g':
                 block = GrassTile('grass', x, y, randint(0, 3), tile_images)
-            elif level[y][x] == 't':
+            elif level[y][x] == 'T':
                 block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
                 block2 = BaseTile("tray", x, y, tile_images)
                 # block2 = BackTile("tray", x, y, tile_images)
@@ -43,20 +43,22 @@ def generate_level(level):
             elif level[y][x] == 'w':
                 block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
                 block2 = BaseTile("water", x, y, tile_images)
-            elif level[y][x] == 'f':
+            elif level[y][x] == 'F':
                 block = BaseTile("fence", x, y, tile_images)
-            elif level[y][x] == 's':
+            elif level[y][x] == 'S':
                 block = BaseTile("stone", x, y, tile_images)
-            elif level[y][x] == "T":
+            elif level[y][x] == "t":
                 block = BaseTile("tree", x, y, tile_images)
             elif level[y][x] == "-":
                 block = BaseTile("path", x, y, tile_images)
             elif level[y][x] == "#":
-                block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
-                block2 = BaseTile("spawner", x, y, tile_images)
+                # block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
+                block1 = BaseTile("path", x, y, tile_images)
+                spawner = FrontTile("spawner", x, y, tile_images)
             elif level[y][x] == '@':
-                block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
+                # block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
+                block1 = BaseTile("path", x, y, tile_images)
                 block2 = BackTile("tray", x, y, tile_images)
                 king = create_cat("king", x, y, cat_images)
                 block3 = FrontTile("tray", x, y, tile_images)
-    return king, x, y, src.objects.tiles.group_list, src.objects.cats.cats_group, src.objects.tiles.all_sprites
+    return king, spawner, x, y, src.objects.tiles.group_list, src.objects.cats.cats_group, src.objects.tiles.all_sprites
