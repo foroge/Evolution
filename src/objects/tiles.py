@@ -79,6 +79,10 @@ class BaseObject(pygame.sprite.Sprite):
     def change_size(self, scale):
         new_size = [int(self.orig_size[0] * scale), int(self.orig_size[1] * scale)]
 
+        # self.default_x = self.default_x + 32 * (new_size[0] - self.rect[2])
+        # self.default_y = self.default_y + 32 * (new_size[1] - self.rect[3])
+        # print(self.default_x, self.default_y)
+
         width_rect = new_size[0] * self.pos_x + self.default_x
         height_rect = new_size[1] * self.pos_y + self.default_y
         self.image = pygame.transform.scale(self.orig_image, new_size)

@@ -47,7 +47,7 @@ set_def_position(all_sprites, x + 20, y + 20, size_map)
 running = True
 fps = 60
 clock = pygame.time.Clock()
-speed = 10 / (2 - camera.scale)
+speed = 15 / (2 - camera.scale)
 
 w_pressed = False
 a_pressed = False
@@ -82,10 +82,10 @@ while running:
                 s_pressed = False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:
             camera.change_scale(True)
-            speed = 10 / (2 - camera.scale)
+            speed = 15 / (2 - camera.scale)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:
             camera.change_scale(False)
-            speed = 10 / (2 - camera.scale)
+            speed = 15 / (2 - camera.scale)
     if a_pressed:
         camera.dx += speed
     if d_pressed:
@@ -96,7 +96,8 @@ while running:
         camera.dy -= speed
 
     sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
-    change_size_sprites(all_sprites, camera.scale)
+    change_size_sprites(all_sprites, camera)
+
     for i in sprites:
         i.draw(screen)
     ver_borders.draw(screen)

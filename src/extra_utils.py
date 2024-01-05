@@ -5,9 +5,25 @@ horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 
 
-def change_size_sprites(sprites, scale):
+def change_size_sprites(sprites, camera):
+    scale = camera.scale
     for sprite in sprites:
         sprite.change_size(scale)
+    cols = [False, False, False, False]
+    for sprite in sprites:
+        check = sprite.check(horizontal_borders, vertical_borders)
+        if not cols[0] and check[0][0]:
+            cols[0] = True
+        if not cols[1] and check[0][1]:
+            cols[1] = True
+        if not cols[2] and check[1][0]:
+            cols[2] = True
+        if not cols[3] and check[1][1]:
+            cols[3] = True
+    if not all(cols):
+        camera.scale += camera.step
+        for sprite in sprites:
+            sprite.change_size(camera.scale)
 
 
 def sprites_move(sprites, vx, vy, hor_borders, ver_borders):
@@ -69,9 +85,12 @@ class Camera:
         self.dy = 0
         self.scale = 0.8
         self.step = 0.02
+        self.old_scale = 0.8
 
     def change_scale(self, flag):
         if flag and self.scale <= 1.2:
+            self.old_scale = self.scale
             self.scale += self.step
         elif not flag and self.scale > 0.8:
+            self.old_scale = self.scale
             self.scale -= self.step
