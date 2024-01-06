@@ -50,7 +50,7 @@ class BaseEnemy(BaseObject):
 
     def self_draw(self, screen):  # может переопределить
         size = self.image.get_size()
-        width_rect = (size[0] * self.pos_x) + self.default_x + self.move_x + 50
+        width_rect = size[0] * self.pos_x + self.default_x + self.move_x
         height_rect = size[0] * self.pos_y + self.default_y + self.move_y
         self.rect = self.image.get_rect().move(width_rect, height_rect)
         screen.blit(self.image, (self.rect.x, self.rect.y))
