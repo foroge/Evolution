@@ -5,6 +5,16 @@ horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 
 
+def update_rect(groups, screen):
+    if type(groups) == list:
+        for sprites in groups:
+            for sprite in sprites:
+                sprite.self_draw(screen)
+    else:
+        for sprite in groups:
+            sprite.self_draw(screen)
+
+
 def change_size_sprites(sprites, camera):
     scale = camera.scale
     for sprite in sprites:

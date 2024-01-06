@@ -10,7 +10,7 @@ import objects.enemies
 from objects.enemies import init_enemies_images, BaseEnemy
 import objects.tiles as obj_tiles
 from objects.tiles import init_image
-from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position, check_collision
+from src.extra_utils import Camera, change_size_sprites, Border, update_rect, enem_move, sprites_move, set_def_position, check_collision
 import src.extra_utils as extra
 from src.tests.create_map import create_map
 
@@ -62,7 +62,6 @@ w_pressed = False
 a_pressed = False
 s_pressed = False
 d_pressed = False
-
 while running:
     camera.dx = camera.dy = 0
     screen.fill((255, 255, 255))
@@ -108,12 +107,10 @@ while running:
     change_size_sprites(all_sprites, camera)
 
     enem_move(enemies_group, level_map, camera.scale)
-
     ver_borders.draw(screen)
     hor_borders.draw(screen)
-    for i in sprites:
-        i.draw(screen)
-    enemies_group.draw(screen)
+    update_rect(sprites, screen)
+    update_rect(enemies_group, screen)
     ver_borders.draw(screen)
     hor_borders.draw(screen)
 

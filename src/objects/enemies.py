@@ -48,6 +48,13 @@ class BaseEnemy(BaseObject):
         if valid_directions:
             return random.choice(valid_directions)
 
+    def self_draw(self, screen):  # может переопределить
+        size = self.image.get_size()
+        width_rect = (size[0] * self.pos_x) + self.default_x + self.move_x + 50
+        height_rect = size[0] * self.pos_y + self.default_y + self.move_y
+        self.rect = self.image.get_rect().move(width_rect, height_rect)
+        screen.blit(self.image, (self.rect.x, self.rect.y))
+
     def go(self):
         # print("speed", self.direction[1] * self.speed / fps)
         size = self.image.get_size()
