@@ -43,8 +43,8 @@ class BaseObject(pygame.sprite.Sprite):
         self.scale = 0
         self.default_x = self.default_y = self.size_map = 0
         self.orig_size = image.get_size()
-        width_rect = self.orig_size[0] * self.pos_x + self.default_x
-        height_rect = self.orig_size[0] * self.pos_y + self.default_y
+        width_rect = self.orig_size[0] * self.pos_x + self.default_x + self.move_x
+        height_rect = self.orig_size[0] * self.pos_y + self.default_y + self.move_y
         self.rect = self.image.get_rect().move(width_rect, height_rect)
 
     def set_default_value(self, def_x, def_y, size):
@@ -78,6 +78,7 @@ class BaseObject(pygame.sprite.Sprite):
         height_rect = size[0] * self.pos_y + self.default_y + self.move_y
         self.rect = self.image.get_rect().move(width_rect, height_rect)
         screen.blit(self.image, (self.rect.x, self.rect.y))
+        print("draw")
 
     def change_size(self, scale):
         self.scale = scale

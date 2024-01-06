@@ -64,10 +64,6 @@ def check_collision(sprites, vx, vy, horizontal_borders, vertical_borders):
     return new_vx, new_vy
 
 
-def move(sprites, level_map, camera_scale):
-    for sprite in sprites:
-        sprite.move(level_map, camera_scale)
-
 def set_def_position(sprites, x, y, size):
     for sprite in sprites:
         sprite.set_default_value(x, y, size)

@@ -29,7 +29,6 @@ king, spawner, x, y, sprites, cats, all_sprites = generate_level(level_map)
 sprites.append(cats)
 
 sprites[-1], sprites[-2] = sprites[-2], sprites[-1]
-# enemies_group = pygame.sprite.Group()   # нужно будет перенести в проект с врагами # Перенес
 ammunition_group = pygame.sprite.Group()  # аналогично
 
 
@@ -48,7 +47,7 @@ border4 = Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
 ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 
 print(spawner.pos_x, spawner.pos_y)
-BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / camera.scale)
+BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 200 / camera.scale)
 enemies_group = objects.enemies.enemies_group
 all_sprites.add(enemies_group)
 
@@ -114,9 +113,11 @@ while running:
     hor_borders.draw(screen)
     for i in sprites:
         i.draw(screen)
+    enemies_group.draw(screen)
     ver_borders.draw(screen)
     hor_borders.draw(screen)
 
-    enemies_group.draw(screen)
+
+
     pygame.display.update()
     clock.tick(fps)
