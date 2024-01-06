@@ -5,12 +5,28 @@ horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 
 
-def change_size_sprites(sprites, scale):
+def change_size_sprites(sprites, camera):
+    scale = camera.scale
     for sprite in sprites:
         sprite.change_size(scale)
+    cols = [False, False, False, False]
+    for sprite in sprites:
+        check = sprite.check(horizontal_borders, vertical_borders)
+        if not cols[0] and check[0][0]:
+            cols[0] = True
+        if not cols[1] and check[0][1]:
+            cols[1] = True
+        if not cols[2] and check[1][0]:
+            cols[2] = True
+        if not cols[3] and check[1][1]:
+            cols[3] = True
+    if not all(cols):
+        camera.scale += camera.step
+        for sprite in sprites:
+            sprite.change_size(camera.scale)
 
 
-def sptires_move(sprites, vx, vy, hor_borders, ver_borders):
+def sprites_move(sprites, vx, vy, hor_borders, ver_borders):
     for sprite in sprites:
         sprite.update(vx, vy)
     check = check_collision(sprites, vx, vy, hor_borders, ver_borders)
@@ -24,18 +40,29 @@ def sptires_move(sprites, vx, vy, hor_borders, ver_borders):
 def check_collision(sprites, vx, vy, horizontal_borders, vertical_borders):
     new_vx = 0
     new_vy = 0
+    col_h = [False, False]
+    col_v = [False, False]
     for sprite in sprites:
-        check = sprite.check(vx, vy, horizontal_borders, vertical_borders)
-        if check[0]:
-            new_vx = check[0]
-        if check[1]:
-            new_vy = check[1]
+        check = sprite.check(horizontal_borders, vertical_borders)
+        if not col_h[0] and check[0][0]:
+            col_h[0] = True
+        if not col_h[1] and check[0][1]:
+            col_h[1] = True
+        if not col_v[0] and check[1][0]:
+            col_v[0] = True
+        if not col_v[1] and check[1][1]:
+            col_v[1] = True
+    if not all(col_h):
+        new_vy = -vy
+    if not all(col_v):
+        new_vx = -vx
     return new_vx, new_vy
 
 
 def move(sprites, level_map, camera_scale):
     for sprite in sprites:
         sprite.move(level_map, camera_scale)
+
 def set_def_position(sprites, x, y, size):
     for sprite in sprites:
         sprite.set_default_value(x, y, size)
@@ -48,31 +75,26 @@ class Border(pygame.sprite.Sprite):
             self.add(vertical_borders)
             self.image = pygame.Surface([20, y2 - y1])
             self.image.fill((0, 0, 0))
-            self.rect = pygame.Rect(x1, y1, 1, y2 - y1)
+            self.rect = pygame.Rect(x1, y1, 25, y2 - y1)
         else:  # горизонтальная стенка
             self.add(horizontal_borders)
             self.image = pygame.Surface([x2 - x1, 20])
             self.image.fill((0, 0, 0))
-            self.rect = pygame.Rect(x1, y1, x2 - x1, 1)
-# class CustomSpriteGroup(pygame.sprite.Group):
-#     def __init__(self, *sprites):
-#         super().__init__(*sprites)
-#         self.collision = False
-#
-#     def update(self, wall):
-#         super().update()
-#         for sprite in self.sprites():
+            self.rect = pygame.Rect(x1, y1, x2 - x1, 25)
 
 
 class Camera:
     def __init__(self):
         self.dx = 0
         self.dy = 0
-        self.scale = 0.65
+        self.scale = 0.8
         self.step = 0.02
+        self.old_scale = 0.8
 
     def change_scale(self, flag):
         if flag and self.scale <= 1.2:
+            self.old_scale = self.scale
             self.scale += self.step
-        elif not flag and self.scale >= 0.5:
+        elif not flag and self.scale > 0.8:
+            self.old_scale = self.scale
             self.scale -= self.step

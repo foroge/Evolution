@@ -10,7 +10,7 @@ import objects.enemies
 from objects.enemies import init_enemies_images, BaseEnemy
 import objects.tiles as obj_tiles
 from objects.tiles import init_image
-from src.extra_utils import Camera, change_size_sprites, Border, move, sptires_move, set_def_position, check_collision
+from src.extra_utils import Camera, change_size_sprites, Border, sprites_move, set_def_position, check_collision
 import src.extra_utils as extra
 from src.tests.create_map import create_map
 
@@ -53,12 +53,16 @@ enemies_group = objects.enemies.enemies_group
 all_sprites.add(enemies_group)
 
 sptires_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
-set_def_position(all_sprites, x + 30, y + 30, size_map)
-
+set_def_position(all_sprites, x + 20, y + 20, size_map)
 running = True
 fps = 60
 clock = pygame.time.Clock()
-speed = 10
+speed = 15 / (2 - camera.scale)
+
+w_pressed = False
+a_pressed = False
+s_pressed = False
+d_pressed = False
 
 while running:
     camera.dx = camera.dy = 0
@@ -70,19 +74,39 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
             if event.key == pygame.K_a:
-                camera.dx -= speed
+                a_pressed = True
             if event.key == pygame.K_d:
-                camera.dx += speed
+                d_pressed = True
             if event.key == pygame.K_w:
-                camera.dy -= speed
+                w_pressed = True
             if event.key == pygame.K_s:
-                camera.dy += speed
+                s_pressed = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_a:
+                a_pressed = False
+            if event.key == pygame.K_d:
+                d_pressed = False
+            if event.key == pygame.K_w:
+                w_pressed = False
+            if event.key == pygame.K_s:
+                s_pressed = False
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:
             camera.change_scale(True)
+            speed = 15 / (2 - camera.scale)
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:
             camera.change_scale(False)
-    sptires_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
-    change_size_sprites(all_sprites, camera.scale)
+            speed = 15 / (2 - camera.scale)
+    if a_pressed:
+        camera.dx += speed
+    if d_pressed:
+        camera.dx -= speed
+    if w_pressed:
+        camera.dy += speed
+    if s_pressed:
+        camera.dy -= speed
+
+    sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
+    change_size_sprites(all_sprites, camera)
 
     move(enemies_group, level_map, camera.scale)
 
@@ -90,6 +114,9 @@ while running:
     hor_borders.draw(screen)
     for i in sprites:
         i.draw(screen)
+    ver_borders.draw(screen)
+    hor_borders.draw(screen)
+
     enemies_group.draw(screen)
     pygame.display.update()
     clock.tick(fps)
