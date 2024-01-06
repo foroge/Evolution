@@ -10,7 +10,7 @@ import objects.enemies
 from objects.enemies import init_enemies_images, BaseEnemy
 import objects.tiles as obj_tiles
 from objects.tiles import init_image
-from src.extra_utils import Camera, change_size_sprites, Border, sprites_move, set_def_position, check_collision
+from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position, check_collision
 import src.extra_utils as extra
 from src.tests.create_map import create_map
 
@@ -52,7 +52,7 @@ BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / ca
 enemies_group = objects.enemies.enemies_group
 all_sprites.add(enemies_group)
 
-sptires_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
+sprites_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
 set_def_position(all_sprites, x + 20, y + 20, size_map)
 running = True
 fps = 60
@@ -108,7 +108,7 @@ while running:
     sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
     change_size_sprites(all_sprites, camera)
 
-    move(enemies_group, level_map, camera.scale)
+    enem_move(enemies_group, level_map, camera.scale)
 
     ver_borders.draw(screen)
     hor_borders.draw(screen)

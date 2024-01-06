@@ -37,6 +37,11 @@ def sprites_move(sprites, vx, vy, hor_borders, ver_borders):
         # sptires_move(sprites, 0, check[1], hor_borders, ver_borders)
 
 
+def enem_move(sprites, level_map, camera_scale):
+    for sprite in sprites:
+        sprite.move(level_map, camera_scale)
+
+
 def check_collision(sprites, vx, vy, horizontal_borders, vertical_borders):
     new_vx = 0
     new_vy = 0
