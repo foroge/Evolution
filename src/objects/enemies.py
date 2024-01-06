@@ -21,40 +21,45 @@ class BaseEnemy(BaseObject):
         self.enemy_images = enemy_images
         self.enemy_type = enemy_type
         self.image = self.enemy_images[enemy_type]["side"]
-        super().__init__(0, 0, self.image, enemies_group, all_sprites)
-
+        super().__init__(pos_x, pos_y, self.image, enemies_group, all_sprites)
+        self.new_pos_x = self.new_pos_y = 0
+        self.spawn_def = (self.default_x, self.default_y)
         self.direction = 0, -1
-        self.global_x, self.global_y = self.orig_size[0] * pos_y, self.orig_size[1] * pos_x
-        self.margin_x = self.margin_y = 0
+        self.back = -self.direction[0], -self.direction[1]
         self.passed_cells = set()
-        self.once_of_passed_cells = set()
         self.speed = self.standard_speed = speed
         self.hp = hp
 
     def check_neighbours(self, level_map, now_coords, get_count=False):
-        for k in ["@", "-"]:
-            neighbours = []
-            for i, j in [self.direction, (-self.direction[1], self.direction[0]), (
-                    -self.direction[0], -self.direction[1]), (self.direction[1], -self.direction[0])]:
-                try:
-                    if ((level_map[now_coords[0] + i][now_coords[1] + j] == k)
-                            and (now_coords[0] + i, now_coords[1] + j) not in self.passed_cells):
-                        neighbours.append((i, j))
-                except IndexError:
-                    ...
-            if not get_count:
-                if len(neighbours) == 2:
-                    return random.choice(neighbours)
-                if len(neighbours) != 0:
-                    return neighbours[0]
-            elif k == "-":
-                return len(neighbours)
+        possible_directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+
+        valid_directions = []
+
+        for direction in possible_directions:
+            i, j = direction
+            try:
+                i2, j2 = int(now_coords[0]) + i, int(now_coords[1]) + j
+                if level_map[i2][j2] == "-" and ((i2, j2), direction) not in self.passed_cells:
+                    valid_directions.append(direction)
+            except IndexError:
+                pass
+        forward_direction = (self.direction[0], self.direction[1])
+        if forward_direction in valid_directions:
+            return forward_direction
+        if valid_directions:
+            return random.choice(valid_directions)
 
     def go(self):
-        self.global_x += self.direction[0] * self.speed / fps
-        self.global_y += self.direction[1] * self.speed / fps
-        # self.rect = self.rect.move(0, 0)
-        self.rect = self.rect.move(self.global_y, self.global_x)
+        # print("speed", self.direction[1] * self.speed / fps)
+        size = self.image.get_size()
+        self.move_x += self.direction[1] * self.speed / fps
+        self.move_y += self.direction[0] * self.speed / fps
+        if self.move_x // size[0] == 1 or self.move_y // size[1] == 1:
+            self.back = -self.direction[0], -self.direction[1]
+        self.pos_x += self.move_x // size[0]
+        self.pos_y += self.move_y // size[1]
+        self.move_x %= size[0]
+        self.move_y %= size[1]
 
     def change_side_image(self, image_type, mirrored=False):
         try:
@@ -64,35 +69,27 @@ class BaseEnemy(BaseObject):
             self.image = image
             self.orig_image = image
             self.orig_size = image.get_size()
-            # self.rect = self.image.get_rect().move(0, 0)
-            self.rect = self.image.get_rect().move(self.global_y, self.global_x)
+            self.change_size(self.scale)
         except KeyError:
             ...
 
-    def update(self, level_map, camera_scale):
+    def move(self, level_map, camera_scale):
         self.speed = camera_scale * self.standard_speed
-        # print(self.global_x, self.global_y, self.rect[0], self.rect[1])
-        now_coords = (int((self.global_x - self.margin_x) // self.orig_size[0]),
-                      int((self.global_y - self.margin_y) // self.orig_size[1]))
-        print(now_coords)
-        print(self.global_y, self.global_x)
-
-        if now_coords not in self.passed_cells:
-            if now_coords in self.once_of_passed_cells or self.check_neighbours(level_map, now_coords, True) != 3:
-                self.passed_cells.add(now_coords)
-            else:
-                self.once_of_passed_cells.add(now_coords)
+        now_coords = (int(self.pos_y), int(self.pos_x))
+        self.passed_cells.add((now_coords, (-self.direction[0], -self.direction[1])))
         direction = self.check_neighbours(level_map, now_coords)
+
+        print(direction, now_coords)
         if self.direction != direction:
             self.direction = direction
             if self.direction == (-1, 0):
                 self.change_side_image("side")
-            elif self.direction == (1, 0):
-                self.change_side_image("side", True)
-            elif self.direction == (0, -1):
-                self.change_side_image("back")
-            elif self.direction == (0, 1):
-                self.change_side_image("front")
+            if self.direction == (1, 0):
+                self.change_side_image("side")
+            if self.direction == (0, -1):
+                self.change_side_image("side")
+            if self.direction == (0, 1):
+                self.change_side_image("side")
         if self.hp == 0:
             self.kill()
         else:
@@ -101,6 +98,3 @@ class BaseEnemy(BaseObject):
                 self.kill()
             else:
                 self.go()
-                # print(now_coords)
-                # print(int((self.rect[0] - self.margin_x) // self.orig_size[0]),
-                #       int((self.rect[1] - self.margin_y) // self.orig_size[1]))

@@ -39,6 +39,8 @@ class BaseObject(pygame.sprite.Sprite):
         self.image = image
         self.orig_image = image
         self.pos_x, self.pos_y = pos_x, pos_y
+        self.move_x = self.move_y = 0
+        self.scale = 0
         self.default_x = self.default_y = self.size_map = 0
         self.orig_size = image.get_size()
         width_rect = self.orig_size[0] * self.pos_x + self.default_x
@@ -64,16 +66,17 @@ class BaseObject(pygame.sprite.Sprite):
         return new_vx, new_vy
 
     def draw(self, screen):
-        width_rect = self.orig_size[0] * self.pos_x + self.default_x
-        height_rect = self.orig_size[0] * self.pos_y + self.default_y
+        size = self.image.get_size()
+        width_rect = size[0] * self.pos_x + self.default_x + self.move_x
+        height_rect = size[0] * self.pos_y + self.default_y + self.move_y
         self.rect = self.image.get_rect().move(width_rect, height_rect)
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
     def change_size(self, scale):
+        self.scale = scale
         new_size = [int(self.orig_size[0] * scale), int(self.orig_size[1] * scale)]
-
-        width_rect = new_size[0] * self.pos_x + self.default_x
-        height_rect = new_size[1] * self.pos_y + self.default_y
+        width_rect = new_size[0] * self.pos_x + self.default_x + self.move_x
+        height_rect = new_size[1] * self.pos_y + self.default_y + self.move_y
         self.image = pygame.transform.scale(self.orig_image, new_size)
         self.rect = self.image.get_rect().move(width_rect, height_rect)
 

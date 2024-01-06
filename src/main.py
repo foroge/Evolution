@@ -10,7 +10,7 @@ import objects.enemies
 from objects.enemies import init_enemies_images, BaseEnemy
 import objects.tiles as obj_tiles
 from objects.tiles import init_image
-from src.extra_utils import Camera, change_size_sprites, Border, sptires_move, set_def_position, check_collision
+from src.extra_utils import Camera, change_size_sprites, Border, move, sptires_move, set_def_position, check_collision
 import src.extra_utils as extra
 from src.tests.create_map import create_map
 
@@ -46,11 +46,14 @@ border2 = Border(x + size_map + 15, y, x + size_map + 35, y + size_map + 20)
 border3 = Border(x, y, x + size_map + 20, y + 20)
 border4 = Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
 ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
-set_def_position(all_sprites, x + 30, y + 30, size_map)
-sptires_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
 
-BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 20 / camera.scale)
+print(spawner.pos_x, spawner.pos_y)
+BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / camera.scale)
 enemies_group = objects.enemies.enemies_group
+all_sprites.add(enemies_group)
+
+sptires_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
+set_def_position(all_sprites, x + 30, y + 30, size_map)
 
 running = True
 fps = 60
@@ -81,7 +84,7 @@ while running:
     sptires_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
     change_size_sprites(all_sprites, camera.scale)
 
-    enemies_group.update(level_map, camera.scale)
+    move(enemies_group, level_map, camera.scale)
 
     ver_borders.draw(screen)
     hor_borders.draw(screen)
