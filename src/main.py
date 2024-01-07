@@ -52,7 +52,7 @@ enemies_group = objects.enemies.enemies_group
 all_sprites.add(enemies_group)
 
 sprites_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
-set_def_position(all_sprites, x + 20, y + 20, size_map)
+
 running = True
 fps = 60
 clock = pygame.time.Clock()
@@ -94,6 +94,9 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:
             camera.change_scale(False)
             speed = 15 / (2 - camera.scale)
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 200 / camera.scale)
+            enemies_group = objects.enemies.enemies_group
     if a_pressed:
         camera.dx += speed
     if d_pressed:

@@ -1,6 +1,6 @@
 import pygame
 import random
-from math import floor
+from math import ceil, floor
 from src.load.load_images import load_image
 from src.objects.tiles import BaseObject, all_sprites
 
@@ -50,8 +50,10 @@ class BaseEnemy(BaseObject):
 
     def self_draw(self, screen):  # может переопределить
         size = self.image.get_size()
-        width_rect = size[0] * self.pos_x + self.default_x + self.move_x
-        height_rect = size[0] * self.pos_y + self.default_y + self.move_y
+        pos_x = self.pos_x
+        pos_y = self.pos_y
+        width_rect = size[0] * pos_x + self.default_x + self.move_x
+        height_rect = size[0] * pos_y + self.default_y + self.move_y
         self.rect = self.image.get_rect().move(width_rect, height_rect)
         screen.blit(self.image, (self.rect.x, self.rect.y))
 
@@ -60,12 +62,23 @@ class BaseEnemy(BaseObject):
         size = self.image.get_size()
         self.move_x += self.direction[1] * self.speed / fps
         self.move_y += self.direction[0] * self.speed / fps
-        # if self.move_x // size[0] == 1 or self.move_y // size[1] == 1:
-        #     self.back = -self.direction[0], -self.direction[1]
-        self.pos_x += int(self.move_x // size[0])
-        self.pos_y += int(self.move_y // size[1])
-        self.move_x %= size[0]
-        self.move_y %= size[1]
+        self.rect.x += self.move_x
+        self.rect.y += self.move_y
+        self.get_pos()
+        # self.move_x %= size[0]
+        # self.move_y %= size[1]
+
+    def get_pos(self):
+        size = self.image.get_size()
+        x = self.rect.x - self.default_x
+        y = self.rect.y - self.default_y
+        if x // size[0] == (x + size[0] - 5) // size[0]:
+            self.pos_x = int(x // size[0])
+        if y // size[1] == (y + size[1] - 5) // size[1]:
+            self.pos_y = int(y // size[1])
+        width_rect = size[0] * self.pos_x + self.default_x
+        height_rect = size[1] * self.pos_y + self.default_y
+        self.rect = self.image.get_rect().move(width_rect, height_rect)
 
     def change_side_image(self, image_type, mirrored=False):
         try:
@@ -81,7 +94,17 @@ class BaseEnemy(BaseObject):
 
     def move(self, level_map, camera_scale):
         self.speed = camera_scale * self.standard_speed
-        now_coords = (self.pos_y, self.pos_x)
+        self.get_pos()
+        pos_x, pos_y = int(self.pos_x), int(self.pos_y)
+        # if self.direction[0] == -1:
+        #     pos_x = ceil(self.pos_x)
+        # if self.direction[0] == 1:
+        #     pos_x = int(self.pos_x)
+        # if self.direction[1] == -1:
+        #     pos_y = ceil(self.pos_y)
+        # if self.direction[1] == 1:
+        #     pos_y = int(self.pos_y)
+        now_coords = (pos_y, pos_x)
         self.passed_cells.add((now_coords, (-self.direction[0], -self.direction[1])))
         direction = self.check_neighbours(level_map, (now_coords[0], now_coords[1]))
         if direction:
