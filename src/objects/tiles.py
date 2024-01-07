@@ -33,7 +33,6 @@ def init_image():
 
 
 class BaseObject(pygame.sprite.Sprite):
-
     def __init__(self, pos_x, pos_y, image, *groups):
         super().__init__(*groups)
         self.image = image

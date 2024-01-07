@@ -3,6 +3,8 @@ from src.load.load_images import load_image
 from src.objects.tiles import BaseObject, all_sprites
 
 cats_group = pygame.sprite.Group()
+projectiles_group = pygame.sprite.Group()
+fps = 60
 
 
 def init_cats():
@@ -20,10 +22,22 @@ def init_cats():
     return cat_image
 
 
+def init_projectiles():
+    images = {
+        "magic": load_image("projectiles/magic.png")
+    }
+    return images
+
+
 class BaseCat(BaseObject):
     def __init__(self, pos_x, pos_y, cat_type, cat_images):
         self.image = cat_images[cat_type]
         super().__init__(pos_x, pos_y, self.image, cats_group, all_sprites)
+
+
+class BaseProjectile(BaseObject):
+    def __init__(self, pos_x, pos_y, image):
+        super().__init__(pos_x, pos_y, image, projectiles_group, all_sprites)
 
 
 class Doctor(BaseCat):
@@ -41,12 +55,6 @@ class Egg(BaseCat):
 class King(BaseCat):
     def __init__(self, x, y, cat_images):
         cat_type = "king"
-        super().__init__(x, y, cat_type, cat_images)
-
-
-class Leaf(BaseCat):
-    def __init__(self, x, y, cat_images):
-        cat_type = "leaf"
         super().__init__(x, y, cat_type, cat_images)
 
 
@@ -69,9 +77,68 @@ class Warrior(BaseCat):
 
 
 class Wizard(BaseCat):
-    def __init__(self, x, y, cat_images):
+    class MagicProjectile(BaseProjectile):
+        def __init__(self, pos_x, pos_y, image, dispenser, enemy, enemy_group, damage):
+            super().__init__(pos_x, pos_y, image)
+            self.damage = damage
+            self.enemy = enemy
+            self.enemy_group = enemy_group
+            self.speed = 512
+            x1, y1 = dispenser.rect.center
+            x2, y2 = enemy.rect.center
+            self.total_distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+            self.y_angle = (y1 - y2) / self.total_distance
+            self.x_angle = (x1 - x2) / self.total_distance
+            # (self.newpos[0] - self.pos[0]) ** 2 + (self.newpos[1] - self.pos[1]) ** 2 = (self.speed / fps) ** 2
+
+        def go_to_enemy(self):
+            self.check_collision()
+            self.move_x -= self.x_angle * self.speed / fps
+            self.move_y -= self.y_angle * self.speed / fps
+
+        def check_collision(self):
+            count = 0
+            for sprite in self.enemy_group:
+                if sprite.rect.colliderect(pygame.rect.Rect(self.rect.center[0] - 4, self.rect.center[1] - 4, 8, 8)):
+                    sprite.hp -= self.damage
+                    count += 1
+            if count > 0:
+                self.kill()
+
+    def __init__(self, x, y, cat_images, projectiles_images):
         cat_type = "wizard"
         super().__init__(x, y, cat_type, cat_images)
+        self.radius = 128
+        self.cooldown = 2
+        self.rest_of_cooldown = 0
+        self.projectile_image = projectiles_images["magic"]
+        self.waiting = False
+        self.damage = 90
+
+    def try_attack(self, enemy_group):
+        if self.rest_of_cooldown <= 0:
+            self.attack(enemy_group)
+            if not self.waiting:
+                self.rest_of_cooldown = self.cooldown
+        else:
+            self.rest_of_cooldown -= 1 / fps
+
+    def attack(self, enemy_group):
+        valid_enemies = []
+        for enemy in enemy_group:
+            x1, y1 = self.rect.center
+            x2, y2 = enemy.rect.center
+            if ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 <= self.radius:
+                valid_enemies.append((enemy, ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5))
+        if valid_enemies:
+            self.waiting = False
+            enemy = min(valid_enemies, key=lambda x: x[1])[0]
+            projectile = self.MagicProjectile(self.pos_x, self.pos_y,
+                                              self.projectile_image, self, enemy, enemy_group, self.damage)
+            projectile.default_x = self.default_x
+            projectile.default_y = self.default_y
+        else:
+            self.waiting = True
 
 
 class SunFlower(BaseCat):
@@ -82,11 +149,11 @@ class SunFlower(BaseCat):
 
 class WaterCat(BaseCat):
     def __init__(self, x, y, cat_images):
-        cat_type = "sunflower"
+        cat_type = "water_cat"
         super().__init__(x, y, cat_type, cat_images)
 
 
-def create_cat(name, x, y, cat_images):
+def create_cat(name, x, y, cat_images, projectiles_images=None):
     if name == "doctor":
         return Doctor(x, y, cat_images)
     elif name == "egg":
@@ -100,7 +167,7 @@ def create_cat(name, x, y, cat_images):
     elif name == "warrior":
         return Warrior(x, y, cat_images)
     elif name == "wizard":
-        return Wizard(x, y, cat_images)
+        return Wizard(x, y, cat_images, projectiles_images)
     elif name == "sunflower":
         return SunFlower(x, y, cat_images)
     elif name == "water_cat":

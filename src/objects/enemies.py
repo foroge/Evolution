@@ -79,17 +79,17 @@ class BaseEnemy(BaseObject):
         self.passed_cells.add((now_coords, (-self.direction[0], -self.direction[1])))
         direction = self.check_neighbours(level_map, now_coords)
 
-        print(direction, now_coords)
+        # print(now_coords)
         if self.direction != direction:
             self.direction = direction
             if self.direction == (-1, 0):
-                self.change_side_image("side")
+                self.change_side_image("back")
             if self.direction == (1, 0):
-                self.change_side_image("side")
+                self.change_side_image("front")
             if self.direction == (0, -1):
                 self.change_side_image("side")
             if self.direction == (0, 1):
-                self.change_side_image("side")
+                self.change_side_image("side", True)
         if self.hp == 0:
             self.kill()
         else:

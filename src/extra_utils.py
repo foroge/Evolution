@@ -42,6 +42,16 @@ def enem_move(sprites, level_map, camera_scale):
         sprite.move(level_map, camera_scale)
 
 
+def cats_attack(sprites, enemy_group):
+    for sprite in sprites:
+        sprite.try_attack(enemy_group)
+
+
+def move_projectiles(sprites):
+    for sprite in sprites:
+        sprite.go_to_enemy()
+
+
 def check_collision(sprites, vx, vy, horizontal_borders, vertical_borders):
     new_vx = 0
     new_vy = 0
@@ -67,6 +77,7 @@ def check_collision(sprites, vx, vy, horizontal_borders, vertical_borders):
 def move(sprites, level_map, camera_scale):
     for sprite in sprites:
         sprite.move(level_map, camera_scale)
+
 
 def set_def_position(sprites, x, y, size):
     for sprite in sprites:
