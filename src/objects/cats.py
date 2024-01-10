@@ -13,7 +13,7 @@ def init_cats():
         "egg": load_image("cats/egg.png"),
         "king": load_image("cats/king.png"),
         "mushroom": load_image("cats/mushroom.png"),
-        "transport": load_image("cats/transport.png"),
+        "electronic": load_image("cats/electronic.png"),
         "warrior": load_image("cats/warrior.png"),
         "wizard": load_image("cats/wizard.png"),
         "sunflower": load_image("cats/sunflower.png"),
@@ -24,7 +24,8 @@ def init_cats():
 
 def init_projectiles():
     images = {
-        "magic": load_image("projectiles/magic.png")
+        "magic": load_image("projectiles/magic.png"),
+        "lightning": load_image("projectiles/lightning.png")
     }
     return images
 
@@ -64,10 +65,63 @@ class Mushroom(BaseCat):
         super().__init__(x, y, cat_type, cat_images)
 
 
-class Transport(BaseCat):
-    def __init__(self, x, y, cat_images):
-        cat_type = "transport"
+class Electronic(BaseCat):
+    class LightningProjectile(BaseProjectile):
+        def __init__(self, pos_x, pos_y, image, enemy_group, damage):
+            super().__init__(pos_x, pos_y, image)
+            self.damage = damage
+            self.enemy_group = enemy_group
+            self.time = 0.5
+
+        def go_to_enemy(self):
+            if self.time <= 0:
+                self.check_collision()
+            else:
+                self.time -= 1 / fps
+
+        def check_collision(self):
+            count = 0
+            for sprite in self.enemy_group:
+                if sprite.rect.colliderect(pygame.rect.Rect(self.rect[0] - 16, self.rect[1] - 16, 64, 64)):
+                    sprite.hp -= self.damage
+                    print(sprite.hp)
+                    count += 1
+            self.kill()
+
+    def __init__(self, x, y, cat_images, projectiles_images):
+        cat_type = "electronic"
         super().__init__(x, y, cat_type, cat_images)
+        self.radius = 256
+        self.cooldown = 2
+        self.rest_of_cooldown = 0
+        self.projectile_image = projectiles_images["lightning"]
+        self.waiting = False
+        self.damage = 50
+
+    def try_attack(self, enemy_group):
+        if self.rest_of_cooldown <= 0:
+            self.attack(enemy_group)
+            if not self.waiting:
+                self.rest_of_cooldown = self.cooldown
+        else:
+            self.rest_of_cooldown -= 1 / fps
+
+    def attack(self, enemy_group):
+        valid_enemies = []
+        for enemy in enemy_group:
+            x1, y1 = self.rect.center
+            x2, y2 = enemy.rect.center
+            if ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 <= self.radius:
+                valid_enemies.append((enemy, ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5))
+        if valid_enemies:
+            self.waiting = False
+            enemy = min(valid_enemies, key=lambda x: x[1])[0]
+            projectile = self.LightningProjectile(enemy.pos_x, enemy.pos_y,
+                                                  self.projectile_image, enemy_group, self.damage)
+            projectile.default_x = self.default_x
+            projectile.default_y = self.default_y
+        else:
+            self.waiting = True
 
 
 class Warrior(BaseCat):
@@ -99,7 +153,7 @@ class Wizard(BaseCat):
         def check_collision(self):
             count = 0
             for sprite in self.enemy_group:
-                if sprite.rect.colliderect(pygame.rect.Rect(self.rect.center[0] - 4, self.rect.center[1] - 4, 8, 8)):
+                if sprite.rect.colliderect(pygame.rect.Rect(self.rect.center[0] - 8, self.rect.center[1] - 8, 16, 16)):
                     sprite.hp -= self.damage
                     count += 1
             if count > 0:
@@ -109,11 +163,11 @@ class Wizard(BaseCat):
         cat_type = "wizard"
         super().__init__(x, y, cat_type, cat_images)
         self.radius = 128
-        self.cooldown = 2
+        self.cooldown = 1
         self.rest_of_cooldown = 0
         self.projectile_image = projectiles_images["magic"]
         self.waiting = False
-        self.damage = 90
+        self.damage = 15
 
     def try_attack(self, enemy_group):
         if self.rest_of_cooldown <= 0:
@@ -162,8 +216,8 @@ def create_cat(name, x, y, cat_images, projectiles_images=None):
         return King(x, y, cat_images)
     elif name == "mushroom":
         return Mushroom(x, y, cat_images)
-    elif name == "transport":
-        return Transport(x, y, cat_images)
+    elif name == "electronic":
+        return Electronic(x, y, cat_images, projectiles_images)
     elif name == "warrior":
         return Warrior(x, y, cat_images)
     elif name == "wizard":

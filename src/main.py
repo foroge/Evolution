@@ -54,8 +54,13 @@ border3 = Border(x, y, x + size_map + 20, y + 20)
 border4 = Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
 ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 
+# Все перениести по другим файлам
 BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / camera.scale)
-wizard = create_cat("wizard", 16, 16, init_cats(), init_projectiles())
+cats_images = init_cats()
+projectiles_images = init_projectiles()
+wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
+# elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
+# ===============================
 
 enemies_group = obj_enemies.enemies_group
 all_sprites.add(enemies_group)

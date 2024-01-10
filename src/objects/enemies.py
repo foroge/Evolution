@@ -31,6 +31,8 @@ class BaseEnemy(BaseObject):
         self.hp = hp
 
     def check_neighbours(self, level_map, now_coords, get_count=False):
+        if self.move_x != 0 or self.move_y != 0:
+            return self.direction
         possible_directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
         valid_directions = []
@@ -52,8 +54,8 @@ class BaseEnemy(BaseObject):
     def go(self):
         # print("speed", self.direction[1] * self.speed / fps)
         size = self.image.get_size()
-        self.move_x += self.direction[1] * self.speed / fps
-        self.move_y += self.direction[0] * self.speed / fps
+        self.move_x += round(self.direction[1] * self.speed / fps)
+        self.move_y += round(self.direction[0] * self.speed / fps)
         if self.move_x // size[0] == 1 or self.move_y // size[1] == 1:
             self.back = -self.direction[0], -self.direction[1]
         self.pos_x += self.move_x // size[0]
@@ -78,7 +80,8 @@ class BaseEnemy(BaseObject):
         now_coords = (int(self.pos_y), int(self.pos_x))
         self.passed_cells.add((now_coords, (-self.direction[0], -self.direction[1])))
         direction = self.check_neighbours(level_map, now_coords)
-
+        if not direction:
+            self.direction = self.back
         # print(now_coords)
         if self.direction != direction:
             self.direction = direction
