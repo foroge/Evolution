@@ -1,6 +1,5 @@
 import pygame
 import random
-from math import ceil, floor
 from src.load.load_images import load_image
 from src.objects.tiles import BaseObject, all_sprites
 
@@ -23,14 +22,19 @@ class BaseEnemy(BaseObject):
         self.enemy_type = enemy_type
         self.image = self.enemy_images[enemy_type]["side"]
         super().__init__(pos_x, pos_y, self.image, enemies_group, all_sprites)
+        self.new_pos_x = self.new_pos_y = 0
         self.spawn_def = (self.default_x, self.default_y)
         self.direction = 0, -1
-        # self.back = -self.direction[0], -self.direction[1]
+        self.back = -self.direction[0], -self.direction[1]
         self.passed_cells = set()
         self.speed = self.standard_speed = speed
         self.hp = hp
+        self.poisoned = False
+        self.poison_time_rest = 0
 
-    def check_neighbours(self, level_map, now_coords):
+    def check_neighbours(self, level_map, now_coords, get_count=False):
+        if self.move_x != 0 or self.move_y != 0:
+            return self.direction
         possible_directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 
         valid_directions = []
@@ -43,42 +47,23 @@ class BaseEnemy(BaseObject):
                     valid_directions.append(direction)
             except IndexError:
                 pass
-        if self.direction in valid_directions:
-            return None
+        forward_direction = (self.direction[0], self.direction[1])
+        if forward_direction in valid_directions:
+            return forward_direction
         if valid_directions:
             return random.choice(valid_directions)
-
-    def self_draw(self, screen):  # может переопределить
-        size = self.image.get_size()
-        pos_x = self.pos_x
-        pos_y = self.pos_y
-        width_rect = size[0] * pos_x + self.default_x + self.move_x
-        height_rect = size[0] * pos_y + self.default_y + self.move_y
-        self.rect = self.image.get_rect().move(width_rect, height_rect)
-        screen.blit(self.image, (self.rect.x, self.rect.y))
 
     def go(self):
         # print("speed", self.direction[1] * self.speed / fps)
         size = self.image.get_size()
-        self.move_x += self.direction[1] * self.speed / fps
-        self.move_y += self.direction[0] * self.speed / fps
-        self.rect.x += self.move_x
-        self.rect.y += self.move_y
-        self.get_pos()
-        # self.move_x %= size[0]
-        # self.move_y %= size[1]
-
-    def get_pos(self):
-        size = self.image.get_size()
-        x = self.rect.x - self.default_x
-        y = self.rect.y - self.default_y
-        if x // size[0] == (x + size[0] - 5) // size[0]:
-            self.pos_x = int(x // size[0])
-        if y // size[1] == (y + size[1] - 5) // size[1]:
-            self.pos_y = int(y // size[1])
-        width_rect = size[0] * self.pos_x + self.default_x
-        height_rect = size[1] * self.pos_y + self.default_y
-        self.rect = self.image.get_rect().move(width_rect, height_rect)
+        self.move_x += round(self.direction[1] * self.speed / fps)
+        self.move_y += round(self.direction[0] * self.speed / fps)
+        if self.move_x // size[0] == 1 or self.move_y // size[1] == 1:
+            self.back = -self.direction[0], -self.direction[1]
+        self.pos_x += self.move_x // size[0]
+        self.pos_y += self.move_y // size[1]
+        self.move_x %= size[0]
+        self.move_y %= size[1]
 
     def change_side_image(self, image_type, mirrored=False):
         try:
@@ -93,32 +78,24 @@ class BaseEnemy(BaseObject):
             ...
 
     def move(self, level_map, camera_scale):
+        self.poison_damage()
         self.speed = camera_scale * self.standard_speed
-        self.get_pos()
-        pos_x, pos_y = int(self.pos_x), int(self.pos_y)
-        # if self.direction[0] == -1:
-        #     pos_x = ceil(self.pos_x)
-        # if self.direction[0] == 1:
-        #     pos_x = int(self.pos_x)
-        # if self.direction[1] == -1:
-        #     pos_y = ceil(self.pos_y)
-        # if self.direction[1] == 1:
-        #     pos_y = int(self.pos_y)
-        now_coords = (pos_y, pos_x)
+        now_coords = (int(self.pos_y), int(self.pos_x))
         self.passed_cells.add((now_coords, (-self.direction[0], -self.direction[1])))
-        direction = self.check_neighbours(level_map, (now_coords[0], now_coords[1]))
-        if direction:
-            if self.direction != direction:
-                self.direction = direction
-                if self.direction == (-1, 0):
-                    self.change_side_image("side")
-                if self.direction == (1, 0):
-                    self.change_side_image("side")
-                if self.direction == (0, -1):
-                    self.change_side_image("side")
-                if self.direction == (0, 1):
-                    self.change_side_image("side")
-
+        direction = self.check_neighbours(level_map, now_coords)
+        if not direction:
+            self.direction = self.back
+        # print(now_coords)
+        if self.direction != direction:
+            self.direction = direction
+            if self.direction == (-1, 0):
+                self.change_side_image("back")
+            if self.direction == (1, 0):
+                self.change_side_image("front")
+            if self.direction == (0, -1):
+                self.change_side_image("side")
+            if self.direction == (0, 1):
+                self.change_side_image("side", True)
         if self.hp == 0:
             self.kill()
         else:
@@ -126,5 +103,12 @@ class BaseEnemy(BaseObject):
                 # Еще нужно нанести королю урон, но у нас такого нет еще
                 self.kill()
             else:
-
                 self.go()
+
+    def poison_damage(self):
+        if self.poisoned:
+            if self.poison_time_rest <= 0:
+                self.poisoned = False
+                self.poison_time_rest = 0
+            else:
+                self.poison_time_rest -= 1 / fps
