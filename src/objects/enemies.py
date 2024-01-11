@@ -29,6 +29,8 @@ class BaseEnemy(BaseObject):
         self.passed_cells = set()
         self.speed = self.standard_speed = speed
         self.hp = hp
+        self.poisoned = False
+        self.poison_time_rest = 0
 
     def check_neighbours(self, level_map, now_coords, get_count=False):
         if self.move_x != 0 or self.move_y != 0:
@@ -76,6 +78,7 @@ class BaseEnemy(BaseObject):
             ...
 
     def move(self, level_map, camera_scale):
+        self.poison_damage()
         self.speed = camera_scale * self.standard_speed
         now_coords = (int(self.pos_y), int(self.pos_x))
         self.passed_cells.add((now_coords, (-self.direction[0], -self.direction[1])))
@@ -101,3 +104,11 @@ class BaseEnemy(BaseObject):
                 self.kill()
             else:
                 self.go()
+
+    def poison_damage(self):
+        if self.poisoned:
+            if self.poison_time_rest <= 0:
+                self.poisoned = False
+                self.poison_time_rest = 0
+            else:
+                self.poison_time_rest -= 1 / fps

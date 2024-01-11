@@ -58,7 +58,8 @@ ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / camera.scale)
 cats_images = init_cats()
 projectiles_images = init_projectiles()
-wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
+mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
+# wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
 # elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
 # ===============================
 

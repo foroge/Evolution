@@ -25,7 +25,8 @@ def init_cats():
 def init_projectiles():
     images = {
         "magic": load_image("projectiles/magic.png"),
-        "lightning": load_image("projectiles/lightning.png")
+        "lightning": load_image("projectiles/lightning.png"),
+        "poison": load_image("projectiles/poison.png")
     }
     return images
 
@@ -60,9 +61,93 @@ class King(BaseCat):
 
 
 class Mushroom(BaseCat):
-    def __init__(self, x, y, cat_images):
+    class PoisonCloudProjectile(BaseProjectile):
+        def __init__(self, pos_x, pos_y, image, dispenser, new_pos, damage, poison_damage, poison_cloud_time,
+                     poison_time, enemy_group):
+            super().__init__(pos_x, pos_y, image)
+            self.orig_size = 32, 32
+            width_rect = self.orig_size[0] * self.pos_x + self.default_x
+            height_rect = self.orig_size[0] * self.pos_y + self.default_y
+            self.rect = self.image.get_rect().move(width_rect, height_rect)
+
+            self.enemy_group = enemy_group
+            self.damage = damage
+            self.speed = 64
+            x1, y1 = dispenser.rect.center
+            self.x2, self.y2 = new_pos[0], new_pos[1]
+
+            print(self.rect.center[0], ((self.x2 + 0.75) * self.orig_size[0] + self.default_x), self.rect.center[1],
+                  ((self.y2 + 0.75) * self.orig_size[1] + self.default_y))
+            self.total_distance = ((((self.x2 + 0.75) * self.orig_size[0] + self.default_x) - x1) ** 2 +
+                                   (((self.y2 + 0.75) * self.orig_size[1] + self.default_y) - y1) ** 2) ** 0.5
+            self.y_angle = (y1 - ((self.y2 + 0.75) * self.orig_size[1] + self.default_y)) / self.total_distance
+            self.x_angle = (x1 - ((self.x2 + 0.75) * self.orig_size[0] + self.default_x)) / self.total_distance
+            self.stop = False
+            self.poison_damage = poison_damage
+            self.poison_cloud_time = self.poison_cloud_time_rest = poison_cloud_time
+            self.poison_time = poison_time
+            # (self.newpos[0] - self.pos[0]) ** 2 + (self.newpos[1] - self.pos[1]) ** 2 = (self.speed / fps) ** 2
+
+        def go_to_enemy(self):
+            self.check_collision()
+            if not self.stop:
+                self.move_x -= self.x_angle * self.speed / fps
+                self.move_y -= self.y_angle * self.speed / fps
+            else:
+                if self.poison_cloud_time_rest <= 0:
+                    self.kill()
+                else:
+                    self.poison_cloud_time_rest -= 1 / fps
+
+        def check_collision(self):
+            # print(self.rect.center[0], ((self.x2 + 0.75) * self.orig_size[0] + self.default_x), self.rect.center[1],
+            #       ((self.y2 + 0.75) * self.orig_size[1] + self.default_y))
+            if (self.rect.center[0] == ((self.x2 + 0.75) * self.orig_size[0] + self.default_x)
+                    and self.rect.center[1] == ((self.y2 + 0.75) * self.orig_size[1] + self.default_y)):
+                self.stop = True
+            for enemy in self.enemy_group:
+                if enemy.rect.colliderect(self.rect):
+                    enemy.poisoned = True
+                    enemy.poison_time_rest = self.poison_time
+                    enemy.hp -= 0.5
+
+    def __init__(self, x, y, cat_images, projectiles_images):
         cat_type = "mushroom"
         super().__init__(x, y, cat_type, cat_images)
+        self.radius = 24
+        self.cooldown = 5
+        self.rest_of_cooldown = 0
+        self.projectile_image = projectiles_images["poison"]
+        self.waiting = False
+        self.damage = 15
+        self.poison_damage = 10
+        self.poison_time = 5
+        self.poison_cloud_time = 2
+
+    def try_attack(self, enemy_group):
+        if self.rest_of_cooldown <= 0:
+            self.attack(enemy_group)
+            self.rest_of_cooldown = self.cooldown
+        else:
+            self.rest_of_cooldown -= 1 / fps
+
+    def attack(self, enemy_group):
+        # valid_enemies = []
+        # for enemy in enemy_group:
+        #     x1, y1 = self.rect.center
+        #     x2, y2 = enemy.rect.center
+        #     if ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 <= self.radius:
+        #         valid_enemies.append((enemy, ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5))
+        # if valid_enemies:
+        #     self.waiting = False
+        for i, j in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
+            projectile = self.PoisonCloudProjectile(self.pos_x, self.pos_y, self.projectile_image, self,
+                                                    (self.pos_x + i, self.pos_y + j), self.damage, self.poison_damage,
+                                                    self.poison_cloud_time, self.poison_time, enemy_group)
+            projectile.default_x = self.default_x
+            projectile.default_y = self.default_y
+        # else:
+        #     self.waiting = True
 
 
 class Electronic(BaseCat):
@@ -215,7 +300,7 @@ def create_cat(name, x, y, cat_images, projectiles_images=None):
     elif name == "king":
         return King(x, y, cat_images)
     elif name == "mushroom":
-        return Mushroom(x, y, cat_images)
+        return Mushroom(x, y, cat_images, projectiles_images)
     elif name == "electronic":
         return Electronic(x, y, cat_images, projectiles_images)
     elif name == "warrior":
