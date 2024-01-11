@@ -100,12 +100,12 @@ class Border(pygame.sprite.Sprite):
         if x1 == x2 - 20:  # вертикальная стенка
             self.add(vertical_borders)
             self.image = pygame.Surface([20, y2 - y1])
-            self.image.fill((0, 0, 0))
+            self.image.fill((109, 86, 80))
             self.rect = pygame.Rect(x1, y1, 25, y2 - y1)
         else:  # горизонтальная стенка
             self.add(horizontal_borders)
             self.image = pygame.Surface([x2 - x1, 20])
-            self.image.fill((0, 0, 0))
+            self.image.fill((109, 86, 80))
             self.rect = pygame.Rect(x1, y1, x2 - x1, 25)
 
 

@@ -187,7 +187,18 @@ def randomize_grass(levelMap, size):
     return levelMap
 
 
+def add_stone_border(level_map, size):
+    stone_border = [STONE_SYMB for _ in range(size + 2)]
+    level_map.insert(0, stone_border)
+    for i in range(1, size + 1):
+        level_map[i].insert(0, STONE_SYMB)
+        level_map[i].append(STONE_SYMB)
+    level_map.append(stone_border)
+    return level_map
+
+
 def create_map(size):
+    size = size - 2
     levelMap = create_empty_map(size).copy()
     halfY = random.choice([-1, 1])
     halfX = random.choice([-1, 1])
@@ -224,14 +235,16 @@ def create_map(size):
             levelMap = randomize_grass(levelMap, size).copy()
 
             bad = False
-        except Exception as error:
+        except BaseException:
             levelMap = create_empty_map(size).copy()
             levelMap[rowKing][colKing] = KING_SYMB
             levelMap[rowSpawn][colSpawn] = SPAWN_SYMB
             bad = True
-    # print()
+
+    levelMap = add_stone_border(levelMap, size)
+
     return levelMap
 
 
 # if __name__ == "__main__":
-#     print(*create_map(32), sep="\n")
+#     print(create_map(32), sep="\n")
