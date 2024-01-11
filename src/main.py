@@ -17,7 +17,7 @@ from objects.enemies import init_enemies_images, BaseEnemy
 from objects.tiles import init_image
 
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position, \
-    check_collision, move_projectiles, cats_attack
+    check_collision, move_projectiles, cats_attack, update_rect
 import src.extra_utils as extra
 
 from src.tests.create_map import create_map
@@ -142,7 +142,7 @@ while running:
     for i in sprites:
         i.draw(screen)
     enemies_group.draw(screen)
-    spawner.draw(screen)
+    # spawner.draw(screen)
     ver_borders.draw(screen)
     hor_borders.draw(screen)
 
