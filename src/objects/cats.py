@@ -89,10 +89,12 @@ class Mushroom(BaseCat):
             # (self.newpos[0] - self.pos[0]) ** 2 + (self.newpos[1] - self.pos[1]) ** 2 = (self.speed / fps) ** 2
 
         def go_to_enemy(self):
+            print(self.rect.center[0], ((self.x2 + 0.75) * self.orig_size[0] + self.default_x), self.rect.center[1],
+                  ((self.y2 + 0.75) * self.orig_size[1] + self.default_y))
             self.check_collision()
             if not self.stop:
-                self.move_x -= self.x_angle * self.speed / fps
-                self.move_y -= self.y_angle * self.speed / fps
+                self.move_x += self.x_angle * self.speed / fps
+                self.move_y += self.y_angle * self.speed / fps
             else:
                 if self.poison_cloud_time_rest <= 0:
                     self.kill()
@@ -102,6 +104,8 @@ class Mushroom(BaseCat):
         def check_collision(self):
             # print(self.rect.center[0], ((self.x2 + 0.75) * self.orig_size[0] + self.default_x), self.rect.center[1],
             #       ((self.y2 + 0.75) * self.orig_size[1] + self.default_y))
+            # if self.rect.colliderect(pygame.Rect(self.x2 - self.rect[2] // 2, self.y2 - self.rect[3] // 2,
+                                                 # self.rect[2], self.rect[3])):
             if (self.rect.center[0] == ((self.x2 + 0.75) * self.orig_size[0] + self.default_x)
                     and self.rect.center[1] == ((self.y2 + 0.75) * self.orig_size[1] + self.default_y)):
                 self.stop = True
@@ -109,7 +113,15 @@ class Mushroom(BaseCat):
                 if enemy.rect.colliderect(self.rect):
                     enemy.poisoned = True
                     enemy.poison_time_rest = self.poison_time
+                    enemy.poison_damage = self.poison_damage
                     enemy.hp -= 0.5
+
+        def draw(self, screen):
+            size = self.rect[2:]
+            width_rect = size[0] * self.pos_x + self.default_x + self.move_x
+            height_rect = size[0] * self.pos_y + self.default_y + self.move_y
+            self.rect = self.image.get_rect().move(width_rect, height_rect)
+            screen.blit(self.image, (self.rect.x, self.rect.y))
 
     def __init__(self, x, y, cat_images, projectiles_images):
         cat_type = "mushroom"
@@ -120,8 +132,8 @@ class Mushroom(BaseCat):
         self.projectile_image = projectiles_images["poison"]
         self.waiting = False
         self.damage = 15
-        self.poison_damage = 10
-        self.poison_time = 5
+        self.poison_damage = 50
+        self.poison_time = 2
         self.poison_cloud_time = 2
 
     def try_attack(self, enemy_group):

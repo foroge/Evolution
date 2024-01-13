@@ -17,7 +17,7 @@ def init_enemies_images():
 
 
 class BaseEnemy(BaseObject):
-    def __init__(self, pos_x, pos_y, enemy_type, enemy_images, speed, hp=100):
+    def __init__(self, pos_x, pos_y, enemy_type, enemy_images, speed, hp, money):
         self.enemy_images = enemy_images
         self.enemy_type = enemy_type
         self.image = self.enemy_images[enemy_type]["side"]
@@ -29,10 +29,12 @@ class BaseEnemy(BaseObject):
         self.passed_cells = set()
         self.speed = self.standard_speed = speed
         self.hp = hp
+        self.money = money
         self.poisoned = False
         self.poison_time_rest = 0
+        self.poison_damage = 0
 
-    def check_neighbours(self, level_map, now_coords, get_count=False):
+    def check_neighbours(self, level_map, now_coords):
         if self.move_x != 0 or self.move_y != 0:
             return self.direction
         possible_directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
@@ -78,7 +80,7 @@ class BaseEnemy(BaseObject):
             ...
 
     def move(self, level_map, camera_scale):
-        self.poison_damage()
+        self.poison_damaging()
         self.speed = camera_scale * self.standard_speed
         now_coords = (int(self.pos_y), int(self.pos_x))
         self.passed_cells.add((now_coords, (-self.direction[0], -self.direction[1])))
@@ -97,6 +99,7 @@ class BaseEnemy(BaseObject):
             if self.direction == (0, 1):
                 self.change_side_image("side", True)
         if self.hp == 0:
+            self.give_money()
             self.kill()
         else:
             if level_map[now_coords[0]][now_coords[1]] == "@":
@@ -105,10 +108,15 @@ class BaseEnemy(BaseObject):
             else:
                 self.go()
 
-    def poison_damage(self):
+    def poison_damaging(self):
         if self.poisoned:
             if self.poison_time_rest <= 0:
                 self.poisoned = False
                 self.poison_time_rest = 0
+                self.poison_damage = 0
             else:
                 self.poison_time_rest -= 1 / fps
+                self.hp -= self.poison_damage / fps
+
+    def give_money(self):
+        ...  # Выдать игроку денег, их количество в переменной self.money

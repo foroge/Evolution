@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+import asyncio
 
 from load.load_images import load_image
 from load.load_levels import generate_level, load_level
@@ -10,7 +11,7 @@ import objects.tiles as obj_tiles
 import objects.enemies as obj_enemies
 
 from objects.cats import init_cats, init_projectiles, create_cat, cats_group, projectiles_group
-from objects.enemies import init_enemies_images, BaseEnemy
+from objects.enemies import init_enemies_images, BaseEnemy, enemies_group
 from objects.tiles import init_image
 
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position, \
@@ -55,15 +56,15 @@ border4 = Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
 ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 
 # Все перениести по другим файлам
-BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / camera.scale)
+# BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / camera.scale)
 cats_images = init_cats()
 projectiles_images = init_projectiles()
-mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
-# wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
-# elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
+# mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
+wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
+elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
 # ===============================
 
-enemies_group = obj_enemies.enemies_group
+# enemies_group = obj_enemies.enemies_group
 all_sprites.add(enemies_group)
 all_sprites.add(cats_group)
 all_sprites.add(projectiles_group)
@@ -81,6 +82,9 @@ s_pressed = False
 d_pressed = False
 
 while running:
+    from src.objects.enemies import enemies_group
+    all_sprites.add(enemies_group)
+    print(all_sprites)
     camera.dx = camera.dy = 0
     screen.fill((255, 255, 255))
     for event in pygame.event.get():
@@ -127,6 +131,7 @@ while running:
     enem_move(enemies_group, level_map, camera.scale)
     cats_attack(cats_group, enemies_group)
     move_projectiles(projectiles_group)
+    spawner.check_to_spawn()
 
     for i in sprites:
         i.draw(screen)
