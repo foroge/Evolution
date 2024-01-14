@@ -1,7 +1,6 @@
 import pygame
 import os
 import sys
-import asyncio
 
 from load.load_images import load_image
 from load.load_levels import generate_level, load_level
@@ -18,7 +17,7 @@ from src.extra_utils import Camera, change_size_sprites, Border, enem_move, spri
     check_collision, move_projectiles, cats_attack
 import src.extra_utils as extra
 
-from src.tests.create_map import create_map
+from src.tests.create_map import start_creating
 
 
 pygame.init()
@@ -30,11 +29,11 @@ screen = pygame.display.set_mode((full_w, full_h))
 
 col_cell = 32
 
-level_map = create_map(col_cell).copy()
+level_map = start_creating(col_cell).copy()
 king, spawner, x, y, sprites, cats, all_sprites = generate_level(level_map)
 sprites.insert(-1, cats)
 sprites.insert(-1, cats_group)
-sprites.append(projectiles_group)
+# sprites.append(projectiles_group)
 
 # sprites[-1], sprites[-2] = sprites[-2], sprites[-1]
 # enemies_group = pygame.sprite.Group()   # нужно будет перенести в проект с врагами # Перенес
@@ -61,7 +60,7 @@ cats_images = init_cats()
 projectiles_images = init_projectiles()
 # mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
 wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
-elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
+# elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
 # ===============================
 
 # enemies_group = obj_enemies.enemies_group
@@ -84,7 +83,7 @@ d_pressed = False
 while running:
     from src.objects.enemies import enemies_group
     all_sprites.add(enemies_group)
-    print(all_sprites)
+
     camera.dx = camera.dy = 0
     screen.fill((255, 255, 255))
     for event in pygame.event.get():
@@ -137,8 +136,13 @@ while running:
         i.draw(screen)
     enemies_group.draw(screen)
     spawner.draw(screen)
+    projectiles_group.draw(screen)
+
     ver_borders.draw(screen)
     hor_borders.draw(screen)
 
     pygame.display.update()
     clock.tick(fps)
+
+pygame.quit()
+quit()

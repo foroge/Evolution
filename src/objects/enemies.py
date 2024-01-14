@@ -56,16 +56,18 @@ class BaseEnemy(BaseObject):
             return random.choice(valid_directions)
 
     def go(self):
-        # print("speed", self.direction[1] * self.speed / fps)
-        size = self.image.get_size()
-        self.move_x += round(self.direction[1] * self.speed / fps)
-        self.move_y += round(self.direction[0] * self.speed / fps)
-        if self.move_x // size[0] == 1 or self.move_y // size[1] == 1:
-            self.back = -self.direction[0], -self.direction[1]
-        self.pos_x += self.move_x // size[0]
-        self.pos_y += self.move_y // size[1]
-        self.move_x %= size[0]
-        self.move_y %= size[1]
+        try:
+            size = self.image.get_size()
+            self.move_x += round(self.direction[1] * self.speed / fps)
+            self.move_y += round(self.direction[0] * self.speed / fps)
+            if self.move_x // size[0] == 1 or self.move_y // size[1] == 1:
+                self.back = -self.direction[0], -self.direction[1]
+            self.pos_x += self.move_x // size[0]
+            self.pos_y += self.move_y // size[1]
+            self.move_x %= size[0]
+            self.move_y %= size[1]
+        except ZeroDivisionError:
+            ...
 
     def change_side_image(self, image_type, mirrored=False):
         try:
@@ -98,7 +100,7 @@ class BaseEnemy(BaseObject):
                 self.change_side_image("side")
             if self.direction == (0, 1):
                 self.change_side_image("side", True)
-        if self.hp == 0:
+        if self.hp <= 0:
             self.give_money()
             self.kill()
         else:

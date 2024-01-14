@@ -177,12 +177,9 @@ class Electronic(BaseCat):
                 self.time -= 1 / fps
 
         def check_collision(self):
-            count = 0
             for sprite in self.enemy_group:
                 if sprite.rect.colliderect(pygame.rect.Rect(self.rect[0] - 16, self.rect[1] - 16, 64, 64)):
                     sprite.hp -= self.damage
-                    print(sprite.hp)
-                    count += 1
             self.kill()
 
     def __init__(self, x, y, cat_images, projectiles_images):
@@ -193,7 +190,7 @@ class Electronic(BaseCat):
         self.rest_of_cooldown = 0
         self.projectile_image = projectiles_images["lightning"]
         self.waiting = False
-        self.damage = 50
+        self.damage = 25
 
     def try_attack(self, enemy_group):
         if self.rest_of_cooldown <= 0:

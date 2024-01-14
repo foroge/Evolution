@@ -35,9 +35,9 @@ class Spawner(FrontTile):
 
     def spawn_wave(self, enemy_types: list[str], count, difficulty):
         for i in range(count):
-            randomizing = random.randint(2, 50) / 10
+            randomizing = random.randint(6, 60) / 10
 
-            speed = round(60 * randomizing) / fps
+            speed = 60
             hp = round(100 / randomizing * (0.9 + difficulty / 10))
             money = 10 + difficulty * 5
             self.spawn(random.choice(enemy_types), speed, hp, money)
