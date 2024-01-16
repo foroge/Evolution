@@ -17,8 +17,10 @@ from objects.enemies import init_enemies_images, BaseEnemy
 from objects.tiles import init_image
 
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position, \
-    check_collision, move_projectiles, cats_attack, update_rect
+    check_collision, move_projectiles, cats_attack, update_rect, update_card
 import src.extra_utils as extra
+
+from src.load.card_cats import BaseCard
 
 from src.tests.create_map import create_map
 
@@ -61,10 +63,23 @@ ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / camera.scale)
 cats_images = init_cats()
 projectiles_images = init_projectiles()
-mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
+# mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
 # wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
 # elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
 # ===============================
+cat_images = init_cats()
+cards = []
+x_card, y_card = -80, 80
+cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
+for i in cat_names:
+    image = cat_images[i]
+    x_card += 100
+    if x_card > x:
+        x_card = 20
+        y_card += 120
+    card = BaseCard(x=x_card, y=y_card, button_text="100", name_text=i, custom_image=image)
+    cards.append(card)
+
 
 enemies_group = obj_enemies.enemies_group
 all_sprites.add(enemies_group)
@@ -146,6 +161,7 @@ while running:
     ver_borders.draw(screen)
     hor_borders.draw(screen)
 
+    update_card(cards, screen)
 
 
     pygame.display.update()

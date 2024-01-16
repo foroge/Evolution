@@ -1,8 +1,14 @@
 import pygame
 
-
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
+
+
+def update_card(cards, screen):
+    for card in cards:
+        card.button.update()
+    for card in cards:
+        card.all_draw(screen)
 
 
 def update_rect(groups, screen):
