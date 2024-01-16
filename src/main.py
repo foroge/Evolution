@@ -21,6 +21,7 @@ from src.tests.create_map import start_creating
 
 
 pygame.init()
+pygame.font.init()
 
 info = pygame.display.Info()
 full_w = info.current_w
@@ -127,16 +128,23 @@ while running:
     sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
     change_size_sprites(all_sprites, camera)
 
-    enem_move(enemies_group, level_map, camera.scale)
+    enem_move(enemies_group, level_map, camera.scale, king)
     cats_attack(cats_group, enemies_group)
     move_projectiles(projectiles_group)
     spawner.check_to_spawn()
+    king.hp_bar.update(king.hp / king.max_hp)
+    king.hp_bar.update_wave_text(spawner.wave)
 
     for i in sprites:
         i.draw(screen)
     enemies_group.draw(screen)
     spawner.draw(screen)
     projectiles_group.draw(screen)
+
+    king.hp_bar.draw_health_bar()
+    screen.blit(king.hp_bar.image, king.hp_bar.rect)
+    screen.blit(king.hp_bar.text_hp_string_rendered, king.hp_bar.text_hp_rect)
+    screen.blit(king.hp_bar.text_wave_string_rendered, king.hp_bar.text_wave_rect)
 
     ver_borders.draw(screen)
     hor_borders.draw(screen)

@@ -54,10 +54,10 @@ class Egg(BaseCat):
         super().__init__(x, y, cat_type, cat_images)
 
 
-class King(BaseCat):
-    def __init__(self, x, y, cat_images):
-        cat_type = "king"
-        super().__init__(x, y, cat_type, cat_images)
+# class King(BaseCat):
+#     def __init__(self, x, y, cat_images):
+#         cat_type = "king"
+#         super().__init__(x, y, cat_type, cat_images)
 
 
 class Mushroom(BaseCat):
@@ -301,13 +301,14 @@ class WaterCat(BaseCat):
         super().__init__(x, y, cat_type, cat_images)
 
 
-def create_cat(name, x, y, cat_images, projectiles_images=None):
+def create_cat(name, x, y, cat_images, projectiles_images=None, hp=None):
     if name == "doctor":
         return Doctor(x, y, cat_images)
     elif name == "egg":
         return Egg(x, y, cat_images)
     elif name == "king":
-        return King(x, y, cat_images)
+        from src.objects.king import King
+        return King(x, y, cat_images, hp)
     elif name == "mushroom":
         return Mushroom(x, y, cat_images, projectiles_images)
     elif name == "electronic":

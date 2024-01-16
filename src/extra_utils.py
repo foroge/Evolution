@@ -1,4 +1,5 @@
 import pygame
+import json
 
 
 horizontal_borders = pygame.sprite.Group()
@@ -37,9 +38,9 @@ def sprites_move(sprites, vx, vy, hor_borders, ver_borders):
         # sptires_move(sprites, 0, check[1], hor_borders, ver_borders)
 
 
-def enem_move(sprites, level_map, camera_scale):
+def enem_move(sprites, level_map, camera_scale, king):
     for sprite in sprites:
-        sprite.move(level_map, camera_scale)
+        sprite.move(level_map, camera_scale, king)
 
 
 def cats_attack(sprites, enemy_group):
@@ -82,6 +83,17 @@ def move(sprites, level_map, camera_scale):
 def set_def_position(sprites, x, y, size):
     for sprite in sprites:
         sprite.set_default_value(x, y, size)
+
+
+def get_json(filename):
+    with open(filename) as file:
+        data = json.load(file)
+    return data
+
+
+def set_json(data, filename):
+    with open(filename, 'w') as file:
+        json.dump(data, file)
 
 
 class Border(pygame.sprite.Sprite):

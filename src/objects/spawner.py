@@ -14,8 +14,8 @@ class Spawner(FrontTile):
     def __init__(self, pos_x, pos_y):
         super().__init__("spawner", pos_x, pos_y, init_image())
         self.enemies_images = init_enemies_images()
-        self.wave = 1
-        self.difficulty = 1
+        self.wave = 0
+        self.difficulty = 0
         self.time_between_waves = 60
         self.time_before_wave = 0
         self.enemy_patterns = [["zombie"]]
@@ -27,8 +27,9 @@ class Spawner(FrontTile):
                         self.difficulty))
             th.start()
 
-            if random.random() <= 0.8:
+            if random.random() <= 0.8 or self.difficulty == 0:
                 self.difficulty += 1
+            self.wave += 1
             self.time_before_wave = self.time_between_waves
         else:
             self.time_before_wave -= 1 / fps

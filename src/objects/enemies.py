@@ -45,6 +45,8 @@ class BaseEnemy(BaseObject):
             i, j = direction
             try:
                 i2, j2 = int(now_coords[0]) + i, int(now_coords[1]) + j
+                if level_map[i2][j2] == "@":
+                    return direction
                 if level_map[i2][j2] == "-" and ((i2, j2), direction) not in self.passed_cells:
                     valid_directions.append(direction)
             except IndexError:
@@ -81,7 +83,7 @@ class BaseEnemy(BaseObject):
         except KeyError:
             ...
 
-    def move(self, level_map, camera_scale):
+    def move(self, level_map, camera_scale, king):
         self.poison_damaging()
         self.speed = camera_scale * self.standard_speed
         now_coords = (int(self.pos_y), int(self.pos_x))
@@ -105,7 +107,7 @@ class BaseEnemy(BaseObject):
             self.kill()
         else:
             if level_map[now_coords[0]][now_coords[1]] == "@":
-                # Еще нужно нанести королю урон, но у нас такого нет еще
+                king.hp -= 1
                 self.kill()
             else:
                 self.go()
