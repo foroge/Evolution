@@ -1,4 +1,6 @@
 import random
+import time
+from threading import Thread
 
 PATH_SYMB = "P"  # Символ пути внутри функций
 ALT_PATH_SYMB = "-"  # Выходной символ пути
@@ -13,6 +15,10 @@ FENCE_SUMB = "F"
 STONE_SYMB = "S"
 
 RANDOM_GRASS_CHANCE = 0.05
+
+end = False
+good_end = False
+level_map_to_return = None
 
 
 def randomize_map_point(levelMap, size, point1: tuple, point2: tuple, canstop=False):
@@ -198,6 +204,8 @@ def add_stone_border(level_map, size):
 
 
 def create_map(size):
+    global good_end, level_map_to_return
+
     size = size - 2
     levelMap = create_empty_map(size).copy()
     halfY = random.choice([-1, 1])
@@ -240,11 +248,31 @@ def create_map(size):
             levelMap[rowKing][colKing] = KING_SYMB
             levelMap[rowSpawn][colSpawn] = SPAWN_SYMB
             bad = True
+    # print()
+    level_map_to_return = levelMap.copy()
+    good_end = True
+    # return levelMap
 
     levelMap = add_stone_border(levelMap, size)
 
     return levelMap
 
 
-# if __name__ == "__main__":
-#     print(create_map(32), sep="\n")
+def check_time():
+    global end
+    time.sleep(2)
+    end = True
+
+
+def start_creating(size):
+    global end, good_end
+    t1 = Thread(target=check_time, args=(), daemon=True)
+    t2 = Thread(target=create_map, args=(size, ), daemon=True)
+    t1.start()
+    t2.start()
+    while not end:
+        if good_end:
+            return level_map_to_return
+    end = False
+    good_end = False
+    return start_creating(size)

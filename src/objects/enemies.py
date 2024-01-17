@@ -17,7 +17,7 @@ def init_enemies_images():
 
 
 class BaseEnemy(BaseObject):
-    def __init__(self, pos_x, pos_y, enemy_type, enemy_images, speed, hp=100):
+    def __init__(self, pos_x, pos_y, enemy_type, enemy_images, speed, hp, money):
         self.enemy_images = enemy_images
         self.enemy_type = enemy_type
         self.image = self.enemy_images[enemy_type]["side"]
@@ -29,10 +29,12 @@ class BaseEnemy(BaseObject):
         self.passed_cells = set()
         self.speed = self.standard_speed = speed
         self.hp = hp
+        self.money = money
         self.poisoned = False
         self.poison_time_rest = 0
+        self.poison_damage = 0
 
-    def check_neighbours(self, level_map, now_coords, get_count=False):
+    def check_neighbours(self, level_map, now_coords):
         if self.move_x != 0 or self.move_y != 0:
             return self.direction
         possible_directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
@@ -43,6 +45,8 @@ class BaseEnemy(BaseObject):
             i, j = direction
             try:
                 i2, j2 = int(now_coords[0]) + i, int(now_coords[1]) + j
+                if level_map[i2][j2] == "@":
+                    return direction
                 if level_map[i2][j2] == "-" and ((i2, j2), direction) not in self.passed_cells:
                     valid_directions.append(direction)
             except IndexError:
@@ -54,16 +58,18 @@ class BaseEnemy(BaseObject):
             return random.choice(valid_directions)
 
     def go(self):
-        # print("speed", self.direction[1] * self.speed / fps)
-        size = self.image.get_size()
-        self.move_x += round(self.direction[1] * self.speed / fps)
-        self.move_y += round(self.direction[0] * self.speed / fps)
-        if self.move_x // size[0] == 1 or self.move_y // size[1] == 1:
-            self.back = -self.direction[0], -self.direction[1]
-        self.pos_x += self.move_x // size[0]
-        self.pos_y += self.move_y // size[1]
-        self.move_x %= size[0]
-        self.move_y %= size[1]
+        try:
+            size = self.image.get_size()
+            self.move_x += round(self.direction[1] * self.speed / fps)
+            self.move_y += round(self.direction[0] * self.speed / fps)
+            if self.move_x // size[0] == 1 or self.move_y // size[1] == 1:
+                self.back = -self.direction[0], -self.direction[1]
+            self.pos_x += self.move_x // size[0]
+            self.pos_y += self.move_y // size[1]
+            self.move_x %= size[0]
+            self.move_y %= size[1]
+        except ZeroDivisionError:
+            ...
 
     def change_side_image(self, image_type, mirrored=False):
         try:
@@ -77,8 +83,8 @@ class BaseEnemy(BaseObject):
         except KeyError:
             ...
 
-    def move(self, level_map, camera_scale):
-        self.poison_damage()
+    def move(self, level_map, camera_scale, king):
+        self.poison_damaging()
         self.speed = camera_scale * self.standard_speed
         now_coords = (int(self.pos_y), int(self.pos_x))
         self.passed_cells.add((now_coords, (-self.direction[0], -self.direction[1])))
@@ -96,19 +102,25 @@ class BaseEnemy(BaseObject):
                 self.change_side_image("side")
             if self.direction == (0, 1):
                 self.change_side_image("side", True)
-        if self.hp == 0:
+        if self.hp <= 0:
+            self.give_money()
             self.kill()
         else:
             if level_map[now_coords[0]][now_coords[1]] == "@":
-                # Еще нужно нанести королю урон, но у нас такого нет еще
+                king.hp -= 1
                 self.kill()
             else:
                 self.go()
 
-    def poison_damage(self):
+    def poison_damaging(self):
         if self.poisoned:
             if self.poison_time_rest <= 0:
                 self.poisoned = False
                 self.poison_time_rest = 0
+                self.poison_damage = 0
             else:
                 self.poison_time_rest -= 1 / fps
+                self.hp -= self.poison_damage / fps
+
+    def give_money(self):
+        ...  # Выдать игроку денег, их количество в переменной self.money
