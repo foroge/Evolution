@@ -54,6 +54,7 @@ class BaseCard:
             self.image = pygame.Surface((48, 20))
             self.image.fill((150, 150, 150))
             x = self.outer_instance.x
+            self.handled = False
             y = self.outer_instance.y + 86
             self.rect = self.image.get_rect().move(x, y)  # Смещаем кнопку вниз
 
