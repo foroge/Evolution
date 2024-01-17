@@ -73,11 +73,14 @@ class BaseCard:
         def update(self):
             mouse_pos = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()[0]
-
-            if self.rect.collidepoint(mouse_pos):
-                if click:
-                    self.outer_instance.counter_display.text = str(int(self.outer_instance.counter_display.text) + 1)
-                    return
+            if click and self.rect.collidepoint(mouse_pos):
+                if not self.handled:
+                    self.handled = True
+                    return True
+                return False
+            else:
+                self.handled = False
+                return False
 
     class CounterDisplay:
         def __init__(self, outer_instance):

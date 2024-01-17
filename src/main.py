@@ -166,7 +166,6 @@ while running:
 
     update_card(cards, screen)
 
-
     pygame.display.update()
     clock.tick(fps)
 
