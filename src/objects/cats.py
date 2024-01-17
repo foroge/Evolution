@@ -54,12 +54,6 @@ class Egg(BaseCat):
         super().__init__(x, y, cat_type, cat_images)
 
 
-# class King(BaseCat):
-#     def __init__(self, x, y, cat_images):
-#         cat_type = "king"
-#         super().__init__(x, y, cat_type, cat_images)
-
-
 class Mushroom(BaseCat):
     class PoisonCloudProjectile(BaseProjectile):
         def __init__(self, pos_x, pos_y, image, dispenser, new_pos, damage, poison_damage, poison_cloud_time,
@@ -86,7 +80,6 @@ class Mushroom(BaseCat):
             self.poison_damage = poison_damage
             self.poison_cloud_time = self.poison_cloud_time_rest = poison_cloud_time
             self.poison_time = poison_time
-            # (self.newpos[0] - self.pos[0]) ** 2 + (self.newpos[1] - self.pos[1]) ** 2 = (self.speed / fps) ** 2
 
         def go_to_enemy(self):
             print(self.rect.center[0], ((self.x2 + 0.75) * self.orig_size[0] + self.default_x), self.rect.center[1],
@@ -102,10 +95,6 @@ class Mushroom(BaseCat):
                     self.poison_cloud_time_rest -= 1 / fps
 
         def check_collision(self):
-            # print(self.rect.center[0], ((self.x2 + 0.75) * self.orig_size[0] + self.default_x), self.rect.center[1],
-            #       ((self.y2 + 0.75) * self.orig_size[1] + self.default_y))
-            # if self.rect.colliderect(pygame.Rect(self.x2 - self.rect[2] // 2, self.y2 - self.rect[3] // 2,
-                                                 # self.rect[2], self.rect[3])):
             if (self.rect.center[0] == ((self.x2 + 0.75) * self.orig_size[0] + self.default_x)
                     and self.rect.center[1] == ((self.y2 + 0.75) * self.orig_size[1] + self.default_y)):
                 self.stop = True
@@ -144,22 +133,12 @@ class Mushroom(BaseCat):
             self.rest_of_cooldown -= 1 / fps
 
     def attack(self, enemy_group):
-        # valid_enemies = []
-        # for enemy in enemy_group:
-        #     x1, y1 = self.rect.center
-        #     x2, y2 = enemy.rect.center
-        #     if ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 <= self.radius:
-        #         valid_enemies.append((enemy, ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5))
-        # if valid_enemies:
-        #     self.waiting = False
         for i, j in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
             projectile = self.PoisonCloudProjectile(self.pos_x, self.pos_y, self.projectile_image, self,
                                                     (self.pos_x + i, self.pos_y + j), self.damage, self.poison_damage,
                                                     self.poison_cloud_time, self.poison_time, enemy_group)
             projectile.default_x = self.default_x
             projectile.default_y = self.default_y
-        # else:
-        #     self.waiting = True
 
 
 class Electronic(BaseCat):
@@ -237,7 +216,6 @@ class Wizard(BaseCat):
             self.total_distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
             self.y_angle = (y1 - y2) / self.total_distance
             self.x_angle = (x1 - x2) / self.total_distance
-            # (self.newpos[0] - self.pos[0]) ** 2 + (self.newpos[1] - self.pos[1]) ** 2 = (self.speed / fps) ** 2
 
         def go_to_enemy(self):
             self.check_collision()

@@ -248,14 +248,12 @@ def create_map(size):
             levelMap[rowKing][colKing] = KING_SYMB
             levelMap[rowSpawn][colSpawn] = SPAWN_SYMB
             bad = True
-    # print()
-    level_map_to_return = levelMap.copy()
-    good_end = True
-    # return levelMap
 
     levelMap = add_stone_border(levelMap, size)
+    level_map_to_return = levelMap.copy()
+    good_end = True
 
-    return levelMap
+    return level_map_to_return
 
 
 def check_time():

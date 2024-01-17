@@ -32,7 +32,6 @@ def generate_level(level):
     king, x, y = None, None, None
     tile_images = init_image()
     cat_images = init_cats()
-    # cats = ["doctor", "egg", "king", "leaf", "mushroom", "transport", "warrior", "wizard", "sunflower"]
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == 'g':
@@ -40,9 +39,6 @@ def generate_level(level):
             elif level[y][x] == 'T':
                 block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
                 block2 = BaseTile("tray", x, y, tile_images)
-                # block2 = BackTile("tray", x, y, tile_images)
-                # cat = create_cat(choice(cats), x, y, cat_images)
-                # block2 = BaseTile("tray", x, y, tile_images)
             elif level[y][x] == 'w':
                 block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
                 block2 = BaseTile("water", x, y, tile_images)
@@ -55,11 +51,9 @@ def generate_level(level):
             elif level[y][x] == "-":
                 block = BaseTile("path", x, y, tile_images)
             elif level[y][x] == "#":
-                # block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
                 block1 = BaseTile("path", x, y, tile_images)
                 spawner = Spawner(x, y)
             elif level[y][x] == '@':
-                # block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
                 block1 = BaseTile("path", x, y, tile_images)
                 block2 = BackTile("tray", x, y, tile_images)
                 king = create_cat("king", x, y, cat_images, hp=get_json("../data/characteristics.json")["king_hp"])

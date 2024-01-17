@@ -50,8 +50,6 @@ def sprites_move(sprites, vx, vy, hor_borders, ver_borders):
     if check[0] or check[1]:
         for sprite in sprites:
             sprite.update(check[0], check[1])
-        # sptires_move(sprites, check[0], 0, hor_borders, ver_borders)
-        # sptires_move(sprites, 0, check[1], hor_borders, ver_borders)
 
 
 def enem_move(sprites, level_map, camera_scale, king):

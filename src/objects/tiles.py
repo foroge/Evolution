@@ -65,11 +65,6 @@ class BaseObject(pygame.sprite.Sprite):
             col_v.append(self.image.get_rect().move(self.image.get_rect()[2] * self.pos_x + self.default_x,
                                                     self.image.get_rect()[3] * self.pos_y + self.default_y).colliderect(v.rect))
         return col_h, col_v
-        # if pygame.sprite.spritecollideany(self, horizontal_borders):
-        #     new_vy = -vy
-        # if pygame.sprite.spritecollideany(self, vertical_borders):
-        #     new_vx = -vx
-        # return new_vx, new_vy
 
     def self_draw(self, screen):
         size = self.image.get_size()

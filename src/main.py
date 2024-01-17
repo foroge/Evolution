@@ -16,13 +16,12 @@ from objects.cats import init_cats, init_projectiles, create_cat, cats_group, pr
 from objects.enemies import init_enemies_images, BaseEnemy, enemies_group
 from objects.tiles import init_image
 
-from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position, \
-    check_collision, move_projectiles, cats_attack, update_rect, update_card
+from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
+from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card
 import src.extra_utils as extra
 
 from src.tests.create_map import start_creating
 from src.load.card_cats import BaseCard
-
 
 
 pygame.init()
@@ -39,11 +38,6 @@ level_map = start_creating(col_cell).copy()
 king, spawner, x, y, sprites, cats, all_sprites = generate_level(level_map)
 sprites.insert(-1, cats)
 sprites.insert(-1, cats_group)
-# sprites.append(projectiles_group)
-
-# sprites[-1], sprites[-2] = sprites[-2], sprites[-1]
-# enemies_group = pygame.sprite.Group()   # нужно будет перенести в проект с врагами # Перенес
-# ammunition_group = pygame.sprite.Group()  # аналогично
 
 
 screen.fill((255, 255, 255))
@@ -60,17 +54,16 @@ border3 = Border(x, y, x + size_map + 20, y + 20)
 border4 = Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
 ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 
-# Все перениести по другим файлам
-# BaseEnemy(spawner.pos_x, spawner.pos_y, "zombie", init_enemies_images(), 60 / camera.scale)
+
 cats_images = init_cats()
 projectiles_images = init_projectiles()
 # mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
 wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
 # elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
-# ===============================
+
 cat_images = init_cats()
 cards = []
-x_card, y_card = -80, 80
+x_card, y_card = -80, 100
 cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
 for i in cat_names:
     image = cat_images[i]
@@ -161,7 +154,6 @@ while running:
     for i in sprites:
         i.draw(screen)
     enemies_group.draw(screen)
-    spawner.draw(screen)
     projectiles_group.draw(screen)
 
     king.hp_bar.draw_health_bar()

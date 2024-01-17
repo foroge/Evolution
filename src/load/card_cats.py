@@ -1,5 +1,8 @@
 import pygame
 from pygame.sprite import Sprite
+from src.load.load_images import load_image
+
+card_gr = pygame.sprite.Group()
 
 
 class BaseCard:
@@ -9,7 +12,7 @@ class BaseCard:
         self.counter = 0
         self.image = pygame.Surface((32 + 26, 32 + 28))
         self.image.fill((255, 255, 255))
-        self.rect = self.image.get_rect(topleft=(x, y))
+        self.rect = self.image.get_rect().move(x, y)
 
         self.name = self.Name(self, name_text)
         self.button = self.Button(self, button_text)
@@ -24,7 +27,9 @@ class BaseCard:
             self.font = pygame.font.Font(None, 16)
             self.text = text
             self.rendered_text = self.font.render(self.text, True, (0, 0, 0))
-            self.rect = self.rendered_text.get_rect(midtop=(outer_instance.x, outer_instance.y))
+            x = self.outer_instance.x
+            y = self.outer_instance.y
+            self.rect = self.rendered_text.get_rect(center=(x + 32, y))
 
         def draw(self, screen):
             screen.blit(self.rendered_text, self.rect)
@@ -33,25 +38,32 @@ class BaseCard:
         def __init__(self, outer_instance, image):
             self.outer_instance = outer_instance
             self.image = image
-            self.rect = self.image.get_rect(midtop=(outer_instance.x, outer_instance.y + 16))
+            self.scale((64, 64))
+            self.rect = self.image.get_rect().move(outer_instance.x, outer_instance.y + 16)
 
         def draw(self, screen):
             screen.blit(self.image, self.rect)
+
+        def scale(self, size):
+            self.image = pygame.transform.scale(self.image, size)
 
     class Button(Sprite):
         def __init__(self, outer_instance, text):
             super().__init__()
             self.outer_instance = outer_instance
-            self.image = pygame.Surface((48 + 4, 16 + 4))
+            self.image = pygame.Surface((48, 20))
             self.image.fill((150, 150, 150))
-            self.rect = self.image.get_rect(midtop=(outer_instance.x - 4, outer_instance.y + 84))
+            x = self.outer_instance.x
+            y = self.outer_instance.y + 86
+            self.rect = self.image.get_rect().move(x, y)  # Смещаем кнопку вниз
+
             self.font = pygame.font.Font(None, 18)
             self.text = text
             self.rendered_text = self.font.render(self.text, True, (0, 0, 0))
             self.text_rect = self.rendered_text.get_rect(midleft=self.rect.center)
-            self.mini_image = pygame.Surface((16, 16))
-            self.mini_image.fill((255, 0, 0))
-            self.mini_image_rect = self.mini_image.get_rect(midleft=(self.rect.x + 4, self.rect.y + 10))
+            self.mini_image = load_image("other_images/coin.png")  # Уменьшаем размер мини-изображения
+            # self.mini_image.fill((255, 0, 0))
+            self.mini_image_rect = self.mini_image.get_rect().move(self.rect.x + 4, self.rect.y + 2)
 
         def draw(self, screen):
             screen.blit(self.image, self.rect)
@@ -64,15 +76,28 @@ class BaseCard:
 
             if self.rect.collidepoint(mouse_pos):
                 if click:
-                    self.outer_instance.counter += 1
+                    self.outer_instance.counter_display.text = str(int(self.outer_instance.counter_display.text) + 1)
+                    return
 
     class CounterDisplay:
         def __init__(self, outer_instance):
             self.outer_instance = outer_instance
             self.font = pygame.font.Font(None, 24)
-            self.text = str(outer_instance.counter)
+            self.text = str(self.outer_instance.counter)
             self.rendered_text = self.font.render(self.text, True, (0, 0, 0))
-            self.rect = self.rendered_text.get_rect(midtop=(outer_instance.x + 26, outer_instance.y + 84))
+            x = self.outer_instance.x + self.outer_instance.button.rect.size[0] + 5
+            y = self.outer_instance.y + 86
+            self.rect = self.rendered_text.get_rect().move(x, y)
 
         def draw(self, screen):
+            self.rendered_text = self.font.render(self.text, True, (0, 0, 0))
+            x = self.outer_instance.x + self.outer_instance.button.rect.size[0] + 5
+            y = self.outer_instance.y + 88
+            self.rect = self.rendered_text.get_rect().move(x, y)
             screen.blit(self.rendered_text, self.rect)
+
+    def all_draw(self, screen):
+        self.name.draw(screen)
+        self.button.draw(screen)
+        self.counter_display.draw(screen)
+        self.custom_image.draw(screen)
