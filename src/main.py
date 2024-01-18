@@ -17,7 +17,7 @@ from objects.enemies import init_enemies_images, BaseEnemy, enemies_group
 from objects.tiles import init_image
 
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
-from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card
+from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
 import src.extra_utils as extra
 
 from src.tests.create_map import start_creating
@@ -41,10 +41,6 @@ sprites.insert(-1, cats_group)
 lose_image = load_image("../data/other_images/lose.png")
 lose_image = pygame.transform.scale(lose_image, (lose_image.get_rect()[2] * 3, lose_image.get_rect()[3] * 3))
 # sprites.append(projectiles_group)
-
-# sprites[-1], sprites[-2] = sprites[-2], sprites[-1]
-# enemies_group = pygame.sprite.Group()   # нужно будет перенести в проект с врагами # Перенес
-# ammunition_group = pygame.sprite.Group()  # аналогично
 
 
 screen.fill((255, 255, 255))
@@ -71,12 +67,12 @@ wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
 
 cat_images = init_cats()
 cards = []
-x_card, y_card = -80, 100
+x_card, y_card = -80, 140
 cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
 for i in cat_names:
     image = cat_images[i]
     x_card += 100
-    if x_card + 20 > x:
+    if x_card + 64 > x:
         x_card = 20
         y_card += 120
     card = BaseCard(x=x_card, y=y_card, button_text="100", name_text=i, custom_image=image)
