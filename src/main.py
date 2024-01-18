@@ -38,6 +38,13 @@ level_map = start_creating(col_cell).copy()
 king, spawner, x, y, sprites, cats, all_sprites = generate_level(level_map)
 sprites.insert(-1, cats)
 sprites.insert(-1, cats_group)
+lose_image = load_image("../data/other_images/lose.png")
+lose_image = pygame.transform.scale(lose_image, (lose_image.get_rect()[2] * 3, lose_image.get_rect()[3] * 3))
+# sprites.append(projectiles_group)
+
+# sprites[-1], sprites[-2] = sprites[-2], sprites[-1]
+# enemies_group = pygame.sprite.Group()   # нужно будет перенести в проект с врагами # Перенес
+# ammunition_group = pygame.sprite.Group()  # аналогично
 
 
 screen.fill((255, 255, 255))
@@ -47,6 +54,7 @@ size_map = full_h - 60
 x, y = full_w - size_map - 50, 10
 
 camera = Camera()
+next_wave_btn = Button(550, 80, 90, 40, "Next wave", "white")
 
 border1 = Border(x, y, x + 20, y + size_map + 20)
 border2 = Border(x + size_map + 15, y, x + size_map + 35, y + size_map + 20)
@@ -83,6 +91,7 @@ all_sprites.add(projectiles_group)
 sprites_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
 set_def_position(all_sprites, x + 20, y + 20, size_map)
 running = True
+running_lose = False
 fps = 60
 clock = pygame.time.Clock()
 speed = 15 / (2 - camera.scale)
@@ -147,9 +156,15 @@ while running:
     update_rect(enemies_group, screen)
     cats_attack(cats_group, enemies_group)
     move_projectiles(projectiles_group)
-    spawner.check_to_spawn()
+    spawner.check_to_spawn(new_wave=next_wave_btn.update())
+
     king.hp_bar.update(king.hp / king.max_hp)
     king.hp_bar.update_wave_text(spawner.wave)
+    king.hp_bar.update_time_before_wave(round(spawner.time_before_wave))
+
+    if king.hp == 0:
+        running = False
+        running_lose = True
 
     for i in sprites:
         i.draw(screen)
@@ -160,12 +175,26 @@ while running:
     screen.blit(king.hp_bar.image, king.hp_bar.rect)
     screen.blit(king.hp_bar.text_hp_string_rendered, king.hp_bar.text_hp_rect)
     screen.blit(king.hp_bar.text_wave_string_rendered, king.hp_bar.text_wave_rect)
+    screen.blit(king.hp_bar.text_time_before_wave_string_rendered, king.hp_bar.text_time_before_wave_rect)
 
     ver_borders.draw(screen)
     hor_borders.draw(screen)
+    next_wave_btn.draw(screen)
 
     update_card(cards, screen)
 
+    pygame.display.update()
+    clock.tick(fps)
+
+while running_lose:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running_lose = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                running_lose = False
+    screen.fill("gray")
+    screen.blit(lose_image, lose_image.get_rect(center=screen.get_rect().center))
     pygame.display.update()
     clock.tick(fps)
 

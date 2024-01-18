@@ -140,3 +140,39 @@ class Camera:
         elif not flag and self.scale > 0.8:
             self.old_scale = self.scale
             self.scale -= self.step
+
+
+class Button(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height, text, color="black"):
+        super().__init__()
+        # self.outer_instance = outer_instance
+        self.image = pygame.Surface((width, height))
+        self.image.fill((150, 150, 150))
+        # x = self.outer_instance.x
+        # y = self.outer_instance.y + 86
+        self.rect = self.image.get_rect().move(x, y)
+
+        self.font = pygame.font.Font(None, 25)
+        self.text = text
+        self.rendered_text = self.font.render(self.text, True, color)
+        self.text_rect = self.rendered_text.get_rect(center=self.rect.center)
+        # self.mini_image = load_image("other_images/coin.png")
+        # self.mini_image_rect = self.mini_image.get_rect().move(self.rect.x + 4, self.rect.y + 2)
+        self.handled = False
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+        screen.blit(self.rendered_text, self.text_rect)
+        # screen.blit(self.mini_image, self.mini_image_rect)
+
+    def update(self):
+        mouse_pos = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()[0]
+        if click and self.rect.collidepoint(mouse_pos):
+            if not self.handled:
+                self.handled = True
+                return True
+            return False
+        else:
+            self.handled = False
+            return False

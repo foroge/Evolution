@@ -17,7 +17,7 @@ class Spawner(FrontTile):
         self.wave = 0
         self.difficulty = 0
         self.time_between_waves = 60
-        self.time_before_wave = 0
+        self.time_before_wave = self.time_between_waves
         self.enemy_patterns = [["zombie"]]
 
     def check_to_spawn(self, new_wave=False):
