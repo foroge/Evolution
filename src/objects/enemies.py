@@ -70,6 +70,8 @@ class BaseEnemy(BaseObject):
             self.move_y %= size[1]
         except ZeroDivisionError:
             ...
+        except TypeError:
+            self.kill()
 
     def change_side_image(self, image_type, mirrored=False):
         try:

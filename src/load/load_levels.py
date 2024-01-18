@@ -8,7 +8,7 @@ from random import randint, choice
 import src.objects.tiles
 from src.objects.tiles import BaseTile, FrontTile, BackTile, GrassTile, init_image
 import src.objects.cats
-from src.objects.cats import create_cat, init_cats
+from src.objects.cats import create_cat, init_cats, init_projectiles
 from src.objects.spawner import Spawner
 from src.extra_utils import get_json
 
