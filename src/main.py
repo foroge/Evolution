@@ -68,7 +68,7 @@ cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "su
 for i in cat_names:
     image = cat_images[i]
     x_card += 100
-    if x_card > x:
+    if x_card + 20 > x:
         x_card = 20
         y_card += 120
     card = BaseCard(x=x_card, y=y_card, button_text="100", name_text=i, custom_image=image)
