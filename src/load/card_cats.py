@@ -77,11 +77,9 @@ class BaseCard:
             if click and self.rect.collidepoint(mouse_pos):
                 if not self.handled:
                     self.handled = True
-                    return True
-                return False
+                    self.outer_instance.counter += 1
             else:
                 self.handled = False
-                return False
 
     class CounterDisplay:
         def __init__(self, outer_instance):
@@ -94,6 +92,7 @@ class BaseCard:
             self.rect = self.rendered_text.get_rect().move(x, y)
 
         def draw(self, screen):
+            self.text = str(self.outer_instance.counter)
             self.rendered_text = self.font.render(self.text, True, (0, 0, 0))
             x = self.outer_instance.x + self.outer_instance.button.rect.size[0] + 5
             y = self.outer_instance.y + 88
