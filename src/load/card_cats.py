@@ -15,7 +15,8 @@ class BaseCard:
         self.rect = self.image.get_rect().move(x, y)
 
         self.name = self.Name(self, name_text)
-        self.button = self.Button(self, button_text)
+        self.button = self.ButtonBuy(self, button_text)
+        self.button_choose = self.ButtonChoose(self, "Choose")
         self.counter_display = self.CounterDisplay(self)
         self.custom_image = None
         if custom_image:
@@ -47,7 +48,7 @@ class BaseCard:
         def scale(self, size):
             self.image = pygame.transform.scale(self.image, size)
 
-    class Button(Sprite):
+    class ButtonBuy(Sprite):
         def __init__(self, outer_instance, text):
             super().__init__()
             self.outer_instance = outer_instance
@@ -81,6 +82,36 @@ class BaseCard:
             else:
                 self.handled = False
 
+    class ButtonChoose(Sprite):
+        def __init__(self, outer_instance, text):
+            super().__init__()
+            self.outer_instance = outer_instance
+            self.image = pygame.Surface((64, 20))
+            self.image.fill((150, 150, 150))
+            x = self.outer_instance.x
+            y = self.outer_instance.y + 116
+            self.rect = self.image.get_rect().move(x, y)  # Смещаем кнопку вниз
+            self.handled = False
+
+            self.font = pygame.font.Font(None, 18)
+            self.text = text
+            self.rendered_text = self.font.render(self.text, True, (0, 0, 0))
+            self.text_rect = self.rendered_text.get_rect(center=self.rect.center)
+
+        def draw(self, screen):
+            screen.blit(self.image, self.rect)
+            screen.blit(self.rendered_text, self.text_rect)
+
+        def update(self):
+            mouse_pos = pygame.mouse.get_pos()
+            click = pygame.mouse.get_pressed()[0]
+            if click and self.rect.collidepoint(mouse_pos):
+                if not self.handled:
+                    self.handled = True
+                    return self.outer_instance.name.text
+            else:
+                self.handled = False
+
     class CounterDisplay:
         def __init__(self, outer_instance):
             self.outer_instance = outer_instance
@@ -102,5 +133,6 @@ class BaseCard:
     def all_draw(self, screen):
         self.name.draw(screen)
         self.button.draw(screen)
+        self.button_choose.draw(screen)
         self.counter_display.draw(screen)
         self.custom_image.draw(screen)

@@ -91,7 +91,7 @@ class BaseTile(BaseObject):
 class GrassTile(BaseObject):
     def __init__(self, tile_type, pos_x, pos_y, pointer, tile_images):
         self.image = tile_images[f"{tile_type}_{pointer}"]
-        super().__init__(pos_x, pos_y,self.image, tiles_group, all_sprites)
+        super().__init__(pos_x, pos_y, self.image, tiles_group, all_sprites)
 
 
 class BackTile(BaseObject):
@@ -104,6 +104,27 @@ class FrontTile(BaseObject):
     def __init__(self, tile_type, pos_x, pos_y, tile_images):
         self.image = tile_images[f"{tile_type}_2"]
         super().__init__(pos_x, pos_y, self.image, front_tile_group, all_sprites)
+
+
+class TrayTile(BaseObject):
+    def __init__(self, pos_x, pos_y, tile_images):
+        self.image = tile_images["tray_0"]
+        super().__init__(pos_x, pos_y, self.image, tiles_group, all_sprites)
+        self.handled = False
+
+    def check_clicked(self, choosen, x):
+        if choosen:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_pos[0] > x:
+                click = pygame.mouse.get_pressed()[0]
+                if click and self.rect.collidepoint(mouse_pos):
+                    if not self.handled:
+                        self.handled = True
+                        return True
+                    return False
+                else:
+                    self.handled = False
+                    return False
 
 
 group_list = [tiles_group, back_tile_group, front_tile_group]
