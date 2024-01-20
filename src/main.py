@@ -18,7 +18,7 @@ from objects.tiles import init_image
 
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
 from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
-from src.extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json
+from src.extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
 import src.extra_utils as extra
 
 from src.tests.create_map import start_creating
@@ -51,7 +51,7 @@ size_map = full_h - 60
 x, y = full_w - size_map - 50, 10
 
 camera = Camera()
-next_wave_btn = Button(550, 80, 90, 40, "Next wave", "white")
+next_wave_btn = WaveButton(x=550, y=80, width=90, height=40, text="Next wave", color="white", time_sleep=3)
 
 border1 = Border(x, y, x + 20, y + size_map + 20)
 border2 = Border(x + size_map + 15, y, x + size_map + 35, y + size_map + 20)
@@ -60,10 +60,18 @@ border4 = Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
 ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 
 
+
+# image1 = pygame.Surface((x, full_w))
+# image1.fill()
+image1, rect1 = create_fon_rect(size=(x, full_w), color=(250, 222, 154))
+image2, rect2 = create_fon_rect(coord=(x, 0), size=(size_map + 35, 30), color=(250, 222, 154))
+image3, rect3 = create_fon_rect(coord=(x, y + size_map + 35), size=(size_map + 35, 30), color=(250, 222, 154))
+image4, rect4 = create_fon_rect(coord=(x + size_map + 35, 0), size=(x, full_w), color=(250, 222, 154))
+
 cats_images = init_cats()
 projectiles_images = init_projectiles()
 # mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
-wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
+wizard = create_cat(name="wizard", x=16, y=16, cat_images=cats_images, projectiles_images=projectiles_images)
 # elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
 
 cat_images = init_cats()
@@ -76,7 +84,7 @@ for i in cat_names:
     x_card += 100
     if x_card + 64 > x:
         x_card = 20
-        y_card += 161
+        y_card += 181
     cat_cost = get_json("../data/characteristics.json")[1]["cats_cost"][i]
     card = BaseCard(x=x_card, y=y_card, button_text=cat_cost, name_text=i, custom_image=image)
     cards.append(card)
@@ -101,6 +109,7 @@ a_pressed = False
 s_pressed = False
 d_pressed = False
 x_mouse = y_mouse = 0
+
 while running:
     from src.objects.enemies import enemies_group
     # from src.objects.tiles import all_sprites, group_list
@@ -108,7 +117,7 @@ while running:
     all_sprites.add(enemies_group)
 
     camera.dx = camera.dy = 0
-    screen.fill((250, 222, 154))
+    screen.fill((75, 105, 47))
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -158,14 +167,9 @@ while running:
     update_rect(enemies_group, screen)
     cats_attack(cats_group, enemies_group)
     move_projectiles(projectiles_group)
-    spawner.check_to_spawn(new_wave=next_wave_btn.update())
 
-    chose = update_card(cards, screen)
-    if chose is not None:
-        if chose == choosen:
-            choosen = None
-        else:
-            choosen = chose
+    next_wave_btn.counter += 1 / fps
+    spawner.check_to_spawn(new_wave=next_wave_btn.update())
 
     tray = check_cat_placed(sprites[0], choosen, x)
     if tray:
@@ -185,6 +189,20 @@ while running:
     enemies_group.draw(screen)
     projectiles_group.draw(screen)
 
+    screen.blit(image1, rect1)
+    screen.blit(image2, rect2)
+    screen.blit(image3, rect3)
+    screen.blit(image4, rect4)
+
+    chose = update_card(cards, screen)
+    if chose is not None:
+        if chose == choosen:
+            choosen = None
+        else:
+            choosen = chose
+
+
+
     king.hp_bar.draw_health_bar()
     screen.blit(king.hp_bar.image, king.hp_bar.rect)
     screen.blit(king.hp_bar.text_hp_string_rendered, king.hp_bar.text_hp_rect)
@@ -196,7 +214,7 @@ while running:
     next_wave_btn.draw(screen)
 
     if choosen:
-        draw_neer_cursor(screen, cat_images[choosen])
+        draw_neer_cursor(screen, cat_images[choosen])\
 
     pygame.display.update()
     clock.tick(fps)

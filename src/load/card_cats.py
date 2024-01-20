@@ -87,10 +87,10 @@ class BaseCard:
         def __init__(self, outer_instance, text):
             super().__init__()
             self.outer_instance = outer_instance
-            self.image = pygame.Surface((64, 20))
+            self.image = pygame.Surface((80, 20))
             self.image.fill((150, 150, 150))
             x = self.outer_instance.x
-            y = self.outer_instance.y + 116
+            y = self.outer_instance.y + 136
             self.rect = self.image.get_rect().move(x, y)  # Смещаем кнопку вниз
             self.handled = False
 

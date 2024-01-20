@@ -128,6 +128,13 @@ def set_def_position(sprites, x, y, size):
         sprite.set_default_value(x, y, size)
 
 
+def create_fon_rect(coord=(0, 0), size=(0, 0), color=(0, 0, 0)):
+    image = pygame.Surface(size)
+    image.fill(color)
+    rect = image.get_rect().move(coord)
+    return image, rect
+
+
 def get_json(filename):
     with open(filename) as file:
         data = json.load(file)
@@ -174,19 +181,14 @@ class Camera:
 class Button(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, text, color="black"):
         super().__init__()
-        # self.outer_instance = outer_instance
         self.image = pygame.Surface((width, height))
         self.image.fill((150, 150, 150))
-        # x = self.outer_instance.x
-        # y = self.outer_instance.y + 86
         self.rect = self.image.get_rect().move(x, y)
 
         self.font = pygame.font.Font(None, 25)
         self.text = text
         self.rendered_text = self.font.render(self.text, True, color)
         self.text_rect = self.rendered_text.get_rect(center=self.rect.center)
-        # self.mini_image = load_image("other_images/coin.png")
-        # self.mini_image_rect = self.mini_image.get_rect().move(self.rect.x + 4, self.rect.y + 2)
         self.handled = False
 
     def draw(self, screen):
@@ -205,3 +207,27 @@ class Button(pygame.sprite.Sprite):
         else:
             self.handled = False
             return False
+
+
+class WaveButton(Button):
+    def __init__(self, x, y, width, height, text, color="black", time_sleep=0):
+        super().__init__(x, y, width, height, text, color)
+        self.counter = 0
+        self.time_sleep = time_sleep
+        self.start = True
+
+    def update(self):
+        sleep_button = self.counter // self.time_sleep
+        mouse_pos = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()[0]
+        if click and self.rect.collidepoint(mouse_pos):
+            if not self.handled and sleep_button or self.start:
+                self.handled = True
+                self.start = False
+                self.counter = 0
+                return True
+            return False
+        else:
+            self.handled = False
+            return False
+

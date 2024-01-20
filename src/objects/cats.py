@@ -70,8 +70,6 @@ class Mushroom(BaseCat):
             x1, y1 = dispenser.rect.center
             self.x2, self.y2 = new_pos[0], new_pos[1]
 
-            print(self.rect.center[0], ((self.x2 + 0.75) * self.orig_size[0] + self.default_x), self.rect.center[1],
-                  ((self.y2 + 0.75) * self.orig_size[1] + self.default_y))
             self.total_distance = ((((self.x2 + 0.75) * self.orig_size[0] + self.default_x) - x1) ** 2 +
                                    (((self.y2 + 0.75) * self.orig_size[1] + self.default_y) - y1) ** 2) ** 0.5
             self.y_angle = (y1 - ((self.y2 + 0.75) * self.orig_size[1] + self.default_y)) / self.total_distance
@@ -82,8 +80,6 @@ class Mushroom(BaseCat):
             self.poison_time = poison_time
 
         def go_to_enemy(self):
-            print(self.rect.center[0], ((self.x2 + 0.75) * self.orig_size[0] + self.default_x), self.rect.center[1],
-                  ((self.y2 + 0.75) * self.orig_size[1] + self.default_y))
             self.check_collision()
             if not self.stop:
                 self.move_x += self.x_angle * self.speed / fps
