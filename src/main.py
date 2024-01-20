@@ -18,7 +18,7 @@ from objects.tiles import init_image
 
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
 from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
-from src.extra_utils import get_json
+from src.extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json
 import src.extra_utils as extra
 
 from src.tests.create_map import start_creating
@@ -67,6 +67,7 @@ wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
 # elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
 
 cat_images = init_cats()
+tile_images = init_image()
 cards = []
 x_card, y_card = -80, 140
 cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
@@ -80,6 +81,7 @@ for i in cat_names:
     card = BaseCard(x=x_card, y=y_card, button_text=cat_cost, name_text=i, custom_image=image)
     cards.append(card)
 
+
 # enemies_group = obj_enemies.enemies_group
 all_sprites.add(enemies_group)
 all_sprites.add(cats_group)
@@ -92,6 +94,7 @@ running_lose = False
 fps = 60
 clock = pygame.time.Clock()
 speed = 15 / (2 - camera.scale)
+choosen = None
 
 w_pressed = False
 a_pressed = False
@@ -100,6 +103,8 @@ d_pressed = False
 x_mouse = y_mouse = 0
 while running:
     from src.objects.enemies import enemies_group
+    # from src.objects.tiles import all_sprites, group_list
+    # sprites[0], sprites[1], sprites[2] = group_list[0], group_list[1], group_list[2]
     all_sprites.add(enemies_group)
 
     camera.dx = camera.dy = 0
@@ -155,6 +160,18 @@ while running:
     move_projectiles(projectiles_group)
     spawner.check_to_spawn(new_wave=next_wave_btn.update())
 
+    chose = update_card(cards, screen)
+    if chose is not None:
+        if chose == choosen:
+            choosen = None
+        else:
+            choosen = chose
+
+    tray = check_cat_placed(sprites[0], choosen, x)
+    if tray:
+        spawn_cat(choosen, "tray", tray, tile_images, cat_images, projectiles_images)
+        choosen = None
+
     king.hp_bar.update(king.hp / king.max_hp)
     king.hp_bar.update_wave_text(spawner.wave)
     king.hp_bar.update_time_before_wave(round(spawner.time_before_wave))
@@ -178,7 +195,8 @@ while running:
     hor_borders.draw(screen)
     next_wave_btn.draw(screen)
 
-    update_card(cards, screen)
+    if choosen:
+        draw_neer_cursor(screen, cat_images[choosen])
 
     pygame.display.update()
     clock.tick(fps)

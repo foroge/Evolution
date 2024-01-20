@@ -6,7 +6,7 @@ import sys
 import os
 from random import randint, choice
 import src.objects.tiles
-from src.objects.tiles import BaseTile, FrontTile, BackTile, GrassTile, init_image
+from src.objects.tiles import BaseTile, FrontTile, BackTile, GrassTile, TrayTile, init_image
 import src.objects.cats
 from src.objects.cats import create_cat, init_cats, init_projectiles
 from src.objects.spawner import Spawner
@@ -38,7 +38,7 @@ def generate_level(level):
                 block = GrassTile('grass', x, y, randint(0, 3), tile_images)
             elif level[y][x] == 'T':
                 block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
-                block2 = BaseTile("tray", x, y, tile_images)
+                block2 = TrayTile(x, y, tile_images)
             elif level[y][x] == 'w':
                 block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
                 block2 = BaseTile("water", x, y, tile_images)

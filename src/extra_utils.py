@@ -1,15 +1,43 @@
 import pygame
 import json
+from objects.tiles import BackTile, FrontTile
+from objects.cats import create_cat
 
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 
 
+def spawn_cat(choosen, tile_type, tray, tile_images, cat_images, projectiles_images):
+    x, y = tray.pos_x, tray.pos_y
+    BackTile(tile_type, x, y, tile_images)
+    cat = create_cat(choosen, x, y, cat_images, projectiles_images)
+    cat.set_default_value(tray.default_x, tray.default_y, tray.size_map)
+    FrontTile(tile_type, x, y, tile_images)
+    tray.kill()
+
+
+def check_cat_placed(tiles_group, choosen, x):
+    for tile in tiles_group:
+        if type(tile).__name__ == "TrayTile":
+            clicked = tile.check_clicked(choosen, x)
+            if clicked:
+                return tile
+
+
 def update_card(cards, screen):
+    choosen = None
     for card in cards:
         card.button.update()
+        chose = card.button_choose.update()
+        if chose:
+            choosen = chose
     for card in cards:
         card.all_draw(screen)
+    return choosen
+
+
+def draw_neer_cursor(screen, image):
+    screen.blit(image, image.get_rect(center=pygame.mouse.get_pos()))
 
 
 def update_rect(groups, screen):
@@ -59,7 +87,8 @@ def enem_move(sprites, level_map, camera_scale, king):
 
 def cats_attack(sprites, enemy_group):
     for sprite in sprites:
-        sprite.try_attack(enemy_group)
+        if type(sprite).__name__ != "King":
+            sprite.try_attack(enemy_group)
 
 
 def move_projectiles(sprites):
