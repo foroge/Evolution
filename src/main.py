@@ -71,7 +71,7 @@ tile_images = init_image()
 projectiles_images = init_projectiles()
 
 # mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
-wizard = create_cat(name="wizard", x=16, y=16, cat_images=cats_images, projectiles_images=projectiles_images)
+# wizard = create_cat(name="wizard", x=16, y=16, cat_images=cats_images, projectiles_images=projectiles_images)
 # elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
 
 
