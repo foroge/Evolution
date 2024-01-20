@@ -42,7 +42,11 @@ sprites.insert(-1, cats_group)
 lose_image = load_image("../data/other_images/lose.png")
 lose_image = pygame.transform.scale(lose_image, (lose_image.get_rect()[2] * 3, lose_image.get_rect()[3] * 3))
 # sprites.append(projectiles_group)
-
+wave_width = 90
+wave_height = 40
+wave_btn_x = king.hp_bar.rect.right - wave_width
+wave_btn_y = king.hp_bar.rect.top + king.hp_bar.rect.height + 10
+next_wave_btn = WaveButton(x=wave_btn_x, y=wave_btn_y, width=wave_width, height=wave_height, text="Next wave", color="white", time_sleep=3)
 
 screen.fill((255, 255, 255))
 pygame.display.set_caption("Feline Fortress")
@@ -51,7 +55,6 @@ size_map = full_h - 60
 x, y = full_w - size_map - 50, 10
 
 camera = Camera()
-next_wave_btn = WaveButton(x=550, y=80, width=90, height=40, text="Next wave", color="white", time_sleep=3)
 
 border1 = Border(x, y, x + 20, y + size_map + 20)
 border2 = Border(x + size_map + 15, y, x + size_map + 35, y + size_map + 20)
@@ -202,8 +205,6 @@ while running:
             choosen = None
         else:
             choosen = chose
-
-
 
     king.hp_bar.draw_health_bar()
     screen.blit(king.hp_bar.image, king.hp_bar.rect)
