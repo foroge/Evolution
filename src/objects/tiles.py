@@ -95,15 +95,21 @@ class GrassTile(BaseObject):
 
 
 class BackTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, tile_images, groups=None):
         self.image = tile_images[f"{tile_type}_1"]
-        super().__init__(pos_x, pos_y, self.image, back_tile_group, all_sprites)
+        if not groups:
+            super().__init__(pos_x, pos_y, self.image, back_tile_group, all_sprites)
+        else:
+            super().__init__(pos_x, pos_y, self.image, *groups)
 
 
 class FrontTile(BaseObject):
-    def __init__(self, tile_type, pos_x, pos_y, tile_images):
+    def __init__(self, tile_type, pos_x, pos_y, tile_images, groups=None):
         self.image = tile_images[f"{tile_type}_2"]
-        super().__init__(pos_x, pos_y, self.image, front_tile_group, all_sprites)
+        if not groups:
+            super().__init__(pos_x, pos_y, self.image, front_tile_group, all_sprites)
+        else:
+            super().__init__(pos_x, pos_y, self.image, *groups)
 
 
 class TrayTile(BaseObject):
