@@ -1,18 +1,21 @@
 import pygame
 import json
-from objects.tiles import BackTile, FrontTile
-from objects.cats import create_cat
 
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 
 
-def spawn_cat(choosen, tile_type, tray, tile_images, cat_images, projectiles_images):
+def spawn_cat(choosen, tile_type, tray, tile_images, cat_images, projectiles_images, back_tile_group, front_tile_group,
+              all_sprites):
+    from objects.tiles import BackTile, FrontTile
+    from objects.cats import create_cat
     x, y = tray.pos_x, tray.pos_y
-    BackTile(tile_type, x, y, tile_images)
+    b_tile = BackTile(tile_type, x, y, tile_images, [back_tile_group, all_sprites])
+    b_tile.set_default_value(tray.default_x, tray.default_y, tray.size_map)
     cat = create_cat(choosen, x, y, cat_images, projectiles_images)
     cat.set_default_value(tray.default_x, tray.default_y, tray.size_map)
-    FrontTile(tile_type, x, y, tile_images)
+    f_tile = FrontTile(tile_type, x, y, tile_images, [front_tile_group, all_sprites])
+    f_tile.set_default_value(tray.default_x, tray.default_y, tray.size_map)
     tray.kill()
 
 

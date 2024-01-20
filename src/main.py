@@ -59,15 +59,17 @@ border3 = Border(x, y, x + size_map + 20, y + 20)
 border4 = Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
 ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 
-
+cat_images = init_cats()
 cats_images = init_cats()
+tile_images = init_image()
+
 projectiles_images = init_projectiles()
+
 # mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
 wizard = create_cat("wizard", 16, 16, cats_images, projectiles_images)
 # elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
 
-cat_images = init_cats()
-tile_images = init_image()
+
 cards = []
 x_card, y_card = -80, 140
 cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
@@ -102,8 +104,6 @@ d_pressed = False
 x_mouse = y_mouse = 0
 while running:
     from src.objects.enemies import enemies_group
-    # from src.objects.tiles import all_sprites, group_list
-    # sprites[0], sprites[1], sprites[2] = group_list[0], group_list[1], group_list[2]
     all_sprites.add(enemies_group)
 
     camera.dx = camera.dy = 0
@@ -168,7 +168,12 @@ while running:
 
     tray = check_cat_placed(sprites[0], choosen, x)
     if tray:
-        spawn_cat(choosen, "tray", tray, tile_images, cat_images, projectiles_images)
+        spawn_cat(choosen, "tray", tray, tile_images, cat_images, projectiles_images, sprites[1], sprites[4],
+                  all_sprites)
+        for c in cards:
+            if c.name.text == choosen:
+                c.counter -= 1
+                break
         choosen = None
 
     king.hp_bar.update(king.hp / king.max_hp)
