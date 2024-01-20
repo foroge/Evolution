@@ -1,3 +1,17 @@
-{
+[
+  {
   "king_hp": 100
-}
+  },
+  {
+    "cats_cost": {
+      "doctor": "100",
+      "egg": "100",
+      "mushroom": "1000",
+      "electronic": "100",
+      "warrior": "100",
+      "wizard": "100",
+      "sunflower": "100",
+      "water_cat": "100"
+    }
+  }
+]

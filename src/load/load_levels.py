@@ -56,6 +56,6 @@ def generate_level(level):
             elif level[y][x] == '@':
                 block1 = BaseTile("path", x, y, tile_images)
                 block2 = BackTile("tray", x, y, tile_images)
-                king = create_cat("king", x, y, cat_images, hp=get_json("../data/characteristics.json")["king_hp"])
+                king = create_cat("king", x, y, cat_images, hp=get_json("../data/characteristics.json")[0]["king_hp"])
                 block3 = FrontTile("tray", x, y, tile_images)
     return king, spawner, x, y, src.objects.tiles.group_list, src.objects.cats.cats_group, src.objects.tiles.all_sprites

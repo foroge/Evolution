@@ -18,6 +18,7 @@ from objects.tiles import init_image
 
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
 from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
+from src.extra_utils import get_json
 import src.extra_utils as extra
 
 from src.tests.create_map import start_creating
@@ -74,10 +75,10 @@ for i in cat_names:
     x_card += 100
     if x_card + 64 > x:
         x_card = 20
-        y_card += 120
-    card = BaseCard(x=x_card, y=y_card, button_text="100", name_text=i, custom_image=image)
+        y_card += 161
+    cat_cost = get_json("../data/characteristics.json")[1]["cats_cost"][i]
+    card = BaseCard(x=x_card, y=y_card, button_text=cat_cost, name_text=i, custom_image=image)
     cards.append(card)
-
 
 # enemies_group = obj_enemies.enemies_group
 all_sprites.add(enemies_group)
