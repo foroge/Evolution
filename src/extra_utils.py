@@ -27,16 +27,16 @@ def check_cat_placed(tiles_group, choosen, x):
                 return tile
 
 
-def update_card(cards, screen):
+def update_card(cards, screen, money=0):
     choosen = None
     for card in cards:
-        card.button.update()
+        money -= card.button.update(money)
         chose = card.button_choose.update()
         if chose:
             choosen = chose
     for card in cards:
         card.all_draw(screen)
-    return choosen
+    return choosen, money
 
 
 def draw_neer_cursor(screen, image):
@@ -84,15 +84,21 @@ def sprites_move(sprites, vx, vy, hor_borders, ver_borders):
 
 
 def enem_move(sprites, level_map, camera_scale, king):
+    count = 0
     for sprite in sprites:
-        sprite.move(level_map, camera_scale, king)
+        count += sprite.move(level_map, camera_scale, king)
+    return count
 
 
-def cats_attack(sprites, enemy_group):
+def cats_attack(sprites, enemy_group, fps):
+    money = 0
     for sprite in sprites:
-        if type(sprite).__name__ != "King":
+        if type(sprite).__name__ == "SunFlower":
+            sprite.counter += 1 / fps
+            money = sprite.get_money()
+        elif type(sprite).__name__ != "King":
             sprite.try_attack(enemy_group)
-
+    return money
 
 def move_projectiles(sprites):
     for sprite in sprites:

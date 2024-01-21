@@ -6,7 +6,7 @@ card_gr = pygame.sprite.Group()
 
 
 class BaseCard:
-    def __init__(self, x, y, button_text, name_text, custom_image=None):
+    def __init__(self, x, y, cost, name_text, custom_image=None):
         self.x = x
         self.y = y
         self.counter = 0
@@ -14,8 +14,10 @@ class BaseCard:
         self.image.fill((255, 255, 255))
         self.rect = self.image.get_rect().move(x, y)
 
+        self.cost = cost
+
         self.name = self.Name(self, name_text)
-        self.button = self.ButtonBuy(self, button_text)
+        self.button = self.ButtonBuy(self, cost)
         self.button_choose = self.ButtonChoose(self, "Choose")
         self.counter_display = self.CounterDisplay(self)
         self.custom_image = None
@@ -59,29 +61,32 @@ class BaseCard:
             y = self.outer_instance.y + 106
             self.rect = self.image.get_rect().move(x, y)  # Смещаем кнопку вниз
 
-            self.font = pygame.font.Font(None, 18)
+            self.font = pygame.font.Font(None, 22)
             self.text = text
 
             self.mini_image = load_image("other_images/coin.png")
-            self.mini_image_rect = self.mini_image.get_rect().move(self.rect.x + 4, self.rect.y + 2)
+            self.mini_image_rect = self.mini_image.get_rect(topright=(self.rect.right - 4, self.rect.top + 2))
             self.rendered_text = self.font.render(self.text, True, (0, 0, 0))
-            x = self.mini_image_rect.x + self.mini_image_rect.width
-            self.text_rect = self.rendered_text.get_rect(midleft=(x, self.rect.center[1]))
+            x = (self.mini_image_rect.left - self.rect.x) / 2 + self.rect.x
+            y = self.rect.centery
+            self.text_rect = self.rendered_text.get_rect(center=(x, y))
 
         def draw(self, screen):
             screen.blit(self.image, self.rect)
             screen.blit(self.rendered_text, self.text_rect)
             screen.blit(self.mini_image, self.mini_image_rect)
 
-        def update(self):
+        def update(self, money):
             mouse_pos = pygame.mouse.get_pos()
             click = pygame.mouse.get_pressed()[0]
             if click and self.rect.collidepoint(mouse_pos):
-                if not self.handled:
+                if not self.handled and int(money) >= int(self.outer_instance.cost):
                     self.handled = True
                     self.outer_instance.counter += 1
+                    return int(self.outer_instance.cost)
             else:
                 self.handled = False
+            return 0
 
     class ButtonChoose(Sprite):
         def __init__(self, outer_instance, text):

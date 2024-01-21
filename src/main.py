@@ -24,6 +24,8 @@ import src.extra_utils as extra
 from src.tests.create_map import start_creating
 from src.load.card_cats import BaseCard
 
+from ui.money_counter import MoneyCouner
+
 
 pygame.init()
 pygame.font.init()
@@ -44,10 +46,16 @@ lose_image = pygame.transform.scale(lose_image, (lose_image.get_rect()[2] * 3, l
 # sprites.append(projectiles_group)
 wave_width = 90
 wave_height = 40
-wave_btn_x = king.hp_bar.rect.right - wave_width
+wave_btn_x = king.hp_bar.rect.left
 wave_btn_y = king.hp_bar.rect.top + king.hp_bar.rect.height + 10
 next_wave_btn = WaveButton(x=wave_btn_x, y=wave_btn_y, width=wave_width, height=wave_height,
                            text="Next wave", color="white", time_sleep=3)
+
+money_counter_height = 40
+money_counter_width = 50
+money_counter_x = king.hp_bar.rect.right - (money_counter_width / 2)
+money_counter_y = king.hp_bar.rect.top + king.hp_bar.rect.height + 18
+money_counter = MoneyCouner(x=money_counter_x, y=money_counter_y, width=money_counter_width, height=money_counter_height)
 
 screen.fill((255, 255, 255))
 pygame.display.set_caption("Feline Fortress")
@@ -88,7 +96,7 @@ for i in cat_names:
         x_card = 20
         y_card += 181
     cat_cost = get_json("../data/characteristics.json")[1]["cats_cost"][i]
-    card = BaseCard(x=x_card, y=y_card, button_text=cat_cost, name_text=i, custom_image=image)
+    card = BaseCard(x=x_card, y=y_card, cost=cat_cost, name_text=i, custom_image=image)
     cards.append(card)
 
 
@@ -162,10 +170,15 @@ while running:
     sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
     change_size_sprites(all_sprites, camera)
 
-    enem_move(enemies_group, level_map, camera.scale, king)
+    money_kills = enem_move(enemies_group, level_map, camera.scale, king)
+    money_counter.count += money_kills
+
     update_rect(sprites, screen)
     update_rect(enemies_group, screen)
-    cats_attack(cats_group, enemies_group)
+
+    money_cats = cats_attack(cats_group, enemies_group, fps)
+    money_counter.count += money_cats
+
     move_projectiles(projectiles_group)
 
     next_wave_btn.counter += 1 / fps
@@ -199,12 +212,15 @@ while running:
     screen.blit(image3, rect3)
     screen.blit(image4, rect4)
 
-    chose = update_card(cards, screen)
+    chose, money = update_card(cards, screen, money=money_counter.count)
+    money_counter.count = money
     if chose is not None:
         if chose == choosen:
             choosen = None
         else:
             choosen = chose
+
+    money_counter.draw(screen)
 
     king.hp_bar.draw_health_bar()
     screen.blit(king.hp_bar.image, king.hp_bar.rect)

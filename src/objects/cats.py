@@ -267,6 +267,16 @@ class SunFlower(BaseCat):
     def __init__(self, x, y, cat_images):
         cat_type = "sunflower"
         super().__init__(x, y, cat_type, cat_images)
+        self.counter = 0
+        self.time_sleep = 3
+        self.coins_get = 25
+
+    def get_money(self):
+        sleep_button = self.counter // self.time_sleep
+        if sleep_button:
+            self.counter = 0
+            return self.coins_get
+        return 0
 
 
 class WaterCat(BaseCat):

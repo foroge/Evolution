@@ -105,14 +105,15 @@ class BaseEnemy(BaseObject):
             if self.direction == (0, 1):
                 self.change_side_image("side", True)
         if self.hp <= 0:
-            self.give_money()
             self.kill()
+            return self.money
         else:
             if level_map[now_coords[0]][now_coords[1]] == "@":
                 king.hp -= 1
                 self.kill()
             else:
                 self.go()
+        return 0
 
     def poison_damaging(self):
         if self.poisoned:
@@ -124,5 +125,3 @@ class BaseEnemy(BaseObject):
                 self.poison_time_rest -= 1 / fps
                 self.hp -= self.poison_damage / fps
 
-    def give_money(self):
-        ...  # Выдать игроку денег, их количество в переменной self.money
