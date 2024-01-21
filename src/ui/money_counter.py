@@ -3,7 +3,7 @@ import pygame
 from src.load.load_images import load_image
 
 
-class MoneyCouner:
+class MoneyCounter:
     def __init__(self, x, y, width, height):
         self.x = x
         self.y = y

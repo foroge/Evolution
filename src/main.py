@@ -28,8 +28,8 @@ import src.extra_utils as extra
 from src.tests.create_map import start_creating
 from src.load.card_cats import BaseCard
 
-from src.ui.pause_menu import PauseMenu, MoneyCouner
-
+from src.ui.pause_menu import PauseMenu
+from src.ui.money_counter import MoneyCounter
 
 pygame.init()
 pygame.font.init()
@@ -65,7 +65,7 @@ money_counter_height = 40
 money_counter_width = 50
 money_counter_x = king.hp_bar.rect.right - (money_counter_width / 2)
 money_counter_y = king.hp_bar.rect.top + king.hp_bar.rect.height + 18
-money_counter = MoneyCouner(x=money_counter_x, y=money_counter_y, width=money_counter_width, height=money_counter_height)
+money_counter = MoneyCounter(x=money_counter_x, y=money_counter_y, width=money_counter_width, height=money_counter_height)
 
 screen.fill((255, 255, 255))
 pygame.display.set_caption("Feline Fortress")
