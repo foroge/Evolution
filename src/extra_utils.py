@@ -34,8 +34,8 @@ def update_card(cards, screen):
         chose = card.button_choose.update()
         if chose:
             choosen = chose
-    for card in cards:
-        card.all_draw(screen)
+    # for card in cards:
+    #     card.all_draw(screen)
     return choosen
 
 

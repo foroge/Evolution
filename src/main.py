@@ -24,6 +24,8 @@ import src.extra_utils as extra
 from src.tests.create_map import start_creating
 from src.load.card_cats import BaseCard
 
+from src.ui.pause_menu import PauseMenu
+
 
 pygame.init()
 pygame.font.init()
@@ -97,10 +99,16 @@ all_sprites.add(enemies_group)
 all_sprites.add(cats_group)
 all_sprites.add(projectiles_group)
 
+darken_surface = pygame.Surface((full_w, full_h))
+darken_surface.set_alpha(128)
+darken_surface.fill((0, 0, 0))
+pause_menu = PauseMenu(full_w // 2, full_h // 2)
+
 sprites_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
 set_def_position(all_sprites, x + 20, y + 20, size_map)
 running = True
 running_lose = False
+paused = False
 fps = 60
 clock = pygame.time.Clock()
 speed = 15 / (2 - camera.scale)
@@ -123,7 +131,7 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                running = False
+                paused = not paused
             if event.key == pygame.K_a:
                 a_pressed = True
             if event.key == pygame.K_d:
@@ -159,35 +167,38 @@ while running:
     if s_pressed:
         camera.dy -= speed
 
-    sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
-    change_size_sprites(all_sprites, camera)
+    if not paused:
+        sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
+        change_size_sprites(all_sprites, camera)
 
-    enem_move(enemies_group, level_map, camera.scale, king)
-    update_rect(sprites, screen)
-    update_rect(enemies_group, screen)
-    cats_attack(cats_group, enemies_group)
-    move_projectiles(projectiles_group)
+        enem_move(enemies_group, level_map, camera.scale, king)
+        update_rect(sprites, screen)
+        update_rect(enemies_group, screen)
+        cats_attack(cats_group, enemies_group)
+        move_projectiles(projectiles_group)
 
-    next_wave_btn.counter += 1 / fps
-    spawner.check_to_spawn(new_wave=next_wave_btn.update())
+        next_wave_btn.counter += 1 / fps
+        spawner.check_to_spawn(new_wave=next_wave_btn.update())
 
-    tray = check_cat_placed(sprites[0], choosen, x)
-    if tray:
-        spawn_cat(choosen, "tray", tray, tile_images, cat_images, projectiles_images, sprites[1], sprites[4],
-                  all_sprites)
-        for c in cards:
-            if c.name.text == choosen:
-                c.counter -= 1
-                break
-        choosen = None
+        tray = check_cat_placed(sprites[0], choosen, x)
+        if tray:
+            spawn_cat(choosen, "tray", tray, tile_images, cat_images, projectiles_images, sprites[1], sprites[4],
+                      all_sprites)
+            for c in cards:
+                if c.name.text == choosen:
+                    c.counter -= 1
+                    break
+            choosen = None
 
-    king.hp_bar.update(king.hp / king.max_hp)
-    king.hp_bar.update_wave_text(spawner.wave)
-    king.hp_bar.update_time_before_wave(round(spawner.time_before_wave))
+        king.hp_bar.update(king.hp / king.max_hp)
+        king.hp_bar.update_wave_text(spawner.wave)
+        king.hp_bar.update_time_before_wave(round(spawner.time_before_wave))
 
-    if king.hp == 0:
-        running = False
-        running_lose = True
+        if king.hp == 0:
+            running = False
+            running_lose = True
+    else:
+        paused, running = pause_menu.update()
 
     for i in sprites:
         i.draw(screen)
@@ -198,14 +209,15 @@ while running:
     screen.blit(image2, rect2)
     screen.blit(image3, rect3)
     screen.blit(image4, rect4)
-
-    chose = update_card(cards, screen)
-    if chose is not None:
-        if chose == choosen:
-            choosen = None
-        else:
-            choosen = chose
-
+    if not paused:
+        chose = update_card(cards, screen)
+        if chose is not None:
+            if chose == choosen:
+                choosen = None
+            else:
+                choosen = chose
+    for card in cards:
+        card.all_draw(screen)
     king.hp_bar.draw_health_bar()
     screen.blit(king.hp_bar.image, king.hp_bar.rect)
     screen.blit(king.hp_bar.text_hp_string_rendered, king.hp_bar.text_hp_rect)
@@ -216,8 +228,11 @@ while running:
     hor_borders.draw(screen)
     next_wave_btn.draw(screen)
 
-    if choosen:
+    if choosen and not paused:
         draw_neer_cursor(screen, cat_images[choosen])
+    if paused:
+        screen.blit(darken_surface, (0, 0))
+        pause_menu.draw(screen)
 
     pygame.display.update()
     clock.tick(fps)
