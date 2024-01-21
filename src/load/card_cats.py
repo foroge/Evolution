@@ -29,7 +29,7 @@ class BaseCard:
             self.outer_instance = outer_instance
             self.font = pygame.font.Font(None, 20)
             self.text = text
-            self.rendered_text = self.font.render(self.text, True, (0, 0, 0))
+            self.rendered_text = self.font.render(self.text.replace("_", " "), True, (0, 0, 0))
             x = self.outer_instance.x
             y = self.outer_instance.y
             self.rect = self.rendered_text.get_rect(center=(x + 40, y))

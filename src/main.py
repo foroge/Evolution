@@ -2,6 +2,9 @@ import pygame
 import os
 import sys
 
+from threading import Thread
+import time
+
 from load.load_images import load_image
 from load.load_levels import generate_level, load_level
 
@@ -19,12 +22,13 @@ from objects.tiles import init_image
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
 from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
 from src.extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
+from src.extra_utils import AnimatedSprite, loading_screen
 import src.extra_utils as extra
 
 from src.tests.create_map import start_creating
 from src.load.card_cats import BaseCard
 
-from ui.money_counter import MoneyCouner
+from src.ui.pause_menu import PauseMenu, MoneyCouner
 
 
 pygame.init()
@@ -34,6 +38,12 @@ info = pygame.display.Info()
 full_w = info.current_w
 full_h = info.current_h
 screen = pygame.display.set_mode((full_w, full_h))
+
+run_loading_screen = [True]
+loading_screen_sprite = AnimatedSprite(load_image("../data/other_images/chipi_chipi_spritesheet.png"), 6, 6,
+                                       full_w // 2, full_h // 2)
+t1 = Thread(target=loading_screen, args=(loading_screen_sprite, run_loading_screen, screen), daemon=True)
+t1.start()
 
 col_cell = 32
 
@@ -88,7 +98,8 @@ projectiles_images = init_projectiles()
 
 cards = []
 x_card, y_card = -80, 140
-cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
+# cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
+cat_names = ["wizard", "electronic", "sunflower"]
 for i in cat_names:
     image = cat_images[i]
     x_card += 100
@@ -105,10 +116,16 @@ all_sprites.add(enemies_group)
 all_sprites.add(cats_group)
 all_sprites.add(projectiles_group)
 
+darken_surface = pygame.Surface((full_w, full_h))
+darken_surface.set_alpha(128)
+darken_surface.fill((0, 0, 0))
+pause_menu = PauseMenu(full_w // 2, full_h // 2)
+
 sprites_move(all_sprites, x + 20, y + 20, hor_borders, ver_borders)
 set_def_position(all_sprites, x + 20, y + 20, size_map)
 running = True
 running_lose = False
+paused = False
 fps = 60
 clock = pygame.time.Clock()
 speed = 15 / (2 - camera.scale)
@@ -119,6 +136,9 @@ a_pressed = False
 s_pressed = False
 d_pressed = False
 x_mouse = y_mouse = 0
+
+time.sleep(2.39)
+run_loading_screen[0] = False
 
 while running:
     from src.objects.enemies import enemies_group
@@ -131,7 +151,7 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                running = False
+                paused = not paused
             if event.key == pygame.K_a:
                 a_pressed = True
             if event.key == pygame.K_d:
@@ -167,40 +187,43 @@ while running:
     if s_pressed:
         camera.dy -= speed
 
-    sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
-    change_size_sprites(all_sprites, camera)
+    if not paused:
+        sprites_move(all_sprites, camera.dx, camera.dy, hor_borders, ver_borders)
+        change_size_sprites(all_sprites, camera)
 
-    money_kills = enem_move(enemies_group, level_map, camera.scale, king)
-    money_counter.count += money_kills
+        move_projectiles(projectiles_group)
+        money_kills = enem_move(enemies_group, level_map, camera.scale, king)
+        money_counter.count += money_kills
 
-    update_rect(sprites, screen)
-    update_rect(enemies_group, screen)
+        update_rect(sprites, screen)
+        update_rect(enemies_group, screen)
 
-    money_cats = cats_attack(cats_group, enemies_group, fps)
-    money_counter.count += money_cats
+        money_cats = cats_attack(cats_group, enemies_group, fps)
+        money_counter.count += money_cats
 
-    move_projectiles(projectiles_group)
 
-    next_wave_btn.counter += 1 / fps
-    spawner.check_to_spawn(new_wave=next_wave_btn.update())
+        next_wave_btn.counter += 1 / fps
+        spawner.check_to_spawn(new_wave=next_wave_btn.update())
 
-    tray = check_cat_placed(sprites[0], choosen, x)
-    if tray:
-        spawn_cat(choosen, "tray", tray, tile_images, cat_images, projectiles_images, sprites[1], sprites[4],
-                  all_sprites)
-        for c in cards:
-            if c.name.text == choosen:
-                c.counter -= 1
-                break
-        choosen = None
+        tray = check_cat_placed(sprites[0], choosen, x)
+        if tray:
+            spawn_cat(choosen, "tray", tray, tile_images, cat_images, projectiles_images, sprites[1], sprites[4],
+                      all_sprites)
+            for c in cards:
+                if c.name.text == choosen:
+                    c.counter -= 1
+                    break
+            choosen = None
 
-    king.hp_bar.update(king.hp / king.max_hp)
-    king.hp_bar.update_wave_text(spawner.wave)
-    king.hp_bar.update_time_before_wave(round(spawner.time_before_wave))
+        king.hp_bar.update(king.hp / king.max_hp)
+        king.hp_bar.update_wave_text(spawner.wave)
+        king.hp_bar.update_time_before_wave(round(spawner.time_before_wave))
 
-    if king.hp == 0:
-        running = False
-        running_lose = True
+        if king.hp == 0:
+            running = False
+            running_lose = True
+    else:
+        paused, running = pause_menu.update()
 
     for i in sprites:
         i.draw(screen)
@@ -212,16 +235,19 @@ while running:
     screen.blit(image3, rect3)
     screen.blit(image4, rect4)
 
-    chose, money = update_card(cards, screen, money=money_counter.count)
-    money_counter.count = money
-    if chose is not None:
-        if chose == choosen:
-            choosen = None
-        else:
-            choosen = chose
+    if not paused:
+        chose, money = update_card(cards, screen, money=money_counter.count)
+        money_counter.count = money
+        if chose is not None:
+            if chose == choosen:
+                choosen = None
+            else:
+                choosen = chose
 
-    money_counter.draw(screen)
+        money_counter.draw(screen)
 
+    for card in cards:
+        card.all_draw(screen)
     king.hp_bar.draw_health_bar()
     screen.blit(king.hp_bar.image, king.hp_bar.rect)
     screen.blit(king.hp_bar.text_hp_string_rendered, king.hp_bar.text_hp_rect)
@@ -232,8 +258,11 @@ while running:
     hor_borders.draw(screen)
     next_wave_btn.draw(screen)
 
-    if choosen:
+    if choosen and not paused:
         draw_neer_cursor(screen, cat_images[choosen])
+    if paused:
+        screen.blit(darken_surface, (0, 0))
+        pause_menu.draw(screen)
 
     pygame.display.update()
     clock.tick(fps)
