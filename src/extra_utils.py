@@ -95,10 +95,11 @@ def cats_attack(sprites, enemy_group, fps):
     for sprite in sprites:
         if type(sprite).__name__ == "SunFlower":
             sprite.counter += 1 / fps
-            money = sprite.get_money()
+            money += sprite.get_money()
         elif type(sprite).__name__ != "King":
             sprite.try_attack(enemy_group)
     return money
+
 
 def move_projectiles(sprites):
     for sprite in sprites:
