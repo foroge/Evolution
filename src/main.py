@@ -48,7 +48,8 @@ wave_width = 90
 wave_height = 40
 wave_btn_x = king.hp_bar.rect.right - wave_width
 wave_btn_y = king.hp_bar.rect.top + king.hp_bar.rect.height + 10
-next_wave_btn = WaveButton(x=wave_btn_x, y=wave_btn_y, width=wave_width, height=wave_height, text="Next wave", color="white", time_sleep=3)
+next_wave_btn = WaveButton(x=wave_btn_x, y=wave_btn_y, width=wave_width, height=wave_height,
+                           text="Next wave", color="white", time_sleep=3)
 
 screen.fill((255, 255, 255))
 pygame.display.set_caption("Feline Fortress")
@@ -70,14 +71,13 @@ image3, rect3 = create_fon_rect(coord=(x, y + size_map + 35), size=(size_map + 3
 image4, rect4 = create_fon_rect(coord=(x + size_map + 35, 0), size=(x, full_w), color=(250, 222, 154))
 
 cat_images = init_cats()
-cats_images = init_cats()
 tile_images = init_image()
 
 projectiles_images = init_projectiles()
 
-# mushroom = create_cat("mushroom", 15, 15, cats_images, projectiles_images)
-# wizard = create_cat(name="wizard", x=16, y=16, cat_images=cats_images, projectiles_images=projectiles_images)
-# elctro = create_cat("electronic", 17, 17, cats_images, projectiles_images)
+# mushroom = create_cat("mushroom", 15, 15, cat_images, projectiles_images)
+# wizard = create_cat(name="wizard", x=16, y=16, cat_images=cat_images, projectiles_images=projectiles_images)
+# elctro = create_cat("electronic", 17, 17, cat_images, projectiles_images)
 
 
 cards = []
