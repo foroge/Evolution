@@ -2,6 +2,9 @@ import pygame
 import os
 import sys
 
+from threading import Thread
+import time
+
 from load.load_images import load_image
 from load.load_levels import generate_level, load_level
 
@@ -19,6 +22,7 @@ from objects.tiles import init_image
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
 from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
 from src.extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
+from src.extra_utils import AnimatedSprite, loading_screen
 import src.extra_utils as extra
 
 from src.tests.create_map import start_creating
@@ -34,6 +38,12 @@ info = pygame.display.Info()
 full_w = info.current_w
 full_h = info.current_h
 screen = pygame.display.set_mode((full_w, full_h))
+
+run_loading_screen = [True]
+loading_screen_sprite = AnimatedSprite(load_image("../data/other_images/chipi_chipi_spritesheet.png"), 6, 6,
+                                       full_w // 2, full_h // 2)
+t1 = Thread(target=loading_screen, args=(loading_screen_sprite, run_loading_screen, screen), daemon=True)
+t1.start()
 
 col_cell = 32
 
@@ -82,7 +92,8 @@ projectiles_images = init_projectiles()
 
 cards = []
 x_card, y_card = -80, 140
-cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
+# cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
+cat_names = ["wizard", "electronic"]
 for i in cat_names:
     image = cat_images[i]
     x_card += 100
@@ -119,6 +130,9 @@ a_pressed = False
 s_pressed = False
 d_pressed = False
 x_mouse = y_mouse = 0
+
+time.sleep(2.39)
+run_loading_screen[0] = False
 
 while running:
     from src.objects.enemies import enemies_group

@@ -5,6 +5,20 @@ horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 
 
+def loading_screen(sprite, running, screen):
+    clock = pygame.time.Clock()
+    fps = 36 / 2.39
+    while running[0]:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running[0] = False
+        screen.fill((40, 40, 40))
+        sprite.update()
+        sprite.draw(screen)
+        pygame.display.update()
+        clock.tick(fps)
+
+
 def spawn_cat(choosen, tile_type, tray, tile_images, cat_images, projectiles_images, back_tile_group, front_tile_group,
               all_sprites):
     from objects.tiles import BackTile, FrontTile
@@ -234,3 +248,28 @@ class WaveButton(Button):
             self.handled = False
             return False
 
+
+class AnimatedSprite(pygame.sprite.Sprite):
+    def __init__(self, sheet, columns, rows, x, y):
+        super().__init__()
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
+        self.rect = self.rect.move(x - self.rect[2] // 2, y - self.rect[3] // 2)
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update(self):
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
