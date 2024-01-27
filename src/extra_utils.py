@@ -5,6 +5,13 @@ horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 
 
+def check_cat_clicked(cat_group, x):
+    for cat in cat_group:
+        check = cat.check_clicked(x)
+        if check:
+            return check
+
+
 def loading_screen(sprite, running, screen):
     clock = pygame.time.Clock()
     fps = 36 / 2.39
@@ -31,6 +38,20 @@ def spawn_cat(choosen, tile_type, tray, tile_images, cat_images, projectiles_ima
     f_tile = FrontTile(tile_type, x, y, tile_images, [front_tile_group, all_sprites])
     f_tile.set_default_value(tray.default_x, tray.default_y, tray.size_map)
     tray.kill()
+
+
+def destroy_cat(cat, back, front, tile_images, tiles_group, all_sprites):
+    from objects.tiles import TrayTile
+    pos_x = cat.pos_x
+    pos_y = cat.pos_y
+    for j in [back, front]:
+        for i in j:
+            if i.pos_x == pos_x and i.pos_y == pos_y:
+                i.kill()
+                break
+    tile = TrayTile(pos_x, pos_y, tile_images, [tiles_group, all_sprites])
+    tile.set_default_value(cat.default_x, cat.default_y, cat.size_map)
+    cat.kill()
 
 
 def check_cat_placed(tiles_group, choosen, x):
@@ -226,6 +247,8 @@ class Button(pygame.sprite.Sprite):
         if click and self.rect.collidepoint(mouse_pos):
             if not self.handled:
                 self.handled = True
+                # if self.text == "Upgrade":
+                #     print(self.handled, self.text)
                 return True
             return False
         else:

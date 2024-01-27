@@ -22,7 +22,7 @@ from objects.tiles import init_image
 from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
 from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
 from src.extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
-from src.extra_utils import AnimatedSprite, loading_screen
+from src.extra_utils import AnimatedSprite, loading_screen, check_cat_clicked, destroy_cat
 import src.extra_utils as extra
 
 from src.tests.create_map import start_creating
@@ -30,6 +30,7 @@ from src.load.card_cats import BaseCard
 
 from src.ui.pause_menu import PauseMenu
 from src.ui.money_counter import MoneyCounter
+from src.ui.cat_upgrade_menu import UpgradeMenu
 
 pygame.init()
 pygame.font.init()
@@ -130,6 +131,7 @@ fps = 60
 clock = pygame.time.Clock()
 speed = 15 / (2 - camera.scale)
 choosen = None
+upgrade_menu_called = None
 
 w_pressed = False
 a_pressed = False
@@ -201,7 +203,6 @@ while running:
         money_cats = cats_attack(cats_group, enemies_group, fps)
         money_counter.count += money_cats
 
-
         next_wave_btn.counter += 1 / fps
         spawner.check_to_spawn(new_wave=next_wave_btn.update())
 
@@ -212,8 +213,30 @@ while running:
             for c in cards:
                 if c.name.text == choosen:
                     c.counter -= 1
-                    break
-            choosen = None
+                    if c.counter > 0:
+                        break
+                    else:
+                        choosen = None
+                        break
+        check = check_cat_clicked(cats_group, x)
+        if check is not None:
+            if upgrade_menu_called is not None and upgrade_menu_called == check:
+                upgrade_menu_called = None
+                upgrade_menu = None
+            else:
+                upgrade_menu_called = check
+                upgrade_menu = UpgradeMenu(10, 500, upgrade_menu_called, cat_images)
+        if upgrade_menu_called:
+            # upgrade_menu = UpgradeMenu(10, 500, upgrade_menu_called, cat_images)
+            upgrade_menu_updated = upgrade_menu.update(money_counter.count)
+            if upgrade_menu_updated[0]:
+                if money_counter.count >= upgrade_menu_called.upgrade_cost:
+                    money_counter.count -= upgrade_menu_called.upgrade_cost
+                    upgrade_menu_called.upgrade()
+            if upgrade_menu_updated[1]:
+                destroy_cat(upgrade_menu_called, sprites[1], sprites[4], tile_images, sprites[0], all_sprites)
+                upgrade_menu_called = None
+                upgrade_menu = None
 
         king.hp_bar.update(king.hp / king.max_hp)
         king.hp_bar.update_wave_text(spawner.wave)
@@ -230,6 +253,10 @@ while running:
     enemies_group.draw(screen)
     projectiles_group.draw(screen)
 
+    if upgrade_menu_called:
+        if type(upgrade_menu_called).__name__ != "SunFlower":
+            pygame.draw.circle(screen, "white", upgrade_menu_called.rect[:2], upgrade_menu_called.radius, 2)
+
     screen.blit(image1, rect1)
     screen.blit(image2, rect2)
     screen.blit(image3, rect3)
@@ -244,7 +271,7 @@ while running:
             else:
                 choosen = chose
 
-        money_counter.draw(screen)
+    money_counter.draw(screen)
 
     for card in cards:
         card.all_draw(screen)
@@ -253,6 +280,9 @@ while running:
     screen.blit(king.hp_bar.text_hp_string_rendered, king.hp_bar.text_hp_rect)
     screen.blit(king.hp_bar.text_wave_string_rendered, king.hp_bar.text_wave_rect)
     screen.blit(king.hp_bar.text_time_before_wave_string_rendered, king.hp_bar.text_time_before_wave_rect)
+
+    if upgrade_menu_called:
+        upgrade_menu.draw(screen)
 
     ver_borders.draw(screen)
     hor_borders.draw(screen)

@@ -10,8 +10,10 @@ class PauseMenu:
         self.rect = self.image.get_rect(center=(x, y))
         self.pause_text = self.PauseText(self)
         button_size = (150, 50)
-        self.resume_button = Button(self.x - button_size[0] // 2, self.y - button_size[1] // 2, *button_size, "Resume game", "white")
-        self.exit_button = Button(self.x - button_size[0] // 2, self.y - button_size[1] // 2 + 75, *button_size, "Exit game", "white")
+        self.resume_button = Button(self.x - button_size[0] // 2, self.y - button_size[1] // 2, *button_size,
+                                    "Resume game", "white")
+        self.exit_button = Button(self.x - button_size[0] // 2, self.y - button_size[1] // 2 + 75, *button_size,
+                                  "Exit game", "white")
 
     class PauseText:
         def __init__(self, outer_instance):

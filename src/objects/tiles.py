@@ -59,11 +59,13 @@ class BaseObject(pygame.sprite.Sprite):
         col_h = []
         for h in horizontal_borders:
             col_h.append(self.image.get_rect().move(self.image.get_rect()[2] * self.pos_x + self.default_x,
-                                                    self.image.get_rect()[3] * self.pos_y + self.default_y).colliderect(h.rect))
+                                                    self.image.get_rect()[3] * self.pos_y +
+                                                    self.default_y).colliderect(h.rect))
         col_v = []
         for v in vertical_borders:
             col_v.append(self.image.get_rect().move(self.image.get_rect()[2] * self.pos_x + self.default_x,
-                                                    self.image.get_rect()[3] * self.pos_y + self.default_y).colliderect(v.rect))
+                                                    self.image.get_rect()[3] * self.pos_y +
+                                                    self.default_y).colliderect(v.rect))
         return col_h, col_v
 
     def self_draw(self, screen):
@@ -113,9 +115,12 @@ class FrontTile(BaseObject):
 
 
 class TrayTile(BaseObject):
-    def __init__(self, pos_x, pos_y, tile_images):
+    def __init__(self, pos_x, pos_y, tile_images, groups=None):
         self.image = tile_images["tray_0"]
-        super().__init__(pos_x, pos_y, self.image, tiles_group, all_sprites)
+        if groups:
+            super().__init__(pos_x, pos_y, self.image, *groups)
+        else:
+            super().__init__(pos_x, pos_y, self.image, tiles_group, all_sprites)
         self.handled = False
 
     def check_clicked(self, choosen, x):

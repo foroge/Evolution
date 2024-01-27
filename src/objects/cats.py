@@ -35,6 +35,20 @@ class BaseCat(BaseObject):
     def __init__(self, pos_x, pos_y, cat_type, cat_images):
         self.image = cat_images[cat_type]
         super().__init__(pos_x, pos_y, self.image, cats_group, all_sprites)
+        self.handled = False
+
+    def check_clicked(self, x):
+        mouse_pos = pygame.mouse.get_pos()
+        if mouse_pos[0] > x:
+            click = pygame.mouse.get_pressed()[0]
+            if click and self.rect.collidepoint(mouse_pos):
+                if not self.handled:
+                    self.handled = True
+                    return self
+                return None
+            else:
+                self.handled = False
+                return None
 
 
 class BaseProjectile(BaseObject):
@@ -44,14 +58,14 @@ class BaseProjectile(BaseObject):
 
 class Doctor(BaseCat):
     def __init__(self, x, y, cat_images):
-        cat_type = "doctor"
-        super().__init__(x, y, cat_type, cat_images)
+        self.cat_type = "doctor"
+        super().__init__(x, y, self.cat_type, cat_images)
 
 
 class Egg(BaseCat):
     def __init__(self, x, y, cat_images):
-        cat_type = "egg"
-        super().__init__(x, y, cat_type, cat_images)
+        self.cat_type = "egg"
+        super().__init__(x, y, self.cat_type, cat_images)
 
 
 class Mushroom(BaseCat):
@@ -109,9 +123,9 @@ class Mushroom(BaseCat):
             screen.blit(self.image, (self.rect.x, self.rect.y))
 
     def __init__(self, x, y, cat_images, projectiles_images):
-        cat_type = "mushroom"
+        self.cat_type = "mushroom"
         super().__init__(x, y, cat_type, cat_images)
-        self.radius = 24
+        self.base_radius = self.radius = 24
         self.cooldown = 5
         self.rest_of_cooldown = 0
         self.projectile_image = projectiles_images["poison"]
@@ -158,14 +172,15 @@ class Electronic(BaseCat):
             self.kill()
 
     def __init__(self, x, y, cat_images, projectiles_images):
-        cat_type = "electronic"
-        super().__init__(x, y, cat_type, cat_images)
-        self.radius = 256
+        self.cat_type = "electronic"
+        super().__init__(x, y, self.cat_type, cat_images)
+        self.base_radius = self.radius = 256
         self.cooldown = 2
         self.rest_of_cooldown = 0
         self.projectile_image = projectiles_images["lightning"]
         self.waiting = False
         self.damage = 25
+        self.upgrade_cost = 100
 
     def try_attack(self, enemy_group):
         if self.rest_of_cooldown <= 0:
@@ -192,11 +207,17 @@ class Electronic(BaseCat):
         else:
             self.waiting = True
 
+    def upgrade(self):
+        self.cooldown = round(0.85 * self.cooldown)
+        self.damage = round(1.15 * self.damage)
+        self.radius = round(1.15 * self.radius)
+        self.upgrade_cost = round(1.5 * self.upgrade_cost)
+
 
 class Warrior(BaseCat):
     def __init__(self, x, y, cat_images):
-        cat_type = "warrior"
-        super().__init__(x, y, cat_type, cat_images)
+        self.cat_type = "warrior"
+        super().__init__(x, y, self.cat_type, cat_images)
 
 
 class Wizard(BaseCat):
@@ -228,14 +249,15 @@ class Wizard(BaseCat):
                 self.kill()
 
     def __init__(self, x, y, cat_images, projectiles_images):
-        cat_type = "wizard"
-        super().__init__(x, y, cat_type, cat_images)
-        self.radius = 128
+        self.cat_type = "wizard"
+        super().__init__(x, y, self.cat_type, cat_images)
+        self.base_radius = self.radius = 128
         self.cooldown = 1
         self.rest_of_cooldown = 0
         self.projectile_image = projectiles_images["magic"]
         self.waiting = False
         self.damage = 15
+        self.upgrade_cost = 50
 
     def try_attack(self, enemy_group):
         if self.rest_of_cooldown <= 0:
@@ -262,14 +284,21 @@ class Wizard(BaseCat):
         else:
             self.waiting = True
 
+    def upgrade(self):
+        self.cooldown = round(0.85 * self.cooldown)
+        self.damage = round(1.15 * self.damage)
+        self.radius = round(1.15 * self.radius)
+        self.upgrade_cost = round(1.5 * self.upgrade_cost)
+
 
 class SunFlower(BaseCat):
     def __init__(self, x, y, cat_images):
-        cat_type = "sunflower"
-        super().__init__(x, y, cat_type, cat_images)
+        self.cat_type = "sunflower"
+        super().__init__(x, y, self.cat_type, cat_images)
         self.counter = 0
         self.time_sleep = 3
         self.coins_get = 25
+        self.upgrade_cost = 50
 
     def get_money(self):
         sleep_button = self.counter // self.time_sleep
@@ -278,11 +307,16 @@ class SunFlower(BaseCat):
             return self.coins_get
         return 0
 
+    def upgrade(self):
+        self.time_sleep = round(0.85 * self.time_sleep, 2)
+        self.coins_get = round(1.15 * self.coins_get)
+        self.upgrade_cost = round(1.5 * self.upgrade_cost)
+
 
 class WaterCat(BaseCat):
     def __init__(self, x, y, cat_images):
-        cat_type = "water_cat"
-        super().__init__(x, y, cat_type, cat_images)
+        self.cat_type = "water_cat"
+        super().__init__(x, y, self.cat_type, cat_images)
 
 
 def create_cat(name, x, y, cat_images, projectiles_images=None, hp=None):
