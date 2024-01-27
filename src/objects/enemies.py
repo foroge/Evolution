@@ -1,7 +1,7 @@
 import pygame
 import random
-from src.load.load_images import load_image
-from src.objects.tiles import BaseObject, all_sprites
+from load.load_images import load_image
+from objects.tiles import BaseObject, all_sprites
 
 enemies_group = pygame.sprite.Group()
 fps = 60

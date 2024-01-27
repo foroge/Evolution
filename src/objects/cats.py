@@ -1,6 +1,6 @@
 import pygame
-from src.load.load_images import load_image
-from src.objects.tiles import BaseObject, all_sprites
+from load.load_images import load_image
+from objects.tiles import BaseObject, all_sprites
 
 cats_group = pygame.sprite.Group()
 projectiles_group = pygame.sprite.Group()
@@ -291,7 +291,7 @@ def create_cat(name, x, y, cat_images, projectiles_images=None, hp=None):
     elif name == "egg":
         return Egg(x, y, cat_images)
     elif name == "king":
-        from src.objects.king import King
+        from objects.king import King
         return King(x, y, cat_images, hp)
     elif name == "mushroom":
         return Mushroom(x, y, cat_images, projectiles_images)

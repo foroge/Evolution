@@ -19,17 +19,17 @@ from objects.cats import init_cats, init_projectiles, create_cat, cats_group, pr
 from objects.enemies import init_enemies_images, BaseEnemy, enemies_group
 from objects.tiles import init_image
 
-from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
-from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
-from src.extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
-from src.extra_utils import AnimatedSprite, loading_screen
-import src.extra_utils as extra
+from extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
+from extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
+from extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
+from extra_utils import AnimatedSprite, loading_screen
+import extra_utils as extra
 
-from src.tests.create_map import start_creating
-from src.load.card_cats import BaseCard
+from tests.create_map import start_creating
+from load.card_cats import BaseCard
 
-from src.ui.pause_menu import PauseMenu
-from src.ui.money_counter import MoneyCounter
+from ui.pause_menu import PauseMenu
+from ui.money_counter import MoneyCounter
 
 pygame.init()
 pygame.font.init()
@@ -65,7 +65,8 @@ money_counter_height = 40
 money_counter_width = 50
 money_counter_x = king.hp_bar.rect.right - (money_counter_width / 2)
 money_counter_y = king.hp_bar.rect.top + king.hp_bar.rect.height + 18
-money_counter = MoneyCounter(x=money_counter_x, y=money_counter_y, width=money_counter_width, height=money_counter_height)
+money_counter = MoneyCounter(x=money_counter_x, y=money_counter_y, width=money_counter_width,
+                             height=money_counter_height)
 
 screen.fill((255, 255, 255))
 pygame.display.set_caption("Feline Fortress")
@@ -106,10 +107,9 @@ for i in cat_names:
     if x_card + 64 > x:
         x_card = 20
         y_card += 181
-    cat_cost = get_json("../data/characteristics.json")[1]["cats_cost"][i]
+    cat_cost = get_json("characteristics.json")[1]["cats_cost"][i]
     card = BaseCard(x=x_card, y=y_card, cost=cat_cost, name_text=i, custom_image=image)
     cards.append(card)
-
 
 # enemies_group = obj_enemies.enemies_group
 all_sprites.add(enemies_group)
@@ -141,7 +141,8 @@ time.sleep(2.39)
 run_loading_screen[0] = False
 
 while running:
-    from src.objects.enemies import enemies_group
+    from objects.enemies import enemies_group
+
     all_sprites.add(enemies_group)
 
     camera.dx = camera.dy = 0
@@ -200,7 +201,6 @@ while running:
 
         money_cats = cats_attack(cats_group, enemies_group, fps)
         money_counter.count += money_cats
-
 
         next_wave_btn.counter += 1 / fps
         spawner.check_to_spawn(new_wave=next_wave_btn.update())

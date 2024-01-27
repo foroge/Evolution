@@ -5,12 +5,12 @@ import pygame
 import sys
 import os
 from random import randint, choice
-import src.objects.tiles
-from src.objects.tiles import BaseTile, FrontTile, BackTile, GrassTile, TrayTile, init_image
-import src.objects.cats
-from src.objects.cats import create_cat, init_cats, init_projectiles
-from src.objects.spawner import Spawner
-from src.extra_utils import get_json
+import objects.tiles
+from objects.tiles import BaseTile, FrontTile, BackTile, GrassTile, TrayTile, init_image
+import objects.cats
+from objects.cats import create_cat, init_cats, init_projectiles
+from objects.spawner import Spawner
+from extra_utils import get_json
 
 
 def load_level(filename):
@@ -56,6 +56,6 @@ def generate_level(level):
             elif level[y][x] == '@':
                 block1 = BaseTile("path", x, y, tile_images)
                 block2 = BackTile("tray", x, y, tile_images)
-                king = create_cat("king", x, y, cat_images, hp=get_json("../data/characteristics.json")[0]["king_hp"])
+                king = create_cat("king", x, y, cat_images, hp=get_json("characteristics.json")[0]["king_hp"])
                 block3 = FrontTile("tray", x, y, tile_images)
-    return king, spawner, x, y, src.objects.tiles.group_list, src.objects.cats.cats_group, src.objects.tiles.all_sprites
+    return king, spawner, x, y, objects.tiles.group_list, objects.cats.cats_group, objects.tiles.all_sprites
