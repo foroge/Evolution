@@ -1,6 +1,6 @@
 import pygame
 
-from src.load.load_images import load_image
+from load.load_images import load_image
 
 
 class MoneyCounter:

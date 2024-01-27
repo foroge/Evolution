@@ -1,6 +1,6 @@
 import pygame
-from src.objects.cats import BaseCat
-from src.objects.tiles import all_sprites
+from objects.cats import BaseCat
+from objects.tiles import all_sprites
 
 
 class HealthBar(pygame.sprite.Sprite):

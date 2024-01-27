@@ -1,5 +1,8 @@
 import pygame
 import json
+import os
+import sys
+from pathlib import Path
 
 horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
@@ -181,7 +184,10 @@ def create_fon_rect(coord=(0, 0), size=(0, 0), color=(0, 0, 0)):
 
 
 def get_json(filename):
-    with open(filename) as file:
+    # sys.argv[0] возвращает путь к выполняемому скрипту
+    scr_path = "\\".join(sys.argv[0].split("\\")[:-2])
+    path = os.path.join(scr_path, "data", filename)
+    with open(path) as file:
         data = json.load(file)
     return data
 

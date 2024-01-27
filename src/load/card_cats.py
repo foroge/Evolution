@@ -1,6 +1,6 @@
 import pygame
 from pygame.sprite import Sprite
-from src.load.load_images import load_image
+from load.load_images import load_image
 
 card_gr = pygame.sprite.Group()
 

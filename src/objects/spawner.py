@@ -2,9 +2,9 @@ import pygame
 import random
 import time
 from threading import Thread
-from src.load.load_images import load_image
-from src.objects.tiles import FrontTile, all_sprites, init_image
-from src.objects.enemies import BaseEnemy, init_enemies_images, enemies_group
+from load.load_images import load_image
+from objects.tiles import FrontTile, all_sprites, init_image
+from objects.enemies import BaseEnemy, init_enemies_images, enemies_group
 
 
 fps = 60

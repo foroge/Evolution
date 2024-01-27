@@ -1,6 +1,6 @@
 import pygame
 import os
-from src.load.load_images import load_image
+from load.load_images import load_image
 
 
 back_tile_group = pygame.sprite.Group()
