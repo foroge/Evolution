@@ -46,7 +46,7 @@ class UpgradeMenu:
             if name_obj in ["Wizard", "Electronic"]:
                 text.append(f"Damage: {cat.damage}")
                 text.append(f"Firing rate: {cat.cooldown}")
-                text.append(f"Radius: {round(cat.radius / 32, 2)}")
+                text.append(f"Radius: {round(cat.base_radius / 32, 2)}")
             elif name_obj == "SunFlower":
                 text.append(f"Income: {cat.coins_get}")
                 text.append(f"Cooldown: {cat.time_sleep}")

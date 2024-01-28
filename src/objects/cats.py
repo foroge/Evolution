@@ -183,6 +183,7 @@ class Electronic(BaseCat):
         self.upgrade_cost = 100
 
     def try_attack(self, enemy_group):
+        self.radius = self.base_radius / 0.8 * self.scale
         if self.rest_of_cooldown <= 0:
             self.attack(enemy_group)
             if not self.waiting:
@@ -211,6 +212,7 @@ class Electronic(BaseCat):
         self.cooldown = round(0.85 * self.cooldown)
         self.damage = round(1.15 * self.damage)
         self.radius = round(1.15 * self.radius)
+        self.base_radius = round(1.15 * self.base_radius)
         self.upgrade_cost = round(1.5 * self.upgrade_cost)
 
 
@@ -260,6 +262,7 @@ class Wizard(BaseCat):
         self.upgrade_cost = 50
 
     def try_attack(self, enemy_group):
+        self.radius = self.base_radius / 0.8 * self.scale
         if self.rest_of_cooldown <= 0:
             self.attack(enemy_group)
             if not self.waiting:
@@ -287,7 +290,8 @@ class Wizard(BaseCat):
     def upgrade(self):
         self.cooldown = round(0.85 * self.cooldown)
         self.damage = round(1.15 * self.damage)
-        self.radius = round(1.15 * self.radius)
+        # self.radius = round(1.15 * self.radius)
+        self.base_radius = round(1.15 * self.base_radius)
         self.upgrade_cost = round(1.5 * self.upgrade_cost)
 
 

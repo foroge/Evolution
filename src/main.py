@@ -143,7 +143,7 @@ time.sleep(2.39)
 run_loading_screen[0] = False
 
 while running:
-    from src.objects.enemies import enemies_group
+    # from src.objects.enemies import enemies_group
     all_sprites.add(enemies_group)
 
     camera.dx = camera.dy = 0
@@ -255,7 +255,9 @@ while running:
 
     if upgrade_menu_called:
         if type(upgrade_menu_called).__name__ != "SunFlower":
-            pygame.draw.circle(screen, "white", upgrade_menu_called.rect[:2], upgrade_menu_called.radius, 2)
+            pygame.draw.circle(screen, "white", [upgrade_menu_called.rect[0] + upgrade_menu_called.rect[2] // 2,
+                                                 upgrade_menu_called.rect[1] + upgrade_menu_called.rect[3] // 2],
+                               upgrade_menu_called.radius, 2)
 
     screen.blit(image1, rect1)
     screen.blit(image2, rect2)
