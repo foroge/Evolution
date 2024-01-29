@@ -12,7 +12,9 @@ class PauseMenu:
         button_size = (150, 50)
         self.resume_button = Button(self.x - button_size[0] // 2, self.y - button_size[1] // 2, *button_size,
                                     "Resume game", "white")
-        self.exit_button = Button(self.x - button_size[0] // 2, self.y - button_size[1] // 2 + 75, *button_size,
+        self.menu_button = Button(self.x - button_size[0] // 2, self.y - button_size[1] // 2 + 75, *button_size,
+                                  "Back to menu", "white")
+        self.exit_button = Button(self.x - button_size[0] // 2, self.y - button_size[1] // 2 + 150, *button_size,
                                   "Exit game", "white")
 
     class PauseText:
@@ -31,9 +33,11 @@ class PauseMenu:
     def draw(self, screen):
         self.pause_text.draw(screen)
         self.resume_button.draw(screen)
+        self.menu_button.draw(screen)
         self.exit_button.draw(screen)
 
     def update(self):
         res_upd = self.resume_button.update()
+        menu_upd = self.menu_button.update()
         ext_upd = self.exit_button.update()
-        return not res_upd, not ext_upd
+        return not res_upd, menu_upd, not ext_upd
