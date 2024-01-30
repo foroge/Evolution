@@ -1,5 +1,5 @@
 import pygame
-from src.extra_utils import Button
+from extra_utils import Button
 
 
 class UpgradeMenu:

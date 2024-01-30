@@ -19,19 +19,19 @@ from objects.cats import init_cats, init_projectiles, create_cat, cats_group, pr
 from objects.enemies import init_enemies_images, BaseEnemy, enemies_group
 from objects.tiles import init_image
 
-from src.extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
-from src.extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
-from src.extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
-from src.extra_utils import AnimatedSprite, loading_screen, check_cat_clicked, destroy_cat
-import src.extra_utils as extra
+from extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
+from extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
+from extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
+from extra_utils import AnimatedSprite, loading_screen, check_cat_clicked, destroy_cat
+import extra_utils as extra
 
-from src.tests.create_map import start_creating
-from src.load.card_cats import BaseCard
+from tests.create_map import start_creating
+from load.card_cats import BaseCard
 
-from src.ui.pause_menu import PauseMenu
-from src.ui.money_counter import MoneyCounter
-from src.ui.cat_upgrade_menu import UpgradeMenu
-from src.ui.main_menu import MainMenu
+from ui.pause_menu import PauseMenu
+from ui.money_counter import MoneyCounter
+from ui.cat_upgrade_menu import UpgradeMenu
+from ui.main_menu import MainMenu
 
 pygame.init()
 pygame.font.init()
@@ -144,7 +144,7 @@ def game():
     run_loading_screen[0] = False
 
     while running:
-        # from src.objects.enemies import enemies_group
+        # from objects.enemies import enemies_group
         all_sprites.add(enemies_group)
 
         camera.dx = camera.dy = 0
