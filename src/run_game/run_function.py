@@ -139,6 +139,9 @@ def game(screen):
     time.sleep(2.39)
     run_loading_screen[0] = False
 
+    all_money = 0
+    all_kills = 0
+
     while running:
         all_sprites.add(enemies_group)
 
@@ -190,14 +193,17 @@ def game(screen):
             change_size_sprites(all_sprites, camera)
 
             move_projectiles(projectiles_group)
-            money_kills = enem_move(enemies_group, level_map, camera.scale, king)
+            money_kills, kills = enem_move(enemies_group, level_map, camera.scale, king)
             money_counter.count += money_kills
+            all_money += money_kills
+            all_kills += kills
 
             update_rect(sprites, screen)
             update_rect(enemies_group, screen)
 
             money_cats = cats_attack(cats_group, enemies_group, fps)
             money_counter.count += money_cats
+            all_money += money_cats
 
             next_wave_btn.counter += 1 / fps
             spawner.check_to_spawn(new_wave=next_wave_btn.update())
@@ -241,11 +247,12 @@ def game(screen):
                 running = False
                 running_lose = True
         else:
+            statistics = (all_kills, king.hp, all_money, spawner.wave)  # + level
             paused, back_to_menu, running = pause_menu.update()
             if back_to_menu:
-                return 2
+                return 2, statistics
             if not running:
-                return 0
+                return 0, statistics
 
         for i in sprites:
             i.draw(screen)
@@ -299,12 +306,13 @@ def game(screen):
         clock.tick(fps)
 
     while running_lose:
+        statistics = (all_kills, king.hp, all_money, spawner.wave)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return 0
+                return 0, statistics
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    return 0
+                    return 0, statistics
         screen.fill("gray")
         screen.blit(lose_image, lose_image.get_rect(center=screen.get_rect().center))
         pygame.display.update()
@@ -369,11 +377,11 @@ def main_menu(screen):
             if event.type == pygame.QUIT:
                 return 0
         screen.fill((40, 40, 40))
-        new_game_upd, ext_game_upd, stat_menu_upd = menu.update(event_list)
+        new_game_upd, ext_game_upd, stat_menu_upd, user = menu.update(event_list)
         if ext_game_upd:
             return 0
         if new_game_upd:
-            return 1
+            return 1, user
         if stat_menu_upd:
             return 3
         menu.draw(screen)

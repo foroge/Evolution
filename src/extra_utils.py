@@ -123,9 +123,13 @@ def sprites_move(sprites, vx, vy, hor_borders, ver_borders):
 
 def enem_move(sprites, level_map, camera_scale, king):
     count = 0
+    kills = 0
     for sprite in sprites:
-        count += sprite.move(level_map, camera_scale, king)
-    return count
+        money = sprite.move(level_map, camera_scale, king)
+        if money:
+            count += money
+            kills += 1
+    return count, kills
 
 
 def cats_attack(sprites, enemy_group, fps):

@@ -44,4 +44,7 @@ class MainMenu:
         ext_upd = self.exit_button.update()
         stat_upd = self.statistic_button.update()
         self.input_box.update(event_list)
-        return new_game_upd, ext_upd, stat_upd
+        user = self.input_box.text
+        if self.input_box.text == "Username":
+            user = "default"
+        return new_game_upd, ext_upd, stat_upd, user

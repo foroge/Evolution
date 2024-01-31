@@ -15,24 +15,9 @@ class StatisticsMenu:
         self.menu_button = Button(self.full_x - button_size[0] - 10, self.full_y - button_size[1] - 10,
                                   *button_size, "Back to menu", "white")
 
-    class DBViewer:
-        def __init__(self, outer_instance):
-            self.font = pygame.font.Font(None, 72)
-            self.outer_instance = outer_instance
-            self.data = DataBase()
-            self.font = pygame.font.SysFont(None, 30)
-            self.rendered_text = self.font.render(self.text, True, "white")
-            x = self.outer_instance.x
-            y = self.outer_instance.y
-            self.rect = self.rendered_text.get_rect(center=(x, y - 100))
-
-        def draw(self, screen):
-            pass
-
     def draw(self, screen):
         self.menu_button.draw(screen)
 
     def update(self):
-        menu_upd = self.menu_button.update()
-        if menu_upd:
-            return 2
+        stat_upd = self.menu_button.update()
+        return stat_upd
