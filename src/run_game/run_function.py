@@ -22,7 +22,7 @@ from objects.tiles import init_image
 from extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
 from extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
 from extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
-from extra_utils import AnimatedSprite, loading_screen, check_cat_clicked, destroy_cat
+from extra_utils import AnimatedSprite, loading_screen, check_cat_clicked, destroy_cat, kill_all_sprites
 import extra_utils as extra
 
 from tests.create_map import start_creating
@@ -149,6 +149,7 @@ def game(screen):
         screen.fill((75, 105, 47))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group])
                 return 0
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -227,7 +228,7 @@ def game(screen):
                     upgrade_menu = None
                 else:
                     upgrade_menu_called = check
-                    upgrade_menu = UpgradeMenu(10, 500, upgrade_menu_called, cat_images)
+                    upgrade_menu = UpgradeMenu(10, 750 / 1080 * full_h, upgrade_menu_called, cat_images)
             if upgrade_menu_called:
                 upgrade_menu_updated = upgrade_menu.update(money_counter.count)
                 if upgrade_menu_updated[0]:
@@ -250,8 +251,10 @@ def game(screen):
             statistics = (all_kills, king.hp, all_money, spawner.wave)  # + level
             paused, back_to_menu, running = pause_menu.update()
             if back_to_menu:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group])
                 return 2, statistics
             if not running:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group])
                 return 0, statistics
 
         for i in sprites:
@@ -309,9 +312,11 @@ def game(screen):
         statistics = (all_kills, king.hp, all_money, spawner.wave)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group])
                 return 0, statistics
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    kill_all_sprites([*sprites, enemies_group, projectiles_group])
                     return 0, statistics
         screen.fill("gray")
         screen.blit(lose_image, lose_image.get_rect(center=screen.get_rect().center))

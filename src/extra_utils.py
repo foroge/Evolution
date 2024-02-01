@@ -8,6 +8,12 @@ horizontal_borders = pygame.sprite.Group()
 vertical_borders = pygame.sprite.Group()
 
 
+def kill_all_sprites(sprites):
+    for g in sprites:
+        for s in g:
+            s.kill()
+
+
 def check_cat_clicked(cat_group, x):
     for cat in cat_group:
         check = cat.check_clicked(x)
