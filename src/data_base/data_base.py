@@ -46,18 +46,18 @@ class DataBase:
                     self.base.execute(ddl)
 
     def save_to_db(self, parameters, user):
-        sql_to_time = f"INSERT INTO time (time, date, user) VALUES (?, ?, ?)"
-        sql_to_stat = f"INSERT INTO statistics (id, kills, health, money, wave) VALUES (?, ?, ?, ?, ?)"
-        with self.base:
-            date, time = str(dt.date.today()), str(dt.datetime.now().time().strftime("%H:%M"))
-            sql = self.base.execute(f"SELECT * FROM time WHERE date = '{date}' AND time = '{time}' AND user = '{user}'")
-            if len([*sql]) > 0:
-                self.change_stat(parameters, date, time, user)
-            else:
-                self.base.execute(sql_to_time, (date, time, user))
-                print(sql_to_time, (date, time, user))
-                id_element = self.get_id_db(date, time, user)
-                self.base.execute(sql_to_stat, (id_element, *parameters))
+        sql_to_time = "INSERT INTO time (time, date, user) VALUES (?, ?, ?)"
+        sql_to_stat = "INSERT INTO statistics (id, kills, health, money, wave) VALUES (?, ?, ?, ?, ?)"
+        cur = self.base.cursor()
+        date, time = str(dt.date.today()), str(dt.datetime.now().time().strftime("%H:%M"))
+        sql = cur.execute(f"SELECT * FROM time WHERE date = '{date}' AND time = '{time}' AND user = '{user}'")
+        if len([*sql]) > 0:
+            self.change_stat(parameters, date, time, user)
+        else:
+            cur.execute(sql_to_time, (date, time, user))
+            print(sql_to_time, (date, time, user))
+            id_element = self.get_id_db(date, time, user)
+            cur.execute(sql_to_stat, (id_element, *parameters))
 
     def get_id_db(self, date, time, user):
         sql = f"SELECT id FROM time WHERE date = '{date}' AND time = '{time}' AND user = '{user}'"
@@ -88,7 +88,7 @@ class DataBase:
             return all_id
 
     def get_all_stat_db(self, user=None, old_date=None, cur_date=None):
-        all_id = get_all_id_db(user, old_date, cur_date)
+        all_id = self.get_all_id_db(user, old_date, cur_date)
         all_id = ', '.join(all_id)
         all_stat_sql = f"SELECT * FROM statistics WHERE id IN ({all_id})"
         with self.base:
@@ -111,7 +111,7 @@ class DataBase:
 
     def del_all(self):
         with self.base:
-            sql_del_id = f"SELECT id FROM time"
+            sql_del_id = "SELECT id FROM time"
             sql_stat = f"DELETE FROM statistics WHERE id IN ({sql_del_id})"
             sql_time = f"DELETE FROM time WHERE id IN ({sql_del_id})"
             self.base.execute(sql_stat)
