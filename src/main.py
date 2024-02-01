@@ -19,15 +19,16 @@ if __name__ == "__main__":
     statistics = []
     if ret_code != 0:
         while all_running:
-            if len(eval(str(ret_code))) > 1:
+            if type(eval(str(ret_code))) != int:
                 if type(eval(str(ret_code))[1]) == str:
                     user = ret_code[1]
                 else:
-                    statistics = ret_code[1]
-                    print("ok1")
-                    data_base.save_to_db(statistics, user)
-                    print("ok2")
-                    print(data_base.get_all_stat_db())
+                    pass
+                    # statistics = ret_code[1]
+                    # print("ok1")
+                    # data_base.save_to_db(statistics, user)
+                    # print("ok2")
+                    # print(data_base.get_all_stat_db())
 
                 ret_code = ret_code[0]
             if ret_code == 0:
