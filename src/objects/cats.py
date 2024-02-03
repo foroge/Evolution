@@ -69,73 +69,106 @@ class Egg(BaseCat):
 
 
 class Mushroom(BaseCat):
-    class PoisonCloudProjectile(BaseProjectile):
-        def __init__(self, pos_x, pos_y, image, dispenser, new_pos, damage, poison_damage, poison_cloud_time,
-                     poison_time, enemy_group):
-            super().__init__(pos_x, pos_y, image)
-            self.orig_size = 32, 32
-            width_rect = self.orig_size[0] * self.pos_x + self.default_x
-            height_rect = self.orig_size[0] * self.pos_y + self.default_y
-            self.rect = self.image.get_rect().move(width_rect, height_rect)
-
+    class PoisonCloudProjectile(pygame.sprite.Sprite):  # (BaseProjectile):
+        def __init__(self, image, dispenser, pos, damage, poison_damage, poison_cloud_time, poison_time, enemy_group):
+            super().__init__(projectiles_group, all_sprites)
+            self.dispenser = dispenser
+            self.pos = pos
+            self.frames = []
+            self.cut_sheet(image, 10, 1)
+            self.cur_frame = 0
+            self.image = self.orig_image = self.frames[self.cur_frame]
+            # self.rect = self.rect.move(x - self.rect[2] // 2, y - self.rect[3] // 2)
+            self.orig_size = 48, 48
+            self.pos = pos
+            self.rect = self.image.get_rect(center=(dispenser.rect[0] + 1 / 2 * self.orig_size[0] * pos[0],
+                                                    dispenser.rect[1] + 1 / 2 * self.orig_size[1] * pos[1]))
+            self.scale = None
             self.enemy_group = enemy_group
             self.damage = damage
-            self.speed = 64
-            x1, y1 = dispenser.rect.center
-            self.x2, self.y2 = new_pos[0], new_pos[1]
 
-            self.total_distance = ((((self.x2 + 0.75) * self.orig_size[0] + self.default_x) - x1) ** 2 +
-                                   (((self.y2 + 0.75) * self.orig_size[1] + self.default_y) - y1) ** 2) ** 0.5
-            self.y_angle = (y1 - ((self.y2 + 0.75) * self.orig_size[1] + self.default_y)) / self.total_distance
-            self.x_angle = (x1 - ((self.x2 + 0.75) * self.orig_size[0] + self.default_x)) / self.total_distance
-            self.stop = False
             self.poison_damage = poison_damage
             self.poison_cloud_time = self.poison_cloud_time_rest = poison_cloud_time
             self.poison_time = poison_time
 
+            self.anim_time = self.anim_time_rest = 1
+
+        def cut_sheet(self, sheet, columns, rows):
+            self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                    sheet.get_height() // rows)
+            for j in range(rows):
+                for i in range(columns):
+                    frame_location = (self.rect.w * i, self.rect.h * j)
+                    self.frames.append(sheet.subsurface(pygame.Rect(
+                        frame_location, self.rect.size)))
+
         def go_to_enemy(self):
+            self.update_rect_anim()
             self.check_collision()
-            if not self.stop:
-                self.move_x += self.x_angle * self.speed / fps
-                self.move_y += self.y_angle * self.speed / fps
+            if self.poison_cloud_time_rest <= 0:
+                self.kill()
             else:
-                if self.poison_cloud_time_rest <= 0:
-                    self.kill()
-                else:
-                    self.poison_cloud_time_rest -= 1 / fps
+                self.poison_cloud_time_rest -= 1 / fps
 
         def check_collision(self):
-            if (self.rect.center[0] == ((self.x2 + 0.75) * self.orig_size[0] + self.default_x)
-                    and self.rect.center[1] == ((self.y2 + 0.75) * self.orig_size[1] + self.default_y)):
-                self.stop = True
             for enemy in self.enemy_group:
                 if enemy.rect.colliderect(self.rect):
                     enemy.poisoned = True
                     enemy.poison_time_rest = self.poison_time
                     enemy.poison_damage = self.poison_damage
-                    enemy.hp -= 0.5
+                    enemy.hp -= self.damage / fps
 
         def draw(self, screen):
-            size = self.rect[2:]
-            width_rect = size[0] * self.pos_x + self.default_x + self.move_x
-            height_rect = size[0] * self.pos_y + self.default_y + self.move_y
-            self.rect = self.image.get_rect().move(width_rect, height_rect)
             screen.blit(self.image, (self.rect.x, self.rect.y))
+
+        def update_rect_anim(self):
+            if self.anim_time_rest <= 0:
+                self.cur_frame += 1 if self.cur_frame < len(self.frames) - 1 else -3
+                self.orig_image = self.frames[self.cur_frame]
+                self.anim_time_rest = self.anim_time
+            else:
+                self.anim_time_rest -= len(self.frames) / fps
+            self.rect = self.image.get_rect(center=(self.dispenser.rect[0] + 1 / 2 * self.dispenser.rect[2] +
+                                                    self.dispenser.rect[2] * self.pos[0],
+                                                    self.dispenser.rect[1] + 1 / 2 * self.dispenser.rect[3] +
+                                                    self.dispenser.rect[3] * self.pos[1]))
+
+        def check(self, horizontal_borders, vertical_borders):
+            col_h = []
+            for h in horizontal_borders:
+                col_h.append(self.image.get_rect().move(self.image.get_rect()[0],
+                                                        self.image.get_rect()[1]).colliderect(h.rect))
+            col_v = []
+            for v in vertical_borders:
+                col_v.append(self.image.get_rect().move(self.image.get_rect()[0],
+                                                        self.image.get_rect()[1]).colliderect(v.rect))
+            return col_h, col_v
+
+        def change_size(self, scale):
+            self.scale = scale
+            new_size = [int(self.orig_size[0] * scale), int(self.orig_size[1] * scale)]
+            self.image = pygame.transform.scale(self.orig_image, new_size)
+            self.rect = self.image.get_rect(center=(self.dispenser.rect[0] + 1 / 2 * self.dispenser.rect[2] +
+                                                    self.dispenser.rect[2] * self.pos[0],
+                                                    self.dispenser.rect[1] + 1 / 2 * self.dispenser.rect[3] +
+                                                    self.dispenser.rect[3] * self.pos[1]))
 
     def __init__(self, x, y, cat_images, projectiles_images):
         self.cat_type = "mushroom"
-        super().__init__(x, y, cat_type, cat_images)
-        self.base_radius = self.radius = 24
-        self.cooldown = 5
+        super().__init__(x, y, self.cat_type, cat_images)
+        self.base_radius = self.radius = 48
+        self.cooldown = 8
         self.rest_of_cooldown = 0
         self.projectile_image = projectiles_images["poison"]
         self.waiting = False
         self.damage = 15
-        self.poison_damage = 50
+        self.poison_damage = 10
         self.poison_time = 2
-        self.poison_cloud_time = 2
+        self.poison_cloud_time = 5
+        self.upgrade_cost = 100
 
     def try_attack(self, enemy_group):
+        self.radius = self.base_radius / 0.8 * self.scale
         if self.rest_of_cooldown <= 0:
             self.attack(enemy_group)
             self.rest_of_cooldown = self.cooldown
@@ -144,11 +177,17 @@ class Mushroom(BaseCat):
 
     def attack(self, enemy_group):
         for i, j in [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]:
-            projectile = self.PoisonCloudProjectile(self.pos_x, self.pos_y, self.projectile_image, self,
-                                                    (self.pos_x + i, self.pos_y + j), self.damage, self.poison_damage,
-                                                    self.poison_cloud_time, self.poison_time, enemy_group)
-            projectile.default_x = self.default_x
-            projectile.default_y = self.default_y
+            self.PoisonCloudProjectile(self.projectile_image, self,
+                                       (i, j), self.damage, self.poison_damage,
+                                       self.poison_cloud_time, self.poison_time, enemy_group)
+
+    def upgrade(self):
+        self.cooldown = round(0.95 * self.cooldown, 1)
+        self.damage = round(1.15 * self.damage)
+        self.upgrade_cost = round(1.5 * self.upgrade_cost)
+        self.poison_damage = round(1.1 * self.poison_damage)
+        self.poison_time = round(1.1 * self.poison_time, 1)
+        self.poison_cloud_time = round(1.05 * self.poison_cloud_time, 1)
 
 
 class Electronic(BaseCat):

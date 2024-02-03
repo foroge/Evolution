@@ -50,6 +50,12 @@ class UpgradeMenu:
             elif name_obj == "SunFlower":
                 text.append(f"Income: {cat.coins_get}")
                 text.append(f"Cooldown: {cat.time_sleep}")
+            elif name_obj == "Mushroom":
+                text.append(f"Damage: {cat.damage}")
+                text.append(f"Firing rate: {cat.cooldown}")
+                text.append(f"Poison damage: {cat.poison_damage}")
+                text.append(f"Cloud time: {cat.poison_cloud_time}")
+                text.append(f"Poison time: {cat.poison_time}")
             text.append(f"Upgrade cost: {cat.upgrade_cost}")
             return text
 
