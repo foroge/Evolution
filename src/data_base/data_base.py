@@ -94,7 +94,7 @@ class DataBase:
             cur.close()
             return all_id
 
-    def get_all_stat_db(self, user=None, old_date=None, cur_date=None):
+    def get_all_stat_db(self):
         all_stat_sql = (f"SELECT time.user, time.date, time.time, statistics.level, statistics.wave, statistics.kills, "
                         f"statistics.money, statistics.health FROM statistics, time WHERE time.id == statistics.id")
         with self.base:
