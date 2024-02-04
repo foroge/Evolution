@@ -203,7 +203,9 @@ def get_json(filename):
 
 
 def set_json(data, filename):
-    with open(filename, 'w') as file:
+    scr_path = "\\".join(sys.argv[0].split("\\")[:-2])
+    path = os.path.join(scr_path, "data", filename)
+    with open(path, "w") as file:
         json.dump(data, file)
 
 

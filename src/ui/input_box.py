@@ -1,4 +1,8 @@
 import pygame
+import os
+import sys
+
+from extra_utils import get_json
 
 
 class TextInputBox(pygame.sprite.Sprite):
@@ -10,7 +14,11 @@ class TextInputBox(pygame.sprite.Sprite):
         self.width = w
         self.active = False
         self.font = pygame.font.SysFont(None, 50)
-        self.text = ""
+        src_path = "\\".join(sys.argv[0].split("\\")[:-2])
+        json = get_json(os.path.join(src_path, "data", "current_user.json"))
+        self.text = json["current_user"]
+        if not self.text:
+            self.text = "default"
         t_surf = self.font.render(self.text, True, self.color, self.backcolor)
         size = (max(self.width, t_surf.get_width() + 10), t_surf.get_height() + 10)
         self.image = pygame.Surface(size, pygame.SRCALPHA)
@@ -37,11 +45,10 @@ class TextInputBox(pygame.sprite.Sprite):
                 elif event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 elif len(self.text) <= 20:
-                    if self.text == "Username":
+                    if self.text == "default":
                         self.text = ""
                     self.text += event.unicode
-        if self.text == "" or self.text == "Username":
-            self.text = "Username"
+        if self.text == "default":
             self.color = (128, 128, 128)
         else:
             self.color = (255, 255, 255)

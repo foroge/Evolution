@@ -22,7 +22,7 @@ from objects.tiles import init_image
 from extra_utils import Camera, change_size_sprites, Border, enem_move, sprites_move, set_def_position
 from extra_utils import check_collision, move_projectiles, cats_attack, update_rect, update_card, Button
 from extra_utils import draw_neer_cursor, check_cat_placed, spawn_cat, get_json, WaveButton, create_fon_rect
-from extra_utils import AnimatedSprite, loading_screen, check_cat_clicked, destroy_cat, kill_all_sprites
+from extra_utils import AnimatedSprite, loading_screen, check_cat_clicked, destroy_cat, kill_all_sprites, set_json
 import extra_utils as extra
 
 from tests.create_map import start_creating
@@ -33,6 +33,8 @@ from ui.money_counter import MoneyCounter
 from ui.cat_upgrade_menu import UpgradeMenu
 from ui.statistics_menu import StatisticsMenu
 from ui.main_menu import MainMenu
+
+from data_base.data_base import DBViewer
 
 
 upgrade_menu: UpgradeMenu
@@ -344,11 +346,11 @@ def run_statistics(screen):
     running = True
     stat_menu = StatisticsMenu(full_w, full_h)
     while running:
+        screen.fill((40, 40, 40))
         event_list = pygame.event.get()
         for event in event_list:
             if event.type == pygame.QUIT:
                 return 0
-        screen.fill((40, 40, 40))
         back_to_menu = stat_menu.update()
         if back_to_menu:
             return 2
@@ -384,10 +386,16 @@ def main_menu(screen):
         screen.fill((40, 40, 40))
         new_game_upd, ext_game_upd, stat_menu_upd, user = menu.update(event_list)
         if ext_game_upd:
+            data = {"current_user": user}
+            set_json(data, "current_user.json")
             return 0
         if new_game_upd:
+            data = {"current_user": user}
+            set_json(data, "current_user.json")
             return 1, user
         if stat_menu_upd:
+            data = {"current_user": user}
+            set_json(data, "current_user.json")
             return 3
         menu.draw(screen)
 
