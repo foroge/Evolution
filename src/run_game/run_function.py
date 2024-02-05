@@ -36,7 +36,6 @@ from ui.main_menu import MainMenu
 
 from data_base.data_base import DBViewer
 
-
 upgrade_menu: UpgradeMenu
 
 
@@ -56,6 +55,15 @@ def game(screen):
     col_cell = 32
 
     level_map = start_creating(col_cell).copy()
+
+    difficulty_dict = {range(30, 51): 1, range(51, 73): 2, range(73, 100): 3}
+    count_path = sum(list(map(lambda x: x.count('-'), level_map)))
+    for i in difficulty_dict.keys():
+        if count_path in i:
+            difficulty_map = difficulty_dict[i]
+            break
+    print(difficulty_map)
+
     king, spawner, x, y, sprites, cats, all_sprites = generate_level(level_map)
     sprites.insert(-1, cats)
     sprites.insert(-1, cats_group)
@@ -145,6 +153,9 @@ def game(screen):
     all_kills = 0
 
     while running:
+        if spawner.wave == 10 * spawner.level:
+            spawner.level += 1
+
         all_sprites.add(enemies_group)
 
         camera.dx = camera.dy = 0
@@ -153,7 +164,8 @@ def game(screen):
             if event.type == pygame.QUIT:
                 kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
                                   obj_tiles.front_tile_group])
-                return 0
+                statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
+                return 0, statistics
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     paused = not paused
@@ -250,11 +262,11 @@ def game(screen):
                 running = False
                 running_lose = True
         else:
-            statistics = (all_kills, king.hp, all_money, spawner.wave)  # + level
+            statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
             paused, back_to_menu, running = pause_menu.update()
             if back_to_menu:
                 kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
-                                      obj_tiles.front_tile_group])
+                                  obj_tiles.front_tile_group])
                 return 2, statistics
             if not running:
                 kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,

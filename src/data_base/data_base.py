@@ -8,7 +8,7 @@ STAT_DDl = """
     CREATE TABLE statistics (
         id INTEGER,
         kills INTEGER,
-        health INTEGER,
+        difficulty INTEGER,
         money INTEGER,
         wave INTEGER,
         level INTEGER
@@ -48,7 +48,7 @@ class DataBase:
                 cur.close()
 
     def save_to_db(self, parameters, user):
-        sql_to_stat = "INSERT INTO statistics (id, kills, health, money, wave) VALUES (?, ?, ?, ?, ?)"
+        sql_to_stat = "INSERT INTO statistics (id, kills, difficulty, money, wave, level) VALUES (?, ?, ?, ?, ?, ?)"
         date, time = str(dt.date.today()), str(dt.datetime.now().time().strftime("%H:%M"))
         with self.base:
             cur = self.base.cursor()
@@ -59,6 +59,7 @@ class DataBase:
                 sql_to_time = f"INSERT INTO time (time, date, user) VALUES ('{time}', '{date}', '{user}')"
                 cur.execute(sql_to_time)
                 id_element = self.get_id_db(date, time, user)
+                print(parameters)
                 cur.execute(sql_to_stat, (id_element, *parameters))
             cur.close()
 
@@ -95,9 +96,9 @@ class DataBase:
             return all_id
 
     def get_all_stat_db(self):
-        all_stat_sql = (f"SELECT time.user, time.date, time.time, statistics.level, statistics.wave, statistics.kills, "
-                        f"statistics.money, statistics.health FROM statistics, time WHERE time.id == statistics.id "
-                        f"ORDER BY time.id DESC")
+        all_stat_sql = (f"SELECT time.user, time.date, time.time, statistics.difficulty, statistics.level, "
+                        f"statistics.wave, statistics.kills, statistics.money FROM statistics, "
+                        f"time WHERE time.id == statistics.id ORDER BY time.id DESC")
         with self.base:
             cur = self.base.cursor()
             all_stat = sorted(list(cur.execute(all_stat_sql)), reverse=True)
@@ -109,7 +110,7 @@ class DataBase:
         with self.base:
             cur = self.base.cursor()
             self.del_from_db(date, time, user)
-            sql_to_stat = "INSERT INTO statistics (id, kills, health, money, wave) VALUES (?, ?, ?, ?, ?)"
+            sql_to_stat = "INSERT INTO statistics (id, kills, difficulty, money, wave, level) VALUES (?, ?, ?, ?, ?, ?)"
             cur.execute(sql_to_stat, (id_element, *parameters))
             cur.close()
 
@@ -145,16 +146,10 @@ class DBViewer:
         self.full_height = full_h
 
     def draw(self, screen, y=0):
-        heads = {"User": 20, "Date": 8, "Time": 5, "Level": 6, "Wave": 6, "Kills": 6, "Money": 8, "Health": 3}
+        heads = {"User": 20, "Date": 8, "Time": 5, "difficulty": 10, "Level": 6, "Wave": 6, "Kills": 6, "Money": 8}
         heads_list = list(heads.keys())
         divider_w = sum(heads.values())
         size_w = self.full_width * 0.75 / divider_w
-        # size_row = 0
-        # for i, head in enumerate(heads.keys()):
-        #     size_text = size_w * heads[head]
-        #     head = self.font.render(head, True, "yellow")
-        #     screen.blit(head, [self.x + size_row, self.y])
-        #     size_row += size_text
         rows = self.db.get_all_stat_db()
         for i, row in enumerate(rows):
             size_row = 0
@@ -173,9 +168,3 @@ class DBViewer:
 
     def get_y_size(self):
         return self.y + 35 + len(self.db.get_all_stat_db()) * self.font_height + 6
-
-
-# bd = DataBase()
-#
-# for i in range(100):
-#     bd.save_to_db((10, 10, 10, 100), "alex" + str(i))
