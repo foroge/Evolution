@@ -261,7 +261,7 @@ def game(screen):
 
             if king.hp == 0:
                 running = False
-                running_lose = True
+                time_between_waves = True
         else:
             statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
             paused, back_to_menu, running = pause_menu.update()
@@ -327,7 +327,7 @@ def game(screen):
     if running_lose:
         lose_menu = LoseMenu(full_w, full_h)
         while running_lose:
-            statistics = (all_kills, king.hp, all_money, spawner.wave)
+            statistics = (all_kills, king.hp, all_money, spawner.wave, spawner.level)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
