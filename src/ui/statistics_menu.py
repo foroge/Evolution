@@ -26,10 +26,10 @@ class StatisticsMenu:
         self.db_view.draw(screen, y=self.pos_y)
 
     def scroll(self, flag):
-        if flag and self.db_view.get_y_size() > self.full_y:
-            self.pos_y += 50
-        elif not flag and self.pos_y >= 50:
+        if not flag and self.db_view.get_y_size() > self.full_y:
             self.pos_y -= 50
+        elif flag and self.pos_y <= -50:
+            self.pos_y += 50
 
     def update(self):
         stat_upd = self.menu_button.update()
