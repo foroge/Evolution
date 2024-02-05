@@ -107,9 +107,9 @@ class DataBase:
         id_element = self.get_id_db(date, time, user)
         with self.base:
             cur = self.base.cursor()
-            print(parameters)
-            sql = f"INSERT INTO statistics ({id_element}, {', '.join(map(str, list(parameters)))})"
-            cur.execute(sql)
+            self.del_from_db(date, time, user)
+            sql_to_stat = "INSERT INTO statistics (id, kills, health, money, wave) VALUES (?, ?, ?, ?, ?)"
+            cur.execute(sql_to_stat, (id_element, *parameters))
             cur.close()
 
     def del_from_db(self, date, time, user):

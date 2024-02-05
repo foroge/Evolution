@@ -72,7 +72,8 @@ def game(screen):
     money_counter_width = 50
     money_counter_x = king.hp_bar.rect.right - (money_counter_width / 2)
     money_counter_y = king.hp_bar.rect.top + king.hp_bar.rect.height + 18
-    money_counter = MoneyCounter(x=money_counter_x, y=money_counter_y, width=money_counter_width, height=money_counter_height)
+    money_counter = MoneyCounter(x=money_counter_x, y=money_counter_y,
+                                 width=money_counter_width, height=money_counter_height)
 
     screen.fill((255, 255, 255))
     pygame.display.set_caption("Feline Fortress")
@@ -82,10 +83,10 @@ def game(screen):
 
     camera = Camera()
 
-    border1 = Border(x, y, x + 20, y + size_map + 20)
-    border2 = Border(x + size_map + 15, y, x + size_map + 35, y + size_map + 20)
-    border3 = Border(x, y, x + size_map + 20, y + 20)
-    border4 = Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
+    Border(x, y, x + 20, y + size_map + 20)
+    Border(x + size_map + 15, y, x + size_map + 35, y + size_map + 20)
+    Border(x, y, x + size_map + 20, y + 20)
+    Border(x, y + size_map + 15, x + size_map + 35, y + size_map + 40)
     ver_borders, hor_borders = extra.vertical_borders, extra.horizontal_borders
 
     image1, rect1 = create_fon_rect(size=(x, full_w), color=(250, 222, 154))
@@ -100,7 +101,6 @@ def game(screen):
 
     cards = []
     x_card, y_card = -80, 140
-    # cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
     cat_names = ["wizard", "electronic", "sunflower", "mushroom"]
     for i in cat_names:
         image = cat_images[i]
@@ -136,7 +136,7 @@ def game(screen):
     a_pressed = False
     s_pressed = False
     d_pressed = False
-    x_mouse = y_mouse = 0
+    x_mouse = 0
 
     time.sleep(2.39)
     run_loading_screen[0] = False
@@ -151,7 +151,8 @@ def game(screen):
         screen.fill((75, 105, 47))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                kill_all_sprites([*sprites, enemies_group, projectiles_group])
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 0
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -175,7 +176,6 @@ def game(screen):
                     s_pressed = False
             if event.type == pygame.MOUSEMOTION:
                 x_mouse = event.pos[0]
-                y_mouse = event.pos[1]
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4 and x_mouse > x:
                 camera.change_scale(True)
                 speed = 15 / (2 - camera.scale)
@@ -253,10 +253,12 @@ def game(screen):
             statistics = (all_kills, king.hp, all_money, spawner.wave)  # + level
             paused, back_to_menu, running = pause_menu.update()
             if back_to_menu:
-                kill_all_sprites([*sprites, enemies_group, projectiles_group])
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                      obj_tiles.front_tile_group])
                 return 2, statistics
             if not running:
-                kill_all_sprites([*sprites, enemies_group, projectiles_group])
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 0, statistics
 
         for i in sprites:
@@ -276,7 +278,7 @@ def game(screen):
         screen.blit(image4, rect4)
 
         if not paused:
-            chose, money = update_card(cards, screen, money=money_counter.count)
+            chose, money = update_card(cards, money=money_counter.count)
             money_counter.count = money
             if chose is not None:
                 if chose == choosen:
@@ -314,11 +316,13 @@ def game(screen):
         statistics = (all_kills, king.hp, all_money, spawner.wave)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                kill_all_sprites([*sprites, enemies_group, projectiles_group])
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 0, statistics
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    kill_all_sprites([*sprites, enemies_group, projectiles_group])
+                    kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                      obj_tiles.front_tile_group])
                     return 0, statistics
         screen.fill("gray")
         screen.blit(lose_image, lose_image.get_rect(center=screen.get_rect().center))

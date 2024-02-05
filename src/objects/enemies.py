@@ -10,8 +10,8 @@ fps = 60
 def init_enemies_images():
     enemy_images = {
         "zombie": {"side": load_image("enemies/zombie/side.png"), }
-                   # "back": load_image("enemies/zombie/back.png"), # Его нет еще
-                   # "front": load_image("enemies/zombie/front.png")}, # Его нет еще
+        # "back": load_image("enemies/zombie/back.png"), # Его нет еще
+        # "front": load_image("enemies/zombie/front.png")}, # Его нет еще
     }
     return enemy_images
 
@@ -21,6 +21,8 @@ class BaseEnemy(BaseObject):
         self.enemy_images = enemy_images
         self.enemy_type = enemy_type
         self.image = self.enemy_images[enemy_type]["side"]
+        self.orig_image = self.image
+        self.orig_size = self.image.get_size()
         super().__init__(pos_x, pos_y, self.image, enemies_group, all_sprites)
         self.new_pos_x = self.new_pos_y = 0
         self.spawn_def = (self.default_x, self.default_y)
@@ -124,4 +126,3 @@ class BaseEnemy(BaseObject):
             else:
                 self.poison_time_rest -= 1 / fps
                 self.hp -= self.poison_damage / fps
-

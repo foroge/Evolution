@@ -21,11 +21,11 @@ good_end = False
 level_map_to_return = None
 
 
-def randomize_map_point(levelMap, size, point1: tuple, point2: tuple, canstop=False):
+def randomize_map_point(level_map, size, point1: tuple, point2: tuple, canstop=False):
     count = 0
     row = random.randint(max([point1[0], 0]), min([point2[0], size - 1]))
     col = random.randint(max([point1[1], 0]), min([point2[1], size - 1]))
-    while levelMap[row][col] != GRASS_SYMB:
+    while level_map[row][col] != GRASS_SYMB:
         row = random.randint(max([point1[0], 0]), min([point2[0], size - 1]))
         col = random.randint(max([point1[1], 0]), min([point2[1], size - 1]))
         if canstop:
@@ -35,162 +35,163 @@ def randomize_map_point(levelMap, size, point1: tuple, point2: tuple, canstop=Fa
     return row, col
 
 
-def create_path_corner(levelMap, coordsStart, coordsEnd):
-    row, col = random.choice([(coordsStart[0], coordsEnd[1]), (coordsEnd[0], coordsStart[1])])
-    if coordsStart[0] != coordsEnd[0]:
-        n = (coordsEnd[0] - coordsStart[0]) // abs(coordsEnd[0] - coordsStart[0])
-        for i in range(coordsStart[0], coordsEnd[0] + n, n):
-            levelMap[i][col] = PATH_SYMB
-    if coordsStart[1] != coordsEnd[1]:
-        m = (coordsEnd[1] - coordsStart[1]) // abs(coordsEnd[1] - coordsStart[1])
-        for i in range(coordsStart[1] + m, coordsEnd[1] + m, m):
-            levelMap[row][i] = PATH_SYMB
-    return levelMap
+def create_path_corner(level_map, coords_start, coords_end):
+    row, col = random.choice([(coords_start[0], coords_end[1]), (coords_end[0], coords_start[1])])
+    if coords_start[0] != coords_end[0]:
+        n = (coords_end[0] - coords_start[0]) // abs(coords_end[0] - coords_start[0])
+        for i in range(coords_start[0], coords_end[0] + n, n):
+            level_map[i][col] = PATH_SYMB
+    if coords_start[1] != coords_end[1]:
+        m = (coords_end[1] - coords_start[1]) // abs(coords_end[1] - coords_start[1])
+        for i in range(coords_start[1] + m, coords_end[1] + m, m):
+            level_map[row][i] = PATH_SYMB
+    return level_map
 
 
-def create_path(levelMap, size, coordsKing, coordsSpawn):
-    coords = coordsKing
+def create_path(level_map, size, coords_king, coords_spawn):
+    global end
+    coords = coords_king
     end = False
     while not end:
         rad = 2.4
-        radEnd = 3
-        if abs(coordsSpawn[0] - coords[0]) <= size // radEnd and abs(coordsSpawn[1] - coords[1]) <= size // radEnd:
-            point = coordsSpawn
+        rad_end = 3
+        if abs(coords_spawn[0] - coords[0]) <= size // rad_end and abs(coords_spawn[1] - coords[1]) <= size // rad_end:
+            point = coords_spawn
             end = True
         else:
             t = int(size // rad)
             for i in range(coords[0] - t, coords[0] + t):
                 for j in range(coords[1] - 1, coords[1] + 1):
                     try:
-                        if levelMap[i][j] == GRASS_SYMB:
-                            levelMap[i][j] = NONE_PATH_SYMB
+                        if level_map[i][j] == GRASS_SYMB:
+                            level_map[i][j] = NONE_PATH_SYMB
                     except IndexError:
                         ...
             for i in range(coords[0] - 1, coords[0] + 1):
                 for j in range(coords[1] - t, coords[1] + t):
                     try:
-                        if levelMap[i][j] == GRASS_SYMB:
-                            levelMap[i][j] = NONE_PATH_SYMB
+                        if level_map[i][j] == GRASS_SYMB:
+                            level_map[i][j] = NONE_PATH_SYMB
                     except IndexError:
                         ...
-            point = randomize_map_point(levelMap, size, (coords[0] - t, coords[1] - t),
+            point = randomize_map_point(level_map, size, (coords[0] - t, coords[1] - t),
                                         (coords[0] + t, coords[1] + t))
             for i in range(coords[0] - t, coords[0] + t):
                 for j in range(coords[1] - 1, coords[1] + 1):
                     try:
-                        if levelMap[i][j] == NONE_PATH_SYMB:
-                            levelMap[i][j] = GRASS_SYMB
+                        if level_map[i][j] == NONE_PATH_SYMB:
+                            level_map[i][j] = GRASS_SYMB
                     except IndexError:
                         ...
             for i in range(coords[0] - 1, coords[0] + 1):
                 for j in range(coords[1] - t, coords[1] + t):
                     try:
-                        if levelMap[i][j] == NONE_PATH_SYMB:
-                            levelMap[i][j] = GRASS_SYMB
+                        if level_map[i][j] == NONE_PATH_SYMB:
+                            level_map[i][j] = GRASS_SYMB
                     except IndexError:
                         ...
-        levelMap = create_path_corner(levelMap, coords, point).copy()
+        level_map = create_path_corner(level_map, coords, point).copy()
         coords = point
-    levelMap[coordsKing[0]][coordsKing[1]] = KING_SYMB
-    levelMap[coordsSpawn[0]][coordsSpawn[1]] = SPAWN_SYMB
-    return levelMap
+    level_map[coords_king[0]][coords_king[1]] = KING_SYMB
+    level_map[coords_spawn[0]][coords_spawn[1]] = SPAWN_SYMB
+    return level_map
 
 
 def create_empty_map(size):
-    levelMap = []
+    level_map = []
     for i in range(size):
-        levelMap.append([])
+        level_map.append([])
         for j in range(size):
-            levelMap[i].append(GRASS_SYMB)
-    return levelMap
+            level_map[i].append(GRASS_SYMB)
+    return level_map
 
 
-def delete_useless_path_and_add_trays(levelMap, coordsKing, coordsSpawn, addTray=True):
-    def check_neighbours(symb, r, c, direction):
-        if 0 <= r + direction[0] < len(levelMap) and 0 <= c + direction[1] < len(levelMap) and \
-                levelMap[r + direction[0]][c + direction[1]] == symb:
-            direction = direction
-        elif 0 <= r - direction[1] < len(levelMap) and 0 <= c + direction[0] < len(levelMap) and \
-                levelMap[r - direction[1]][c + direction[0]] == symb:
-            direction = -direction[1], direction[0]
-        elif 0 <= r - direction[0] < len(levelMap) and 0 <= c - direction[1] < len(levelMap) and \
-                levelMap[r - direction[0]][c - direction[0]] == symb:
-            direction = -direction[0], -direction[1]
-        elif 0 <= r + direction[1] < len(levelMap) and 0 <= c - direction[0] < len(levelMap) and \
-                levelMap[r + direction[1]][c - direction[0]] == symb:
-            direction = direction[1], -direction[0]
+def delete_useless_path_and_add_trays(level_map, coords_king, coords_spawn, add_tray=True):
+    def check_neighbours(symb, r1, c1, direction1):
+        if 0 <= r1 + direction1[0] < len(level_map) and 0 <= c1 + direction1[1] < len(level_map) and \
+                level_map[r1 + direction1[0]][c1 + direction1[1]] == symb:
+            direction1 = direction1
+        elif 0 <= r1 - direction1[1] < len(level_map) and 0 <= c1 + direction1[0] < len(level_map) and \
+                level_map[r1 - direction1[1]][c1 + direction1[0]] == symb:
+            direction1 = -direction1[1], direction1[0]
+        elif 0 <= r1 - direction1[0] < len(level_map) and 0 <= c1 - direction1[1] < len(level_map) and \
+                level_map[r1 - direction1[0]][c1 - direction1[0]] == symb:
+            direction1 = -direction1[0], -direction1[1]
+        elif 0 <= r1 + direction1[1] < len(level_map) and 0 <= c1 - direction1[0] < len(level_map) and \
+                level_map[r1 + direction1[1]][c1 - direction1[0]] == symb:
+            direction1 = direction1[1], -direction1[0]
         else:
-            direction = None
-        return direction
+            direction1 = None
+        return direction1
 
-    def add_trays(r, c):
+    def add_trays(r1, c1):
         for k in range(3):
-            ret = randomize_map_point(levelMap, len(levelMap), (r - 2, c - 2), (r + 2, c + 2), True)
+            ret = randomize_map_point(level_map, len(level_map), (r1 - 2, c1 - 2), (r1 + 2, c1 + 2), True)
             if ret:
-                levelMap[ret[0]][ret[1]] = TRAY_SYMB if random.random() > 0.2 else WATER_SYMB
+                level_map[ret[0]][ret[1]] = TRAY_SYMB if random.random() > 0.2 else WATER_SYMB
             else:
                 break
 
-    r, c = coordsSpawn
+    r, c = coords_spawn
     direction = None
     create_tray = 1
-    while (r, c) != coordsKing:
+    while (r, c) != coords_king:
         if not direction:
-            if 0 <= r - 1 < len(levelMap) and 0 <= c < len(levelMap) and levelMap[r - 1][c] == PATH_SYMB:
+            if 0 <= r - 1 < len(level_map) and 0 <= c < len(level_map) and level_map[r - 1][c] == PATH_SYMB:
                 direction = -1, 0
-            elif 0 <= r < len(levelMap) and 0 <= c + 1 < len(levelMap) and levelMap[r][c + 1] == PATH_SYMB:
+            elif 0 <= r < len(level_map) and 0 <= c + 1 < len(level_map) and level_map[r][c + 1] == PATH_SYMB:
                 direction = 0, 1
-            elif 0 <= r + 1 < len(levelMap) and 0 <= c < len(levelMap) and levelMap[r + 1][c] == PATH_SYMB:
+            elif 0 <= r + 1 < len(level_map) and 0 <= c < len(level_map) and level_map[r + 1][c] == PATH_SYMB:
                 direction = 1, 0
-            elif 0 <= r < len(levelMap) and 0 <= c - 1 < len(levelMap) and levelMap[r][c - 1] == PATH_SYMB:
+            elif 0 <= r < len(level_map) and 0 <= c - 1 < len(level_map) and level_map[r][c - 1] == PATH_SYMB:
                 direction = 0, -1
             r, c = r + direction[0], c + direction[1]
-            levelMap[r][c] = ALT_PATH_SYMB
+            level_map[r][c] = ALT_PATH_SYMB
         else:
-            dir = check_neighbours(KING_SYMB, r, c, direction)
-            if not dir:
-                dir = check_neighbours(PATH_SYMB, r, c, direction)
-            if not dir:
-                dir = check_neighbours(ALT_PATH_SYMB, r, c, direction)
-                if dir[0] == -direction[0] and dir[1] == -direction[1]:
-                    dir = None
-            if dir:
-                direction = dir
+            direct = check_neighbours(KING_SYMB, r, c, direction)
+            if not direct:
+                direct = check_neighbours(PATH_SYMB, r, c, direction)
+            if not direct:
+                direct = check_neighbours(ALT_PATH_SYMB, r, c, direction)
+                if direct[0] == -direction[0] and direct[1] == -direction[1]:
+                    direct = None
+            if direct:
+                direction = direct
                 r, c = r + direction[0], c + direction[1]
-                levelMap[r][c] = ALT_PATH_SYMB
-                if addTray:
+                level_map[r][c] = ALT_PATH_SYMB
+                if add_tray:
                     if create_tray % 2 == 0:
                         add_trays(r, c)
                     create_tray += 1
             else:
-                levelMap[r][c] = GRASS_SYMB
+                level_map[r][c] = GRASS_SYMB
                 r, c = r - direction[0], c - direction[1]
 
-    for i in range(len(levelMap)):
-        for j in range(len(levelMap[i])):
-            if levelMap[i][j] == PATH_SYMB:
-                levelMap[i][j] = GRASS_SYMB
-    return levelMap
+    for i in range(len(level_map)):
+        for j in range(len(level_map[i])):
+            if level_map[i][j] == PATH_SYMB:
+                level_map[i][j] = GRASS_SYMB
+    return level_map
 
 
-def add_random_trays(levelMap, size):
+def add_random_trays(level_map, size):
     for i in range(15):
-        row, col = randomize_map_point(levelMap, size, (0, 0), (size - 1, size - 1))
-        levelMap[row][col] = TRAY_SYMB if random.random() > 0.2 else WATER_SYMB
-    return levelMap
+        row, col = randomize_map_point(level_map, size, (0, 0), (size - 1, size - 1))
+        level_map[row][col] = TRAY_SYMB if random.random() > 0.2 else WATER_SYMB
+    return level_map
 
 
-def randomize_grass(levelMap, size):
+def randomize_grass(level_map, size):
     for i in range(size):
         for j in range(size):
-            if levelMap[i][j] == GRASS_SYMB:
+            if level_map[i][j] == GRASS_SYMB:
                 if random.random() <= RANDOM_GRASS_CHANCE:
-                    levelMap[i][j] = TREE_SYMB
+                    level_map[i][j] = TREE_SYMB
                 if random.random() <= RANDOM_GRASS_CHANCE:
-                    levelMap[i][j] = FENCE_SUMB
+                    level_map[i][j] = FENCE_SUMB
                 if random.random() <= RANDOM_GRASS_CHANCE:
-                    levelMap[i][j] = STONE_SYMB
-    return levelMap
+                    level_map[i][j] = STONE_SYMB
+    return level_map
 
 
 def add_stone_border(level_map, size):
@@ -207,50 +208,51 @@ def create_map(size):
     global good_end, level_map_to_return
 
     size = size - 2
-    levelMap = create_empty_map(size).copy()
-    halfY = random.choice([-1, 1])
-    halfX = random.choice([-1, 1])
-    rowKing = size // 2 - random.randint(size // 4, size // 2 - 1) * halfY
-    colKing = size // 2 - random.randint(size // 4, size // 2 - 1) * halfX
-    levelMap[rowKing][colKing] = KING_SYMB
-    rowSpawn = size // 2 - random.randint(size // 4, size // 2 - 1) * [0, -1, 1][halfY:][0]
-    colSpawn = size // 2 - random.randint(size // 4, size // 2 - 1) * [0, -1, 1][halfX:][0]
-    levelMap[rowSpawn][colSpawn] = SPAWN_SYMB
+    level_map = create_empty_map(size).copy()
+    half_y = random.choice([-1, 1])
+    half_x = random.choice([-1, 1])
+    row_king = size // 2 - random.randint(size // 4, size // 2 - 1) * half_y
+    col_king = size // 2 - random.randint(size // 4, size // 2 - 1) * half_x
+    level_map[row_king][col_king] = KING_SYMB
+    row_spawn = size // 2 - random.randint(size // 4, size // 2 - 1) * [0, -1, 1][half_y:][0]
+    col_spawn = size // 2 - random.randint(size // 4, size // 2 - 1) * [0, -1, 1][half_x:][0]
+    level_map[row_spawn][col_spawn] = SPAWN_SYMB
 
     bad = True
     while bad:
         try:
-            levelMap = create_path(levelMap, size, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
-            while sum(list(map(lambda x: x.count(PATH_SYMB), levelMap))) > 100:
-                levelMap = create_empty_map(size).copy()
-                levelMap[rowKing][colKing] = KING_SYMB
-                levelMap[rowSpawn][colSpawn] = SPAWN_SYMB
-                levelMap = create_path(levelMap, size, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
-            levelMap = delete_useless_path_and_add_trays(levelMap, (rowKing, colKing), (rowSpawn, colSpawn)).copy()
-            levelMap[rowKing][colKing] = KING_SYMB
+            level_map = create_path(level_map, size, (row_king, col_king), (row_spawn, col_spawn)).copy()
+            while sum(list(map(lambda x: x.count(PATH_SYMB), level_map))) > 100:
+                level_map = create_empty_map(size).copy()
+                level_map[row_king][col_king] = KING_SYMB
+                level_map[row_spawn][col_spawn] = SPAWN_SYMB
+                level_map = create_path(level_map, size, (row_king, col_king), (row_spawn, col_spawn)).copy()
+            level_map = delete_useless_path_and_add_trays(level_map, (row_king, col_king),
+                                                          (row_spawn, col_spawn)).copy()
+            level_map[row_king][col_king] = KING_SYMB
 
             for k in range(2):
-                for i in range(len(levelMap)):
-                    for j in range(len(levelMap[i])):
-                        if levelMap[i][j] == ALT_PATH_SYMB:
-                            levelMap[i][j] = PATH_SYMB
+                for i in range(len(level_map)):
+                    for j in range(len(level_map[i])):
+                        if level_map[i][j] == ALT_PATH_SYMB:
+                            level_map[i][j] = PATH_SYMB
 
-                levelMap = delete_useless_path_and_add_trays(levelMap, (rowKing, colKing), (rowSpawn, colSpawn),
-                                                             addTray=False).copy()
-                levelMap[rowKing][colKing] = KING_SYMB
+                level_map = delete_useless_path_and_add_trays(level_map, (row_king, col_king), (row_spawn, col_spawn),
+                                                              add_tray=False).copy()
+                level_map[row_king][col_king] = KING_SYMB
 
-            levelMap = add_random_trays(levelMap, size).copy()
-            levelMap = randomize_grass(levelMap, size).copy()
+            level_map = add_random_trays(level_map, size).copy()
+            level_map = randomize_grass(level_map, size).copy()
 
             bad = False
         except BaseException:
-            levelMap = create_empty_map(size).copy()
-            levelMap[rowKing][colKing] = KING_SYMB
-            levelMap[rowSpawn][colSpawn] = SPAWN_SYMB
+            level_map = create_empty_map(size).copy()
+            level_map[row_king][col_king] = KING_SYMB
+            level_map[row_spawn][col_spawn] = SPAWN_SYMB
             bad = True
 
-    levelMap = add_stone_border(levelMap, size)
-    level_map_to_return = levelMap.copy()
+    level_map = add_stone_border(level_map, size)
+    level_map_to_return = level_map.copy()
     good_end = True
 
     return level_map_to_return

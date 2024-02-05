@@ -40,11 +40,11 @@ def spawn_cat(choosen, tile_type, tray, tile_images, cat_images, projectiles_ima
     from objects.tiles import BackTile, FrontTile
     from objects.cats import create_cat
     x, y = tray.pos_x, tray.pos_y
-    b_tile = BackTile(tile_type, x, y, tile_images, [back_tile_group, all_sprites])
+    b_tile = BackTile(tile_type, x, y, tile_images, groups=(back_tile_group, all_sprites))
     b_tile.set_default_value(tray.default_x, tray.default_y, tray.size_map)
     cat = create_cat(choosen, x, y, cat_images, projectiles_images)
     cat.set_default_value(tray.default_x, tray.default_y, tray.size_map)
-    f_tile = FrontTile(tile_type, x, y, tile_images, [front_tile_group, all_sprites])
+    f_tile = FrontTile(tile_type, x, y, tile_images, groups=(front_tile_group, all_sprites))
     f_tile.set_default_value(tray.default_x, tray.default_y, tray.size_map)
     tray.kill()
 
@@ -58,7 +58,7 @@ def destroy_cat(cat, back, front, tile_images, tiles_group, all_sprites):
             if i.pos_x == pos_x and i.pos_y == pos_y:
                 i.kill()
                 break
-    tile = TrayTile(pos_x, pos_y, tile_images, [tiles_group, all_sprites])
+    tile = TrayTile(pos_x, pos_y, tile_images, groups=(tiles_group, all_sprites))
     tile.set_default_value(cat.default_x, cat.default_y, cat.size_map)
     cat.kill()
 
@@ -71,7 +71,7 @@ def check_cat_placed(tiles_group, choosen, x):
                 return tile
 
 
-def update_card(cards, screen, money=0):
+def update_card(cards, money=0):
     choosen = None
     for card in cards:
         money -= card.button.update(money)
@@ -79,8 +79,6 @@ def update_card(cards, screen, money=0):
         if chose:
             choosen = chose
     return choosen, money
-    # for card in cards:
-    #     card.all_draw(screen)
 
 
 def draw_neer_cursor(screen, image):
@@ -88,7 +86,7 @@ def draw_neer_cursor(screen, image):
 
 
 def update_rect(groups, screen):
-    if type(groups) == list:
+    if type(groups) is list:
         for sprites in groups:
             for sprite in sprites:
                 sprite.self_draw(screen)
@@ -154,13 +152,13 @@ def move_projectiles(sprites):
         sprite.go_to_enemy()
 
 
-def check_collision(sprites, vx, vy, horizontal_borders, vertical_borders):
+def check_collision(sprites, vx, vy, hor_bord, vert_bord):
     new_vx = 0
     new_vy = 0
     col_h = [False, False]
     col_v = [False, False]
     for sprite in sprites:
-        check = sprite.check(horizontal_borders, vertical_borders)
+        check = sprite.check(hor_bord, vert_bord)
         if not col_h[0] and check[0][0]:
             col_h[0] = True
         if not col_h[1] and check[0][1]:

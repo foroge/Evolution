@@ -13,7 +13,7 @@ class TextInputBox(pygame.sprite.Sprite):
         self.pos = (x, y)
         self.width = w
         self.active = False
-        self.font = pygame.font.SysFont(None, 50)
+        self.font = pygame.font.SysFont("", 50)
         src_path = "\\".join(sys.argv[0].split("\\")[:-2])
         json = get_json(os.path.join(src_path, "data", "current_user.json"))
         self.text = json["current_user"]
@@ -52,4 +52,3 @@ class TextInputBox(pygame.sprite.Sprite):
             self.color = (128, 128, 128)
         else:
             self.color = (255, 255, 255)
-
