@@ -33,6 +33,7 @@ from ui.money_counter import MoneyCounter
 from ui.cat_upgrade_menu import UpgradeMenu
 from ui.statistics_menu import StatisticsMenu
 from ui.main_menu import MainMenu
+from ui.lose_menu import LoseMenu
 
 from data_base.data_base import DBViewer
 
@@ -323,23 +324,30 @@ def game(screen):
 
         pygame.display.update()
         clock.tick(fps)
-
-    while running_lose:
-        statistics = (all_kills, king.hp, all_money, spawner.wave)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
-                                  obj_tiles.front_tile_group])
-                return 0, statistics
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
+    if running_lose:
+        lose_menu = LoseMenu(full_w, full_h)
+        while running_lose:
+            statistics = (all_kills, king.hp, all_money, spawner.wave)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
                     kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
                                       obj_tiles.front_tile_group])
                     return 0, statistics
-        screen.fill("gray")
-        screen.blit(lose_image, lose_image.get_rect(center=screen.get_rect().center))
-        pygame.display.update()
-        clock.tick(fps)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                          obj_tiles.front_tile_group])
+                        return 2, statistics
+            screen.fill((40, 40, 40))
+            lose_menu_update = lose_menu.update()
+            if lose_menu_update[0]:
+                return 2, statistics
+            elif lose_menu_update[1]:
+                return 1, statistics
+            screen.blit(lose_image, lose_image.get_rect(center=screen.get_rect().center))
+            lose_menu.draw(screen)
+            pygame.display.update()
+            clock.tick(fps)
 
 
 def run_statistics(screen):
