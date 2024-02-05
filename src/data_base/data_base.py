@@ -143,7 +143,7 @@ class DBViewer:
         self.full_width = full_w
         self.full_height = full_h
 
-    def draw(self, screen):
+    def draw(self, screen, y=0):
         heads = {"User": 20, "Date": 8, "Time": 5, "Level": 6, "Wave": 6, "Kills": 6, "Money": 8, "Health": 3}
         heads_list = list(heads.keys())
         divider_w = sum(heads.values())
@@ -152,7 +152,7 @@ class DBViewer:
         for i, head in enumerate(heads.keys()):
             size_text = size_w * heads[head]
             head = self.font.render(head, True, "yellow")
-            screen.blit(head, [self.x + size_row, self.y])
+            screen.blit(head, [self.x + size_row, self.y + y])
             size_row += size_text
         rows = self.db.get_all_stat_db()
 
@@ -161,5 +161,8 @@ class DBViewer:
             for j, col in enumerate(row):
                 size_text = size_w * heads[heads_list[j]]
                 cell = self.font.render(str(col), True, "yellow")
-                screen.blit(cell, [self.x + size_row, self.y + 35 + i * self.font_height + 6])
+                screen.blit(cell, [self.x + size_row, self.y + y + 35 + i * self.font_height + 6])
                 size_row += size_text
+
+    def get_y_size(self):
+        return self.y + 35 + len(self.db.get_all_stat_db()) * self.font_height + 6
