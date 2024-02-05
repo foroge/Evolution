@@ -166,3 +166,9 @@ class DBViewer:
 
     def get_y_size(self):
         return self.y + 35 + len(self.db.get_all_stat_db()) * self.font_height + 6
+
+
+# bd = DataBase()
+#
+# for i in range(100):
+#     bd.save_to_db((10, 10, 10, 100), "alex" + str(i))
