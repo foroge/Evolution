@@ -97,7 +97,7 @@ class DataBase:
     def get_all_stat_db(self):
         all_stat_sql = (f"SELECT time.user, time.date, time.time, statistics.level, statistics.wave, statistics.kills, "
                         f"statistics.money, statistics.health FROM statistics, time WHERE time.id == statistics.id "
-                        f"ORDER BY time.date DESC, time.time DESC")
+                        f"ORDER BY time.id DESC")
         with self.base:
             cur = self.base.cursor()
             all_stat = sorted(list(cur.execute(all_stat_sql)), reverse=True)
@@ -149,14 +149,13 @@ class DBViewer:
         heads_list = list(heads.keys())
         divider_w = sum(heads.values())
         size_w = self.full_width * 0.75 / divider_w
-        size_row = 0
-        for i, head in enumerate(heads.keys()):
-            size_text = size_w * heads[head]
-            head = self.font.render(head, True, "yellow")
-            screen.blit(head, [self.x + size_row, self.y + y])
-            size_row += size_text
+        # size_row = 0
+        # for i, head in enumerate(heads.keys()):
+        #     size_text = size_w * heads[head]
+        #     head = self.font.render(head, True, "yellow")
+        #     screen.blit(head, [self.x + size_row, self.y])
+        #     size_row += size_text
         rows = self.db.get_all_stat_db()
-
         for i, row in enumerate(rows):
             size_row = 0
             for j, col in enumerate(row):
@@ -164,6 +163,13 @@ class DBViewer:
                 cell = self.font.render(str(col), True, "yellow")
                 screen.blit(cell, [self.x + size_row, self.y + y + 35 + i * self.font_height + 6])
                 size_row += size_text
+        pygame.draw.rect(screen, (40, 40, 40), [(0, 0), (self.full_width, 80)])
+        size_row = 0
+        for i, head in enumerate(heads.keys()):
+            size_text = size_w * heads[head]
+            head = self.font.render(head, True, "yellow")
+            screen.blit(head, [self.x + size_row, self.y])
+            size_row += size_text
 
     def get_y_size(self):
         return self.y + 35 + len(self.db.get_all_stat_db()) * self.font_height + 6

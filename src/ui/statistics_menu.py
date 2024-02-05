@@ -21,12 +21,12 @@ class StatisticsMenu:
         self.pos_y = 0
 
     def draw(self, screen):
+        self.db_view.draw(screen, y=self.pos_y)
         self.menu_button.draw(screen)
         self.delete_button.draw(screen)
-        self.db_view.draw(screen, y=self.pos_y)
 
     def scroll(self, flag):
-        if not flag and self.db_view.get_y_size() > self.full_y:
+        if not flag and self.db_view.get_y_size() + self.pos_y > self.full_y:
             self.pos_y -= 50
         elif flag and self.pos_y <= -50:
             self.pos_y += 50
