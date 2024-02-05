@@ -33,11 +33,11 @@ if __name__ == "__main__":
                 ret_code = ret_code[0]
             if ret_code == 0:
                 all_running = False
-            if ret_code == 1:
+            elif ret_code == 1:
                 ret_code = game(screen)
-            if ret_code == 2:
+            elif ret_code == 2:
                 ret_code = main_menu(screen)
-            if ret_code == 3:
+            elif ret_code == 3:
                 ret_code = run_statistics(screen)
     pygame.quit()
     quit()

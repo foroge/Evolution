@@ -13,7 +13,7 @@ class StatisticsMenu:
         self.rect = self.image.get_rect(center=(x, y))
         button_size = (150, 50)
         self.delete_button = Button(self.full_x - button_size[0] - 10, 10,
-                                    *button_size, "Del full records", "white")
+                                    *button_size, "Delete all stat.", "white")
         self.menu_button = Button(self.full_x - button_size[0] - 10, self.full_y - button_size[1] - 10,
                                   *button_size, "Back to menu", "white")
         self.db_view = DBViewer(40, 40, self.full_x, self.full_y)
