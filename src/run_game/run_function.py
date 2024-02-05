@@ -101,7 +101,7 @@ def game(screen):
     cards = []
     x_card, y_card = -80, 140
     # cat_names = ["doctor", "egg", "mushroom", "electronic", "warrior", "wizard", "sunflower", "water_cat"]
-    cat_names = ["wizard", "electronic", "sunflower"]
+    cat_names = ["wizard", "electronic", "sunflower", "mushroom"]
     for i in cat_names:
         image = cat_images[i]
         x_card += 100
@@ -230,7 +230,7 @@ def game(screen):
                     upgrade_menu = None
                 else:
                     upgrade_menu_called = check
-                    upgrade_menu = UpgradeMenu(10, 750 / 1080 * full_h, upgrade_menu_called, cat_images)
+                    upgrade_menu = UpgradeMenu(10, 500 / 864 * full_h, upgrade_menu_called, cat_images)
             if upgrade_menu_called:
                 upgrade_menu_updated = upgrade_menu.update(money_counter.count)
                 if upgrade_menu_updated[0]:
