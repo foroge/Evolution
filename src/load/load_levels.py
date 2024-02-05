@@ -32,30 +32,31 @@ def generate_level(level):
     king, x, y = None, None, None
     tile_images = init_image()
     cat_images = init_cats()
+    spawner = None
     for y in range(len(level)):
         for x in range(len(level[y])):
             if level[y][x] == 'g':
-                block = GrassTile('grass', x, y, randint(0, 3), tile_images)
+                GrassTile('grass', x, y, randint(0, 3), tile_images)
             elif level[y][x] == 'T':
-                block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
-                block2 = TrayTile(x, y, tile_images)
+                GrassTile('grass', x, y, randint(0, 3), tile_images)
+                TrayTile(x, y, tile_images)
             elif level[y][x] == 'w':
-                block1 = GrassTile('grass', x, y, randint(0, 3), tile_images)
-                block2 = BaseTile("water", x, y, tile_images)
+                GrassTile('grass', x, y, randint(0, 3), tile_images)
+                BaseTile("water", x, y, tile_images)
             elif level[y][x] == 'F':
-                block = BaseTile("fence", x, y, tile_images)
+                BaseTile("fence", x, y, tile_images)
             elif level[y][x] == 'S':
-                block = BaseTile("stone", x, y, tile_images)
+                BaseTile("stone", x, y, tile_images)
             elif level[y][x] == "t":
-                block = BaseTile("tree", x, y, tile_images)
+                BaseTile("tree", x, y, tile_images)
             elif level[y][x] == "-":
-                block = BaseTile("path", x, y, tile_images)
+                BaseTile("path", x, y, tile_images)
             elif level[y][x] == "#":
-                block1 = BaseTile("path", x, y, tile_images)
+                BaseTile("path", x, y, tile_images)
                 spawner = Spawner(x, y)
             elif level[y][x] == '@':
-                block1 = BaseTile("path", x, y, tile_images)
-                block2 = BackTile("tray", x, y, tile_images)
+                BaseTile("path", x, y, tile_images)
+                BackTile("tray", x, y, tile_images)
                 king = create_cat("king", x, y, cat_images, hp=get_json("characteristics.json")[0]["king_hp"])
-                block3 = FrontTile("tray", x, y, tile_images)
+                FrontTile("tray", x, y, tile_images)
     return king, spawner, x, y, objects.tiles.group_list, objects.cats.cats_group, objects.tiles.all_sprites

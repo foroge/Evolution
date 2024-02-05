@@ -329,7 +329,6 @@ class Wizard(BaseCat):
     def upgrade(self):
         self.cooldown = round(0.85 * self.cooldown)
         self.damage = round(1.15 * self.damage)
-        # self.radius = round(1.15 * self.radius)
         self.base_radius = round(1.15 * self.base_radius)
         self.upgrade_cost = round(1.5 * self.upgrade_cost)
 
