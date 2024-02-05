@@ -351,6 +351,10 @@ def run_statistics(screen):
         for event in event_list:
             if event.type == pygame.QUIT:
                 return 0
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:
+                stat_menu.scroll(True)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 5:
+                stat_menu.scroll(False)
         back_to_menu = stat_menu.update()
         if back_to_menu:
             return 2
