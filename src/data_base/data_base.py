@@ -96,7 +96,8 @@ class DataBase:
 
     def get_all_stat_db(self):
         all_stat_sql = (f"SELECT time.user, time.date, time.time, statistics.level, statistics.wave, statistics.kills, "
-                        f"statistics.money, statistics.health FROM statistics, time WHERE time.id == statistics.id")
+                        f"statistics.money, statistics.health FROM statistics, time WHERE time.id == statistics.id "
+                        f"ORDER BY time.date DESC, time.time DESC")
         with self.base:
             cur = self.base.cursor()
             all_stat = sorted(list(cur.execute(all_stat_sql)), reverse=True)
