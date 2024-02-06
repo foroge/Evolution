@@ -59,4 +59,4 @@ def generate_level(level):
                 BackTile("tray", x, y, tile_images)
                 king = create_cat("king", x, y, cat_images, hp=get_json("characteristics.json")[0]["king_hp"])
                 FrontTile("tray", x, y, tile_images)
-    return king, spawner, x, y, objects.tiles.group_list, objects.cats.cats_group, objects.tiles.all_sprites
+    return king, spawner, x, y, objects.tiles.group_list.copy(), objects.cats.cats_group, objects.tiles.all_sprites

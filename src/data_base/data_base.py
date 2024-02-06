@@ -59,7 +59,6 @@ class DataBase:
                 sql_to_time = f"INSERT INTO time (time, date, user) VALUES ('{time}', '{date}', '{user}')"
                 cur.execute(sql_to_time)
                 id_element = self.get_id_db(date, time, user)
-                print(parameters)
                 cur.execute(sql_to_stat, (id_element, *parameters))
             cur.close()
 
