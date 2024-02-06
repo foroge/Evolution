@@ -37,11 +37,9 @@ from ui.lose_menu import LoseMenu
 
 from data_base.data_base import DBViewer
 
-upgrade_menu: UpgradeMenu
-
 
 def game(screen):
-    global upgrade_menu
+    upgrade_menu: UpgradeMenu
 
     info = pygame.display.Info()
     full_w = info.current_w
@@ -58,12 +56,12 @@ def game(screen):
     level_map = start_creating(col_cell).copy()
 
     difficulty_dict = {range(30, 51): 1, range(51, 73): 2, range(73, 100): 3}
-    count_path = sum(list(map(lambda x: x.count('-'), level_map)))
+    count_path = sum(list(map(lambda n: n.count('-'), level_map)))
+    difficulty_map = 1
     for i in difficulty_dict.keys():
         if count_path in i:
             difficulty_map = difficulty_dict[i]
             break
-    print(difficulty_map)
 
     king, spawner, x, y, sprites, cats, all_sprites = generate_level(level_map)
     sprites.insert(-1, cats)
@@ -261,7 +259,7 @@ def game(screen):
 
             if king.hp == 0:
                 running = False
-                time_between_waves = True
+                running_lose = True
         else:
             statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
             paused, back_to_menu, running = pause_menu.update()
@@ -278,6 +276,7 @@ def game(screen):
             i.draw(screen)
         enemies_group.draw(screen)
         projectiles_group.draw(screen)
+        king.hp = 0
 
         if upgrade_menu_called:
             if type(upgrade_menu_called).__name__ != "SunFlower":
@@ -326,8 +325,8 @@ def game(screen):
         clock.tick(fps)
     if running_lose:
         lose_menu = LoseMenu(full_w, full_h)
+        statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
         while running_lose:
-            statistics = (all_kills, king.hp, all_money, spawner.wave, spawner.level)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
