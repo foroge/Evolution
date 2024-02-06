@@ -168,7 +168,7 @@ def game(screen):
             if event.type == pygame.QUIT:
                 kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
                                   obj_tiles.front_tile_group])
-                statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
+                statistics = (difficulty_map, spawner.level, spawner.wave, all_kills, all_money)
                 return 0, statistics
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -267,10 +267,11 @@ def game(screen):
                 running = False
                 running_lose = True
             if spawner.level > 5:
+                spawner.level -= 1
                 running = False
                 running_win = True
         else:
-            statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
+            statistics = (difficulty_map, spawner.level, spawner.wave, all_kills, all_money)
             paused, back_to_menu, running = pause_menu.update()
             if back_to_menu:
                 kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
@@ -334,7 +335,7 @@ def game(screen):
         clock.tick(fps)
 
     if running_lose:
-        statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
+        statistics = (difficulty_map, spawner.level, spawner.wave, all_kills, all_money)
         lose_menu = LoseMenu(full_w, full_h, statistics)
         while running_lose:
             for event in pygame.event.get():
@@ -364,7 +365,7 @@ def game(screen):
             clock.tick(fps)
 
     if running_win:
-        statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
+        statistics = (difficulty_map, spawner.level, spawner.wave, all_kills, all_money)
         win_menu = LoseMenu(full_w, full_h, statistics)
         while running_win:
             for event in pygame.event.get():
