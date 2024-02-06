@@ -145,6 +145,7 @@ class DBViewer:
         self.y = y
         self.full_width = full_w
         self.full_height = full_h
+        self.size = self.y + 35 + len(self.db.get_all_stat_db()) * self.font_height + 6
 
     def draw(self, screen, y=0):
         heads = {"User": 20, "Date": 8, "Time": 5, "difficulty": 10, "Level": 6, "Wave": 6, "Kills": 6, "Money": 8}
@@ -171,4 +172,4 @@ class DBViewer:
             size_row += size_text
 
     def get_y_size(self):
-        return self.y + 35 + len(self.db.get_all_stat_db()) * self.font_height + 6
+        return self.size
