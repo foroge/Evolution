@@ -70,6 +70,8 @@ def game(screen):
     sprites.insert(-1, cats_group)
     lose_image = load_image("../data/other_images/lose.png")
     lose_image = pygame.transform.scale(lose_image, (lose_image.get_rect()[2] * 3, lose_image.get_rect()[3] * 3))
+    win_image = load_image("../data/other_images/win.png")
+    win_image = pygame.transform.scale(win_image, (win_image.get_rect()[2] * 3, win_image.get_rect()[3] * 3))
     wave_width = 90
     wave_height = 40
     wave_btn_x = king.hp_bar.rect.left
@@ -134,6 +136,7 @@ def game(screen):
     set_def_position(all_sprites, x + 20, y + 20, size_map)
     running = True
     running_lose = False
+    running_win = False
     paused = False
     fps = 60
     clock = pygame.time.Clock()
@@ -258,10 +261,14 @@ def game(screen):
             king.hp_bar.update(king.hp / king.max_hp)
             king.hp_bar.update_wave_text(spawner.wave)
             king.hp_bar.update_time_before_wave(round(spawner.time_before_wave))
+            king.hp_bar.update_level_text(spawner.level)
 
             if king.hp == 0:
                 running = False
                 running_lose = True
+            if spawner.level > 5:
+                running = False
+                running_win = True
         else:
             statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
             paused, back_to_menu, running = pause_menu.update()
@@ -278,6 +285,7 @@ def game(screen):
             i.draw(screen)
         enemies_group.draw(screen)
         projectiles_group.draw(screen)
+
         if upgrade_menu_called:
             if type(upgrade_menu_called).__name__ != "SunFlower":
                 pygame.draw.circle(screen, "white", [upgrade_menu_called.rect[0] + upgrade_menu_called.rect[2] // 2,
@@ -306,6 +314,7 @@ def game(screen):
         screen.blit(king.hp_bar.image, king.hp_bar.rect)
         screen.blit(king.hp_bar.text_hp_string_rendered, king.hp_bar.text_hp_rect)
         screen.blit(king.hp_bar.text_wave_string_rendered, king.hp_bar.text_wave_rect)
+        screen.blit(king.hp_bar.text_level_string_rendered, king.hp_bar.text_level_rect)
         screen.blit(king.hp_bar.text_time_before_wave_string_rendered, king.hp_bar.text_time_before_wave_rect)
 
         if upgrade_menu_called:
@@ -323,6 +332,7 @@ def game(screen):
 
         pygame.display.update()
         clock.tick(fps)
+
     if running_lose:
         statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
         lose_menu = LoseMenu(full_w, full_h, statistics)
@@ -340,12 +350,46 @@ def game(screen):
             screen.fill((40, 40, 40))
             lose_menu_update = lose_menu.update()
             if lose_menu_update[0]:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 2, statistics
             elif lose_menu_update[1]:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 1, statistics
             center = screen.get_rect().center
             screen.blit(lose_image, lose_image.get_rect(center=(center[0], center[1] // 2)))
             lose_menu.draw(screen)
+            pygame.display.update()
+            clock.tick(fps)
+
+    if running_win:
+        statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
+        win_menu = LoseMenu(full_w, full_h, statistics)
+        while running_win:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                      obj_tiles.front_tile_group])
+                    return 0, statistics
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                          obj_tiles.front_tile_group])
+                        return 2, statistics
+            screen.fill((40, 40, 40))
+            win_menu_update = win_menu.update()
+            if win_menu_update[0]:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
+                return 2, statistics
+            elif win_menu_update[1]:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
+                return 1, statistics
+            center = screen.get_rect().center
+            screen.blit(win_image, win_image.get_rect(center=(center[0], center[1] // 2)))
+            win_menu.draw(screen)
             pygame.display.update()
             clock.tick(fps)
 

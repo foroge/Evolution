@@ -19,6 +19,8 @@ class HealthBar(pygame.sprite.Sprite):
         self.text_hp_rect = None
         self.text_wave_string_rendered = None
         self.text_wave_rect = None
+        self.text_level_string_rendered = None
+        self.text_level_rect = None
         self.text_time_before_wave_string_rendered = None
         self.text_time_before_wave_rect = None
 
@@ -50,6 +52,11 @@ class HealthBar(pygame.sprite.Sprite):
                                                                       pygame.Color('black'))
         self.text_time_before_wave_rect = self.text_wave_string_rendered.get_rect(
             center=(self.rect.center[0] - 65, self.rect.center[1] + 2 * self.rect.height + 5))
+
+    def update_level_text(self, level):
+        self.text_level_string_rendered = self.font.render(f"Level: {level}", 1, pygame.Color('black'))
+        self.text_level_rect = self.text_level_string_rendered.get_rect(
+            center=(self.rect.center[0], self.rect.center[1] - self.rect.height - 5))
 
 
 class King(BaseCat):
