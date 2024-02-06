@@ -37,9 +37,11 @@ from ui.lose_menu import LoseMenu
 
 from data_base.data_base import DBViewer
 
+upgrade_menu: UpgradeMenu
+
 
 def game(screen):
-    upgrade_menu: UpgradeMenu
+    global upgrade_menu
 
     info = pygame.display.Info()
     full_w = info.current_w
@@ -333,8 +335,8 @@ def game(screen):
         clock.tick(fps)
 
     if running_lose:
-        lose_menu = LoseMenu(full_w, full_h)
         statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
+        lose_menu = LoseMenu(full_w, full_h, statistics)
         while running_lose:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -352,7 +354,8 @@ def game(screen):
                 return 2, statistics
             elif lose_menu_update[1]:
                 return 1, statistics
-            screen.blit(lose_image, lose_image.get_rect(center=screen.get_rect().center))
+            center = screen.get_rect().center
+            screen.blit(lose_image, lose_image.get_rect(center=(center[0], center[1] // 2)))
             lose_menu.draw(screen)
             pygame.display.update()
             clock.tick(fps)
