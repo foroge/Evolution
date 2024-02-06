@@ -48,7 +48,7 @@ class DataBase:
                 cur.close()
 
     def save_to_db(self, parameters, user):
-        sql_to_stat = "INSERT INTO statistics (id, kills, difficulty, money, wave, level) VALUES (?, ?, ?, ?, ?, ?)"
+        sql_to_stat = "INSERT INTO statistics (id, difficulty, level, wave, kills, money) VALUES (?, ?, ?, ?, ?, ?)"
         date, time = str(dt.date.today()), str(dt.datetime.now().time().strftime("%H:%M"))
         with self.base:
             cur = self.base.cursor()
@@ -109,7 +109,7 @@ class DataBase:
         with self.base:
             cur = self.base.cursor()
             self.del_from_db(date, time, user)
-            sql_to_stat = "INSERT INTO statistics (id, kills, difficulty, money, wave, level) VALUES (?, ?, ?, ?, ?, ?)"
+            sql_to_stat = "INSERT INTO statistics (id, difficulty, level, wave, kills, money) VALUES (?, ?, ?, ?, ?, ?)"
             cur.execute(sql_to_stat, (id_element, *parameters))
             cur.close()
 
