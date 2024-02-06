@@ -278,8 +278,6 @@ def game(screen):
             i.draw(screen)
         enemies_group.draw(screen)
         projectiles_group.draw(screen)
-        king.hp = 0
-
         if upgrade_menu_called:
             if type(upgrade_menu_called).__name__ != "SunFlower":
                 pygame.draw.circle(screen, "white", [upgrade_menu_called.rect[0] + upgrade_menu_called.rect[2] // 2,
@@ -376,6 +374,7 @@ def run_statistics(screen):
         event_list = pygame.event.get()
         for event in event_list:
             if event.type == pygame.QUIT:
+                del stat_menu
                 return 0
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 4:
                 stat_menu.scroll(True)
@@ -383,6 +382,7 @@ def run_statistics(screen):
                 stat_menu.scroll(False)
         back_to_menu = stat_menu.update()
         if back_to_menu:
+            del stat_menu
             return 2
         stat_menu.draw(screen)
         pygame.display.update()

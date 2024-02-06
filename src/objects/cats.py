@@ -69,7 +69,7 @@ class Egg(BaseCat):
 
 
 class Mushroom(BaseCat):
-    class PoisonCloudProjectile(pygame.sprite.Sprite):  # (BaseProjectile):
+    class PoisonCloudProjectile(pygame.sprite.Sprite):
         def __init__(self, image, dispenser, pos, damage, poison_damage, poison_cloud_time, poison_time, enemy_group):
             super().__init__(projectiles_group, all_sprites)
             self.dispenser = dispenser
@@ -78,7 +78,6 @@ class Mushroom(BaseCat):
             self.cut_sheet(image, 10, 1)
             self.cur_frame = 0
             self.image = self.orig_image = self.frames[self.cur_frame]
-            # self.rect = self.rect.move(x - self.rect[2] // 2, y - self.rect[3] // 2)
             self.orig_size = 48, 48
             self.pos = pos
             self.rect = self.image.get_rect(center=(dispenser.rect[0] + 1 / 2 * self.orig_size[0] * pos[0],

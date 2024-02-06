@@ -15,6 +15,7 @@ def kill_all_sprites(sprites):
 
 
 def check_cat_clicked(cat_group, x):
+    print(cat_group)
     for cat in cat_group:
         check = cat.check_clicked(x)
         if check:
