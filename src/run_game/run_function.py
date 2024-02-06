@@ -266,7 +266,7 @@ def game(screen):
             if king.hp == 0:
                 running = False
                 running_lose = True
-            if spawner.level > 3:
+            if spawner.level > 5:
                 running = False
                 running_win = True
         else:
@@ -351,8 +351,12 @@ def game(screen):
             screen.fill((40, 40, 40))
             lose_menu_update = lose_menu.update()
             if lose_menu_update[0]:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 2, statistics
             elif lose_menu_update[1]:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 1, statistics
             center = screen.get_rect().center
             screen.blit(lose_image, lose_image.get_rect(center=(center[0], center[1] // 2)))
@@ -377,8 +381,12 @@ def game(screen):
             screen.fill((40, 40, 40))
             win_menu_update = win_menu.update()
             if win_menu_update[0]:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 2, statistics
             elif win_menu_update[1]:
+                kill_all_sprites([*sprites, enemies_group, projectiles_group, obj_tiles.back_tile_group,
+                                  obj_tiles.front_tile_group])
                 return 1, statistics
             center = screen.get_rect().center
             screen.blit(win_image, win_image.get_rect(center=(center[0], center[1] // 2)))
