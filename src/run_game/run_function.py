@@ -266,7 +266,7 @@ def game(screen):
             if king.hp == 0:
                 running = False
                 running_lose = True
-            if spawner.level > 10:
+            if spawner.level > 3:
                 running = False
                 running_win = True
         else:
@@ -361,8 +361,8 @@ def game(screen):
             clock.tick(fps)
 
     if running_win:
-        win_menu = LoseMenu(full_w, full_h)
         statistics = (all_kills, difficulty_map, all_money, spawner.wave, spawner.level)
+        win_menu = LoseMenu(full_w, full_h, statistics)
         while running_win:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -380,7 +380,8 @@ def game(screen):
                 return 2, statistics
             elif win_menu_update[1]:
                 return 1, statistics
-            screen.blit(win_image, win_image.get_rect(center=screen.get_rect().center))
+            center = screen.get_rect().center
+            screen.blit(win_image, win_image.get_rect(center=(center[0], center[1] // 2)))
             win_menu.draw(screen)
             pygame.display.update()
             clock.tick(fps)
