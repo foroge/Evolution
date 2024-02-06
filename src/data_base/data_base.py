@@ -136,10 +136,11 @@ class DataBase:
 
 
 class DBViewer:
-    def __init__(self, x, y, full_w, full_h):
+    def __init__(self, x, y, full_w, full_h, stat=tuple()):
         self.db = DataBase()
         self.font_height = full_h // 40
         self.font = pygame.font.SysFont("Monospace", self.font_height)
+        self.stat = stat
         self.x = x
         self.y = y
         self.full_width = full_w
@@ -151,6 +152,9 @@ class DBViewer:
         divider_w = sum(heads.values())
         size_w = self.full_width * 0.75 / divider_w
         rows = self.db.get_all_stat_db()
+        if self.stat:
+            heads_list = heads_list[3:]
+            rows = [self.stat]
         for i, row in enumerate(rows):
             size_row = 0
             for j, col in enumerate(row):
@@ -160,7 +164,7 @@ class DBViewer:
                 size_row += size_text
         pygame.draw.rect(screen, (40, 40, 40), [(0, 0), (self.full_width, 80)])
         size_row = 0
-        for i, head in enumerate(heads.keys()):
+        for i, head in enumerate(heads.keys() if not self.stat else list(heads.keys())[3:]):
             size_text = size_w * heads[head]
             head = self.font.render(head, True, "yellow")
             screen.blit(head, [self.x + size_row, self.y])
