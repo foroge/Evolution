@@ -1,7 +1,5 @@
 import random
-import threading
-import time
-from threading import Thread
+from stopit import threading_timeoutable
 
 PATH_SYMB = "P"  # Символ пути внутри функций
 ALT_PATH_SYMB = "-"  # Выходной символ пути
@@ -17,8 +15,6 @@ STONE_SYMB = "S"
 
 RANDOM_GRASS_CHANCE = 0.05
 
-end = False
-good_end = False
 level_map_to_return = None
 
 
@@ -204,8 +200,9 @@ def add_stone_border(level_map, size):
     return level_map
 
 
+@threading_timeoutable()
 def create_map(size):
-    global good_end, level_map_to_return
+    global level_map_to_return
 
     size = size - 2
     level_map = create_empty_map(size).copy()
@@ -253,38 +250,11 @@ def create_map(size):
 
     level_map = add_stone_border(level_map, size)
     level_map_to_return = level_map.copy()
-    good_end = True
 
-    return level_map_to_return
-
-
-def check_time(breaker: list[bool]):
-    global end
-    start_time = time.time()
-    while time.time() - start_time < 2:
-        if breaker[0]:
-            break
-        else:
-            time.sleep(0.05)
-    else:
-        end = True
+    return True
 
 
 def start_creating(size):
-    for thread in threading.enumerate():
-        print(thread.name, end="; ")
-    print()
-    global end, good_end
-    breaker = [False]
-    t1 = Thread(target=check_time, args=(breaker, ), daemon=True)
-    t2 = Thread(target=create_map, args=(size, ), daemon=False)
-    t1.start()
-    t2.start()
-    while not end:
-        if good_end:
-            breaker[0] = True
-            return level_map_to_return
-    end = False
-    good_end = False
-    breaker[0] = True
+    if create_map(size, timeout=2):
+        return level_map_to_return
     return start_creating(size)
