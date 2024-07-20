@@ -1,4 +1,5 @@
 import random
+import threading
 import time
 from threading import Thread
 
@@ -49,7 +50,6 @@ def create_path_corner(level_map, coords_start, coords_end):
 
 
 def create_path(level_map, size, coords_king, coords_spawn):
-    global end
     coords = coords_king
     end = False
     while not end:
@@ -258,21 +258,33 @@ def create_map(size):
     return level_map_to_return
 
 
-def check_time():
+def check_time(breaker: list[bool]):
     global end
-    time.sleep(2)
-    end = True
+    start_time = time.time()
+    while time.time() - start_time < 2:
+        if breaker[0]:
+            break
+        else:
+            time.sleep(0.05)
+    else:
+        end = True
 
 
 def start_creating(size):
+    for thread in threading.enumerate():
+        print(thread.name, end="; ")
+    print()
     global end, good_end
-    t1 = Thread(target=check_time, args=(), daemon=True)
-    t2 = Thread(target=create_map, args=(size, ), daemon=True)
+    breaker = [False]
+    t1 = Thread(target=check_time, args=(breaker, ), daemon=True)
+    t2 = Thread(target=create_map, args=(size, ), daemon=False)
     t1.start()
     t2.start()
     while not end:
         if good_end:
+            breaker[0] = True
             return level_map_to_return
     end = False
     good_end = False
+    breaker[0] = True
     return start_creating(size)
